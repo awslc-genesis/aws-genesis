@@ -51,7 +51,7 @@ function EventCard({ event, index }) {
         // Width follows the screen's height on wide screens, so a card plus its
         // caption always fits vertically; on phones one card fills most of the
         // width with the next peeking in.
-        'relative w-[min(85vw,66svh)] shrink-0 self-center text-ink',
+        'relative w-[min(90vw,78svh)] shrink-0 self-center text-ink',
         raised ? '-translate-y-[5svh]' : 'translate-y-[5svh]',
       )}
     >
@@ -69,7 +69,7 @@ function EventCard({ event, index }) {
           containerWidth="100%"
           imageHeight="100%"
           imageWidth="100%"
-          radius={28}
+          radius={0}
           rotateAmplitude={12}
           scaleOnHover={1.05}
           glare={0.5}
@@ -227,7 +227,7 @@ export default function EventsSection({ className }) {
 
         <ul
           ref={track}
-          className="mt-8 flex min-h-0 w-max flex-1 gap-12 px-5 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
+          className="mt-8 flex min-h-0 w-max flex-1 gap-12 pt-[6svh] px-5 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
         >
           {EVENTS.map((event, i) => (
             <EventCard key={event.seed} event={event} index={i} />

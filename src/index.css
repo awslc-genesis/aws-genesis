@@ -419,3 +419,8 @@ html[data-cursor-hidden] .scroll-cursor {
   -webkit-mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
   mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
 }
+
+/* Square corners on the event cards' hover label, to match the cards. */
+.event-tilt .tilted-card__caption {
+  border-radius: 0;
+}
