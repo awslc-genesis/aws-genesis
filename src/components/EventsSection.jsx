@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { ArrowUpRight } from 'lucide-react'
 
 import TiltedCard, { TiltedCardLayer } from '@/components/TiltedCard'
+import { PINNED } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -79,7 +80,7 @@ function EventCard({ event, index }) {
                 {event.date} · {event.place}
               </p>
               <p className="type-body max-w-[36ch] text-paper/80">{event.summary}</p>
-              <p className="type-label text-paper/40">Click to flip back</p>
+              <p className="type-label text-paper/55">Click to flip back</p>
             </div>
           }
         >
@@ -99,7 +100,7 @@ function EventCard({ event, index }) {
           <p className="type-label text-ink/55">
             No.{number} · {event.type}
           </p>
-          <p className="type-body mt-2 text-ink/55">
+          <p className="type-body mt-2 text-ink/60">
             {event.date} · {event.place}
           </p>
         </div>
@@ -125,58 +126,63 @@ export default function EventsSection({ className }) {
 
   useGSAP(
     () => {
-      const section = root.current
-      const row = track.current
-      const distance = () => Math.max(0, row.scrollWidth - window.innerWidth)
-      // Extra scroll before the cards start moving, so the first card can be
-      // seen while the strip holds still...
-      const lead = () => window.innerHeight * 0.5
-      // ...and after the last card arrives, so the strip rests with every
-      // event in view before the page moves on to the next section.
-      const hold = () => window.innerHeight * 0.6
+      // Wide screens with a mouse or trackpad: the strip sticks and vertical
+      // scroll moves the cards sideways. Phones and tablets skip all of this
+      // and swipe the row natively (see the `free:` classes below).
+      gsap.matchMedia().add(PINNED, () => {
+        const section = root.current
+        const row = track.current
+        const distance = () => Math.max(0, row.scrollWidth - window.innerWidth)
+        // Extra scroll before the cards start moving, so the first card can be
+        // seen while the strip holds still...
+        const lead = () => window.innerHeight * 0.5
+        // ...and after the last card arrives, so the strip rests with every
+        // event in view before the page moves on to the next section.
+        const hold = () => window.innerHeight * 0.6
 
-      // Re-measured on every refresh (resize, font load) before triggers recalc.
-      const setHeight = () => {
-        section.style.height = `${window.innerHeight + lead() + distance() + hold()}px`
-      }
-      setHeight()
-      ScrollTrigger.addEventListener('refreshInit', setHeight)
+        // Re-measured on every refresh (resize, font load) before triggers recalc.
+        const setHeight = () => {
+          section.style.height = `${window.innerHeight + lead() + distance() + hold()}px`
+        }
+        setHeight()
+        ScrollTrigger.addEventListener('refreshInit', setHeight)
 
-      // The strip sticks at the top, holds for `lead`, slides over `distance`,
-      // then holds again for the rest of the block.
-      gsap.to(row, {
-        x: () => -distance(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: () => `top top-=${lead()}`,
-          end: () => `+=${distance()}`,
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-        },
+        // The strip sticks at the top, holds for `lead`, slides over `distance`,
+        // then holds again for the rest of the block.
+        gsap.to(row, {
+          x: () => -distance(),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            start: () => `top top-=${lead()}`,
+            end: () => `+=${distance()}`,
+            scrub: 0.5,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        // This block's height pushes down everything after it, so whenever the
+        // row's width changes (cards added or removed, a hot reload, a resize)
+        // every scroll trigger is re-measured: this block's height, the pinned
+        // About panel and the black section's cover. Otherwise they keep stale
+        // positions and the next section slides up over the strip too early.
+        let lastWidth = row.scrollWidth
+        let timer = setTimeout(() => ScrollTrigger.refresh(), 50)
+        const observer = new ResizeObserver(() => {
+          if (row.scrollWidth === lastWidth) return
+          lastWidth = row.scrollWidth
+          clearTimeout(timer)
+          timer = setTimeout(() => ScrollTrigger.refresh(), 50)
+        })
+        observer.observe(row)
+
+        return () => {
+          clearTimeout(timer)
+          observer.disconnect()
+          ScrollTrigger.removeEventListener('refreshInit', setHeight)
+          section.style.height = ''
+        }
       })
-
-      // This block's height pushes down everything after it, so whenever the
-      // row's width changes (cards added or removed, a hot reload, a resize)
-      // every scroll trigger is re-measured: this block's height, the pinned
-      // About panel and the black section's cover. Otherwise they keep stale
-      // positions and the next section slides up over the strip too early.
-      let lastWidth = row.scrollWidth
-      let timer = setTimeout(() => ScrollTrigger.refresh(), 50)
-      const observer = new ResizeObserver(() => {
-        if (row.scrollWidth === lastWidth) return
-        lastWidth = row.scrollWidth
-        clearTimeout(timer)
-        timer = setTimeout(() => ScrollTrigger.refresh(), 50)
-      })
-      observer.observe(row)
-
-      return () => {
-        clearTimeout(timer)
-        observer.disconnect()
-        ScrollTrigger.removeEventListener('refreshInit', setHeight)
-        section.style.height = ''
-      }
     },
     // Rebuilt when the event list changes (including on a hot reload), so the
     // height and scroll distance always match the cards on screen.
@@ -188,9 +194,9 @@ export default function EventsSection({ className }) {
       ref={root}
       id="events"
       aria-labelledby="events-title"
-      className={cn('relative h-[300svh]', className)}
+      className={cn('relative pinned:h-[300svh]', className)}
     >
-      <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-24 pb-8 sm:pt-28 sm:pb-10">
+      <div className="flex flex-col pt-24 pb-8 sm:pt-28 sm:pb-10 pinned:sticky pinned:top-0 pinned:h-svh pinned:overflow-hidden">
         <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
           <h2
             id="events-title"
@@ -206,14 +212,18 @@ export default function EventsSection({ className }) {
           </p>
         </div>
 
+        {/* On phones and tablets this wrapper is a native sideways swipe area
+            (no snapping); on desktop it just holds the row the scroll moves. */}
+        <div className="mt-8 flex min-h-0 flex-1 sm:mt-10 free:overflow-x-auto free:overscroll-x-contain free:py-[6svh] free:[scrollbar-width:none] free:[&::-webkit-scrollbar]:hidden">
         <ul
           ref={track}
-          className="mt-8 flex min-h-0 w-max flex-1 gap-12 px-5 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
+          className="flex w-max gap-12 px-5 will-change-transform sm:gap-24 sm:px-10 lg:gap-40 lg:px-16 pinned:min-h-0 pinned:flex-1"
         >
           {EVENTS.map((event, i) => (
             <EventCard key={event.seed} event={event} index={i} />
           ))}
         </ul>
+        </div>
       </div>
     </section>
   )

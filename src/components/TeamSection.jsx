@@ -79,7 +79,7 @@ function MemberRow({ member }) {
         </p>
       </div>
 
-      <blockquote data-member-quote className="type-h3 leading-[1.25]">
+      <blockquote data-member-quote className="type-h3">
         {member.quote}
       </blockquote>
     </li>
@@ -88,7 +88,7 @@ function MemberRow({ member }) {
 
 // Meet the Team: a title row in the same style as Our Partners, then one row
 // per member that rises in as it scrolls into view.
-export default function TeamSection({ className }) {
+export default function TeamSection({ className, heading = true }) {
   const root = useRef(null)
 
   useGSAP(
@@ -118,19 +118,21 @@ export default function TeamSection({ className }) {
   )
 
   return (
-    <section ref={root} id="team" aria-labelledby="team-title" className={cn('text-ink', className)}>
+    <section ref={root} id="team" aria-labelledby={heading ? 'team-title' : undefined} aria-label={heading ? undefined : 'Team members'} className={cn('text-ink', className)}>
+      {heading && (
       <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <h2 id="team-title" className="type-h2 overflow-hidden pb-[0.1em]">
           <span data-team-line className="block">
-            Meet the <span className="text-genesis-gradient type-accent">Team</span>
+            Meet the <span className="text-genesis-gradient type-accent">Leads</span>
           </span>
         </h2>
-        <p data-team-intro className="type-body max-w-[32ch] text-ink/55 sm:pb-2">
+        <p data-team-intro className="type-body max-w-[32ch] text-ink/60 sm:pb-2">
           The students running Genesis: organising events, mentoring members and building alongside everyone.
         </p>
       </div>
+      )}
 
-      <ul className="mt-14 border-b border-ink/10 sm:mt-20 lg:ml-[25%]">
+      <ul className={cn('border-b border-ink/10 lg:ml-[25%]', heading && 'mt-14 sm:mt-20')}>
         {TEAM.map(member => (
           <MemberRow key={member.name} member={member} />
         ))}

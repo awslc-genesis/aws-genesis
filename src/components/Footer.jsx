@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
 import TechText from '@/components/TechText'
+import TransitionLink from '@/components/TransitionLink'
 import { NAV_LINKS } from '@/lib/navigation'
 
 const COLUMNS = [
@@ -12,10 +13,32 @@ const COLUMNS = [
 
 const YEAR = new Date().getFullYear()
 
-const linkClass =
-  'rounded-sm text-ink/75 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink'
+// Two colour schemes: light (cream, used on the home page) and dark (ink, used
+// under the inner pages' cream closing band).
+const TONES = {
+  light: {
+    footer: 'bg-paper text-ink',
+    label: 'text-ink/55',
+    link: 'text-ink/75 hover:text-ink focus-visible:outline-ink',
+    rule: 'border-ink/10',
+    meta: 'text-ink/60',
+    mark: '#dedad4',
+    accent: '#0e0c11',
+  },
+  dark: {
+    footer: 'bg-ink text-paper',
+    label: 'text-paper/55',
+    link: 'text-paper/70 hover:text-paper focus-visible:outline-paper',
+    rule: 'border-paper/10',
+    meta: 'text-paper/60',
+    mark: '#24212a',
+    accent: '#f6f3ee',
+  },
+}
 
-export default function Footer() {
+export default function Footer({ tone = 'light' }) {
+  const t = TONES[tone] ?? TONES.light
+  const linkClass = `rounded-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 ${t.link}`
   const root = useRef(null)
 
   // The giant wordmark rises out of its mask as the footer scrolls into view.
@@ -34,22 +57,22 @@ export default function Footer() {
   )
 
   return (
-    // Pulled up under the rounded bottom of the section above, so the paper
-    // background shows in its corners.
-    <footer ref={root} className="relative z-[5] -mt-16 bg-paper pt-16 text-ink">
+    // Pulled up under the rounded bottom of the section above, so the
+    // footer's background shows in its corners.
+    <footer ref={root} className={`relative z-[5] -mt-16 pt-16 ${t.footer}`}>
       <div className="px-5 pt-16 sm:px-10 sm:pt-24 lg:px-16">
         <div className="grid gap-12 md:grid-cols-[2fr_1fr_1fr]">
           <p className="type-h3">Start your Day One</p>
 
           {COLUMNS.map(column => (
             <nav key={column.title} aria-label={column.title}>
-              <h2 className="type-label text-ink/55">{column.title}</h2>
+              <h2 className={`type-label ${t.label}`}>{column.title}</h2>
               <ul className="type-body mt-6 space-y-3">
                 {column.links.map(link => (
-                  <li key={link.href}>
-                    <a href={link.href} className={linkClass}>
+                  <li key={link.to}>
+                    <TransitionLink to={link.to} className={linkClass}>
                       {link.label}
-                    </a>
+                    </TransitionLink>
                   </li>
                 ))}
               </ul>
@@ -70,8 +93,8 @@ export default function Footer() {
               fontFamily='"Inter", sans-serif'
               fontWeight={600}
               fontSize={900}
-              color="#dedad4"
-              accentColor="#0e0c11"
+              color={t.mark}
+              accentColor={t.accent}
               reveal="letter"
               dashLength={4}
               dashGap={2}
@@ -85,8 +108,8 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-ink/10 px-5 py-6 sm:px-10 lg:px-16">
-        <div className="type-body flex flex-col gap-4 text-ink/60 sm:flex-row sm:items-center sm:justify-between">
+      <div className={`border-t px-5 py-6 sm:px-10 lg:px-16 ${t.rule}`}>
+        <div className={`type-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${t.meta}`}>
           <span>© {YEAR} AWS Learning Club – Genesis</span>
           <span>Tarlac State University · Tarlac City</span>
         </div>

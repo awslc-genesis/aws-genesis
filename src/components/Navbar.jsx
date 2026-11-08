@@ -1,21 +1,27 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
 import logo from '@/assets/logo.webp'
+import TransitionLink from '@/components/TransitionLink'
 import { NAV_LINKS } from '@/lib/navigation'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-4'
 
 const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
-export default function Navbar() {
+// tone: "light" for pages that start on a dark section (the home hero), so the
+// logo text is white; "dark" for pages that start on cream, so it is ink.
+export default function Navbar({ tone = 'light' }) {
+  const onCream = tone === 'dark'
   const [open, setOpen] = useState(false)
   const root = useRef(null)
   const timeline = useRef(null)
   const buttonRef = useRef(null)
   const firstLinkRef = useRef(null)
   const openedByKeyboard = useRef(false)
+  const { pathname } = useLocation()
 
   // Open: the white panel wipes down from the top until it fills the screen,
   // then the links rise into place. Closing plays the same timeline backwards.
@@ -69,37 +75,25 @@ export default function Navbar() {
     return undefined
   }, [open])
 
-  // Close the menu and scroll to the section ourselves, so the jump also works
-  // for links clicked while the menu is open.
-  const goTo = href => event => {
-    event.preventDefault()
-    setOpen(false)
-    const target = document.querySelector(href)
-    if (target) {
-      target.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
-      history.replaceState(null, '', href)
-    }
-  }
-
   return (
     <>
       <header ref={root} className="absolute inset-x-0 top-0 z-50">
         <div className="relative z-[45] px-5 py-5 sm:px-10 sm:py-6">
-          <a
-            href="#home"
-            onClick={goTo('#home')}
+          <TransitionLink
+            to="/"
+            onClick={() => setOpen(false)}
             className={`flex w-fit items-center gap-3 rounded-full transition-colors duration-500 ${focusRing} ${
-              open ? 'text-ink focus-visible:outline-ink' : 'text-white focus-visible:outline-gold'
+              open || onCream ? 'text-ink focus-visible:outline-ink' : 'text-white focus-visible:outline-gold'
             }`}
           >
             <img src={logo} alt="" className="size-10 sm:size-11" />
             <span className="flex flex-col leading-tight">
               <span className="text-sm font-medium tracking-tight">AWS Learning Club - Genesis</span>
-              <span className={`text-xs font-normal tracking-wide ${open ? 'text-ink/70' : 'text-white/70'}`}>
+              <span className={`text-xs font-normal tracking-wide ${open || onCream ? 'text-ink/70' : 'text-white/70'}`}>
                 Tarlac State University
               </span>
             </span>
-          </a>
+          </TransitionLink>
         </div>
 
         <div
@@ -112,16 +106,18 @@ export default function Navbar() {
             {/* Hovering (or keyboard-focusing) one link dims the others. */}
             <ul className="group/menu text-center">
               {NAV_LINKS.map((link, i) => (
-                <li key={link.href} className="overflow-hidden">
-                  <a
+                <li key={link.to} className="overflow-hidden">
+                  {/* Each link closes the menu and plays the page transition. */}
+                  <TransitionLink
                     ref={i === 0 ? firstLinkRef : undefined}
                     data-menu-link
-                    href={link.href}
-                    onClick={goTo(link.href)}
+                    to={link.to}
+                    aria-current={pathname === link.to ? 'page' : undefined}
+                    onClick={() => setOpen(false)}
                     className={`inline-block text-[clamp(2rem,min(9svh,15vw),6.5rem)] leading-[1.08] font-medium tracking-[-0.045em] uppercase transition-opacity duration-300 group-hover/menu:opacity-20 group-has-[a:focus-visible]/menu:opacity-20 hover:!opacity-100 focus-visible:!opacity-100 focus-visible:outline-ink ${focusRing}`}
                   >
                     {link.label}
-                  </a>
+                  </TransitionLink>
                 </li>
               ))}
             </ul>

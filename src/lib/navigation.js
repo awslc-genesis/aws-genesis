@@ -1,9 +1,9 @@
-// Site sections, shared by the menu and the footer.
+// Site pages, shared by the menu and the footer.
 export const NAV_LINKS = [
-  { label: 'Home', href: '#home' },
-  { label: 'About', href: '#about' },
-  { label: 'Team', href: '#team' },
-  { label: 'Events', href: '#events' },
-  { label: 'Resources', href: '#resources' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Home', to: '/' },
+  { label: 'About', to: '/about' },
+  { label: 'Team', to: '/team' },
+  { label: 'Events', to: '/events' },
+  { label: 'Resources', to: '/resources' },
+  { label: 'Contact', to: '/contact' },
 ]

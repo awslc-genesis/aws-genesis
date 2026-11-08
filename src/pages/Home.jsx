@@ -12,6 +12,9 @@ import Navbar from '@/components/Navbar'
 import PartnersMarquee from '@/components/PartnersMarquee'
 import SplitWords from '@/components/SplitWords'
 import EventsSection from '@/components/EventsSection'
+import TransitionLink from '@/components/TransitionLink'
+import { isCoarsePointer, PINNED } from '@/lib/motion'
+import { onPageReveal } from '@/lib/pageReveal'
 import TeamSection from '@/components/TeamSection'
 import VariableProximity from '@/components/VariableProximity'
 
@@ -73,15 +76,17 @@ export default function Home() {
       const mm = gsap.matchMedia()
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        // Hero intro: headline words rise out of their masks.
-        gsap
-          .timeline({ defaults: { ease: 'expo.out' }, delay: 0.25 })
+        // Hero intro: headline words rise out of their masks, once the loading
+        // screen or page curtain has lifted so the visitor sees it play.
+        const heroIntro = gsap
+          .timeline({ defaults: { ease: 'expo.out' }, paused: true })
           // VariableProximity also marks its own inner words with data-word; skip those.
           .from('[data-hero-title] [data-word]:not(.variable-proximity [data-word])', {
             yPercent: 115,
             duration: 1.4,
             stagger: 0.08,
           })
+        const cancelHeroIntro = onPageReveal(() => heroIntro.play())
 
         // The headline scrolls up with the page like normal content, while the
         // hero background stays pinned and full size behind it. It travels the
@@ -205,6 +210,8 @@ export default function Home() {
           { borderTopLeftRadius: '3rem', borderTopRightRadius: '3rem' },
           { borderTopLeftRadius: 0, borderTopRightRadius: 0, ease: 'none', scrollTrigger: coverAbout },
         )
+
+        return cancelHeroIntro
       })
 
       // Hold the About panel in place once its bottom reaches the bottom of the
@@ -212,13 +219,17 @@ export default function Home() {
       // The black section sits a gap below the panel (its top margin), so the
       // panel first rests on the Become a Member button for that much scrolling
       // before the black section starts sliding over it.
+      // Only on wide screens with a mouse or trackpad: on phones and tablets the
+      // panel just scrolls away naturally, with nothing held in place.
       const coverGap = () => parseFloat(getComputedStyle(coverRef.current).marginTop) || 0
-      ScrollTrigger.create({
-        trigger: '[data-panel]',
-        start: 'bottom bottom',
-        end: () => `+=${window.innerHeight + coverGap()}`,
-        pin: true,
-        pinSpacing: false,
+      gsap.matchMedia().add(PINNED, () => {
+        ScrollTrigger.create({
+          trigger: '[data-panel]',
+          start: 'bottom bottom',
+          end: () => `+=${window.innerHeight + coverGap()}`,
+          pin: true,
+          pinSpacing: false,
+        })
       })
 
       // Stop the shader animating once the panel fully covers it.
@@ -261,7 +272,7 @@ export default function Home() {
       {/* Hero stays pinned (CSS sticky) while the next section slides over it. */}
       <section id="home" className="sticky top-0 h-svh overflow-hidden text-white" aria-labelledby="hero-title">
         <div data-hero-veil className="absolute inset-0 origin-top">
-          <DarkVeil color="#6e2406" paused={veilPaused} />
+          <DarkVeil color="#6e2406" paused={veilPaused} dpr={isCoarsePointer() ? 1 : undefined} />
         </div>
 
 
@@ -397,9 +408,9 @@ export default function Home() {
             so this block ends exactly at the panel's bottom edge; when the panel
             is held in place there, the button sits in the middle of the screen. */}
         <div className="-mb-24 flex min-h-svh flex-col items-center justify-center sm:-mb-36">
-          <a
+          <TransitionLink
             data-member-cta
-            href="#contact"
+            to="/contact"
             aria-label="Become a member"
             onPointerDown={event => {
               pressStart.current = { x: event.clientX, y: event.clientY }
@@ -427,7 +438,7 @@ export default function Home() {
             >
               <ArrowUpRight className="size-9" strokeWidth={1.5} aria-hidden="true" />
             </CircularText>
-          </a>
+          </TransitionLink>
         </div>
 
         {/* Darkens the About panel while the black section slides over it. */}
@@ -444,7 +455,7 @@ export default function Home() {
       <section
         ref={coverRef}
         data-cover
-        className="relative z-10 mt-[70svh] min-h-[200svh] overflow-hidden rounded-t-[3rem] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem]"
+        className="relative z-10 min-h-[200svh] pinned:mt-[70svh] overflow-hidden rounded-t-[3rem] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem]"
       >
         {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
             at the top of the section so its shape doesn't stretch as the section grows. */}
@@ -459,6 +470,7 @@ export default function Home() {
                 cellSize={16}
                 density={0.8}
                 fontFamily='"Inter", sans-serif'
+                dpr={isCoarsePointer() ? 1 : undefined}
               />
             </Suspense>
           )}
@@ -502,7 +514,7 @@ export default function Home() {
               <p id="sponsor-title" className="type-label text-white/55">
                 Principal Sponsor
               </p>
-              <p className="type-label text-white/35">No.01</p>
+              <p className="type-label text-white/55">No.01</p>
             </div>
 
             <div className="mt-16 grid items-center gap-14 sm:mt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
@@ -517,7 +529,7 @@ export default function Home() {
                     started it all
                   </span>
                 </p>
-                <p className="type-body mt-6 max-w-[44ch] text-white/55">
+                <p className="type-body mt-6 max-w-[44ch] text-white/60">
                   Amazon Web Services powers Genesis with credits, training and mentorship, so every member can build
                   on real cloud infrastructure.
                 </p>
