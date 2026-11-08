@@ -11,7 +11,10 @@
   --color-gold: #e2b25c;
 }
 
-/* Type scale. The site uses only two fonts: Inter for everything, and
+/* Type scale, smallest to largest: label, body, h3, statement, h2, h1,
+   display. Use these utilities rather than one-off text-[...] sizes so the
+   same kind of text is the same size everywhere. The site uses only two
+   fonts: Inter for everything, and
    Instrument Serif italic for single accent words (type-accent). Weights are
    400 for body text and 500 for headings and labels. */
 
@@ -43,20 +46,41 @@
   }
 }
 
-/* Section titles: Our Partners, Latest Events. */
+/* Section titles and the big item titles beside them: Our Partners, Latest
+   Events, and the three About points ("Learn the cloud"). */
 @utility type-h2 {
-  font-size: clamp(2.25rem, 6vw, 5rem);
+  font-size: clamp(2.5rem, 5.2vw, 5.25rem);
   line-height: 0.95;
   font-weight: 500;
   letter-spacing: -0.045em;
 }
 
-/* The large About statement. */
-@utility type-statement {
-  font-size: clamp(2rem, 5.2vw, 4.75rem);
-  line-height: 1.05;
+/* Large page headline: "It's Always Day One" in About. */
+@utility type-h1 {
+  font-size: clamp(3rem, 7.4vw, 7.5rem);
+  line-height: 0.9;
   font-weight: 500;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.05em;
+}
+
+/* The hero headline ("Let's make history"), the largest text on the site. */
+@utility type-display {
+  font-size: clamp(2.75rem, 15.5vw, 3.75rem);
+  line-height: 0.92;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+
+  @media (width >= 40rem) {
+    font-size: clamp(3.75rem, 11vw, 12rem);
+  }
+}
+
+/* The About statement paragraph ("Genesis is where students..."). */
+@utility type-statement {
+  font-size: clamp(1.875rem, 3.3vw, 3.5rem);
+  line-height: 1.08;
+  font-weight: 500;
+  letter-spacing: -0.04em;
 }
 
 /* The serif italic accent word inside a heading ("One", "Partners", "Events"),
@@ -318,4 +342,37 @@ html[data-cursor-hidden] .scroll-cursor {
   margin: -3px 0 0 -3px;
   border-radius: 9999px;
   background: currentColor;
+}
+
+/* Gradient band above the About panel: the dark hero melts through ember and
+   orange into paper. The band is tall and the stops are spread wide, so the
+   colour change is gradual; its last stop is exactly the paper colour, so it
+   joins the panel with no visible edge. */
+.panel-glow-fill {
+  /* Light and soft: the top is see-through orange that warms the dark hero
+     gradually (no dark brown bands), easing through amber and peach into paper. */
+  background: linear-gradient(
+    to bottom,
+    rgb(234 88 12 / 0) 0%,
+    rgb(234 88 12 / 0.05) 12%,
+    rgb(238 98 24 / 0.14) 22%,
+    rgb(242 110 34 / 0.28) 31%,
+    rgb(245 124 48 / 0.46) 39%,
+    rgb(248 140 66 / 0.66) 46%,
+    rgb(250 156 86 / 0.84) 53%,
+    rgb(251 170 108) 60%,
+    rgb(252 186 132) 67%,
+    rgb(252 201 158) 73%,
+    rgb(252 215 182) 79%,
+    rgb(251 226 203) 85%,
+    rgb(250 234 218) 90%,
+    rgb(248 239 229) 95%,
+    var(--color-paper) 100%
+  );
+  /* Curved upper edge, like light over a planet's rim: an oval cut out of the
+     top centre (fully see-through inside, fading out softly) so the colour
+     rises higher at the sides and dips in the middle. The bottom of the band
+     is outside the oval, so it still meets the paper with no edge. */
+  -webkit-mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
+  mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
 }

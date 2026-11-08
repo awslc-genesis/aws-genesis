@@ -94,7 +94,7 @@ export default function Navbar() {
           >
             <img src={logo} alt="" className="size-10 sm:size-11" />
             <span className="flex flex-col leading-tight">
-              <span className="text-sm font-medium tracking-tight">AWSLC - Genesis</span>
+              <span className="text-sm font-medium tracking-tight">AWS Learning Club - Genesis</span>
               <span className={`text-xs font-normal tracking-wide ${open ? 'text-ink/70' : 'text-white/70'}`}>
                 Tarlac State University
               </span>

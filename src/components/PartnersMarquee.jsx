@@ -29,7 +29,14 @@ const PARTNERS = [
   { name: 'Samsung', src: samsung, scale: 1.5 },
 ]
 
-function LogoRow({ hidden = false }) {
+// Every wordmark is flattened to one colour so the strip reads as one set:
+// white for dark backgrounds, or near-black ink for light ones.
+const TONES = {
+  light: 'opacity-60 brightness-0 invert hover:opacity-100',
+  dark: 'opacity-80 brightness-0 hover:opacity-100',
+}
+
+function LogoRow({ hidden = false, tone }) {
   return (
     <ul className="flex shrink-0 items-center gap-16 pr-16 sm:gap-24 sm:pr-24" aria-hidden={hidden || undefined}>
       {PARTNERS.map(partner => (
@@ -39,8 +46,7 @@ function LogoRow({ hidden = false }) {
             alt={hidden ? '' : partner.name}
             draggable="false"
             style={{ height: `${(partner.scale ?? 1) * 100}%` }}
-            // Every wordmark is flattened to white so the strip reads as one set.
-            className="w-auto opacity-60 brightness-0 invert transition-opacity duration-300 hover:opacity-100"
+            className={`w-auto transition-opacity duration-300 ${TONES[tone]}`}
           />
         </li>
       ))}
@@ -50,14 +56,15 @@ function LogoRow({ hidden = false }) {
 
 // Logos scroll right to left in an endless loop. The row is rendered twice side
 // by side and the track slides by exactly one row's width, so the seam never shows.
-export default function PartnersMarquee() {
+// tone: "light" (white logos, for dark backgrounds) or "dark" (ink logos, for light ones).
+export default function PartnersMarquee({ tone = 'light' }) {
   return (
     // Vertical padding leaves room for logos scaled taller than the row, so the
     // horizontal clipping doesn't cut off their tops and bottoms.
     <div className="partners-marquee relative overflow-hidden py-6">
       <div className="partners-marquee-track flex w-max">
-        <LogoRow />
-        <LogoRow hidden />
+        <LogoRow tone={tone} />
+        <LogoRow hidden tone={tone} />
       </div>
     </div>
   )

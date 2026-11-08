@@ -12,6 +12,7 @@ import Navbar from '@/components/Navbar'
 import PartnersMarquee from '@/components/PartnersMarquee'
 import SplitWords from '@/components/SplitWords'
 import EventsSection from '@/components/EventsSection'
+import TeamSection from '@/components/TeamSection'
 import VariableProximity from '@/components/VariableProximity'
 
 // Loaded on demand: its code is only downloaded once the black section nears the screen.
@@ -48,22 +49,24 @@ export default function Home() {
 
   // Mount the ASCII background only when the black section is about to scroll
   // into view (within a quarter screen of the bottom edge), so its WebGL setup
-  // and intro animation happen when the visitor actually gets there.
+  // and intro animation happen when the visitor actually gets there. Scrolling
+  // back up until the section is below the screen again unmounts it, which
+  // resets the intro so it plays again the next time you scroll down to it.
   useEffect(() => {
     const section = coverRef.current
-    if (!section || showAscii) return undefined
+    if (!section) return undefined
     const observer = new IntersectionObserver(
       entries => {
-        if (entries.some(entry => entry.isIntersecting)) {
-          setShowAscii(true)
-          observer.disconnect()
-        }
+        const entry = entries[entries.length - 1]
+        if (entry.isIntersecting) setShowAscii(true)
+        // Out of range and below the screen: the visitor scrolled back up.
+        else if (entry.boundingClientRect.top > 0) setShowAscii(false)
       },
       { rootMargin: '0px 0px 25% 0px' },
     )
     observer.observe(section)
     return () => observer.disconnect()
-  }, [showAscii])
+  }, [])
 
   useGSAP(
     () => {
@@ -80,21 +83,55 @@ export default function Home() {
             stagger: 0.08,
           })
 
-        // As the white panel rises, the hero recedes: content drifts up and dims,
-        // the veil sinks back, and the panel's top corners flatten as it lands.
+        // The headline scrolls up with the page like normal content, while the
+        // hero background stays pinned and full size behind it. It travels the
+        // same distance as the page scroll until the panel reaches the top, so it
+        // moves exactly 1:1 with the scroll; it also fades as the panel rises.
+        ScrollTrigger.create({
+          start: 0,
+          endTrigger: '[data-panel]',
+          end: 'top top',
+          onUpdate: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
+          onRefresh: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
+        })
         const cover = {
           trigger: '[data-panel]',
           start: 'top bottom',
           end: 'top top',
           scrub: true,
         }
-        gsap.to('[data-hero-content]', { yPercent: -18, autoAlpha: 0, ease: 'none', scrollTrigger: cover })
-        gsap.to('[data-hero-veil]', { scale: 0.92, ease: 'none', scrollTrigger: cover })
-        gsap.to('[data-hero-dim]', { opacity: 0.7, ease: 'none', scrollTrigger: cover })
+        gsap.to('[data-hero-content]', { autoAlpha: 0, ease: 'none', scrollTrigger: cover })
+        // Light floods up from the panel's edge into the dark hero. The glow is
+        // anchored to the panel and grows upward (it never fades, so its paper
+        // end always matches the panel and no edge shows). Its top is fully
+        // transparent, so it melts into the hero. A lagging scrub keeps it fluid.
+        // It starts a little before the panel arrives: once the panel's top is
+        // a quarter screen below the bottom of the screen (GLOW_LEAD). At that
+        // moment it is scaled so its top edge sits exactly at the bottom of the
+        // screen, so the light starts rising into view from there.
+        const GLOW_LEAD = 0.25
+        const glowEl = document.querySelector('[data-panel-glow]')
+        const glowStartScale = () => {
+          const box = glowEl.parentElement.getBoundingClientRect()
+          const panelTop = document.querySelector('[data-panel]').getBoundingClientRect().top
+          // The glow box reaches a little way into the panel (its bottom overlap).
+          const overlap = box.bottom - panelTop
+          return Math.min(1, Math.max(0, (GLOW_LEAD * window.innerHeight + overlap) / box.height))
+        }
         gsap.fromTo(
-          '[data-panel]',
-          { borderTopLeftRadius: '3rem', borderTopRightRadius: '3rem' },
-          { borderTopLeftRadius: 0, borderTopRightRadius: 0, ease: 'none', scrollTrigger: cover },
+          glowEl,
+          { scaleY: glowStartScale },
+          {
+            scaleY: 1,
+            ease: 'sine.inOut',
+            scrollTrigger: {
+              trigger: '[data-panel]',
+              start: `top ${100 + GLOW_LEAD * 100}%`,
+              end: 'top top',
+              scrub: 1.8,
+              invalidateOnRefresh: true,
+            },
+          },
         )
 
         // Statement words brighten one by one while it scrolls through the viewport.
@@ -109,27 +146,39 @@ export default function Home() {
           },
         )
 
-        // AWS logo pops up from below the statement as it scrolls into view,
-        // overshooting slightly before settling.
+        // When the About split reaches the screen, the headline lines rise out
+        // of their masks; the left column then sticks.
+        gsap
+          .timeline({
+            defaults: { ease: 'expo.out' },
+            scrollTrigger: { trigger: '[data-about-split]', start: 'top 75%', toggleActions: 'play none none reverse' },
+          })
+          .from('[data-about-line]', { yPercent: 115, duration: 1.3, stagger: 0.12 })
+
+        // The AWS logo pops up as you scroll into About, tied to the scroll:
+        // it grows from small, rises, untwists and overshoots slightly before
+        // settling, and plays back in reverse when you scroll up.
         gsap.from('[data-aws-logo]', {
           scale: 0.25,
           yPercent: 45,
           rotate: -14,
           autoAlpha: 0,
           ease: 'back.out(1.7)',
-          scrollTrigger: { trigger: '[data-aws-logo]', start: 'top 95%', end: 'center 55%', scrub: 0.6 },
+          scrollTrigger: { trigger: '[data-about-split]', start: 'top 85%', end: 'top 15%', scrub: 0.6 },
         })
 
-        // The three points reveal column by column when they reach the viewport:
+        // Each of the three points reveals as it scrolls up the right column:
         // the number fades in, the title rises out of its mask, then the text.
-        gsap
-          .timeline({
-            defaults: { ease: 'expo.out' },
-            scrollTrigger: { trigger: '[data-features]', start: 'top 85%', toggleActions: 'play none none reverse' },
-          })
-          .from('[data-feature-label]', { autoAlpha: 0, x: -12, duration: 0.8, stagger: 0.15 })
-          .from('[data-feature-title]', { yPercent: 115, duration: 1.1, stagger: 0.15 }, 0.1)
-          .from('[data-feature-body]', { autoAlpha: 0, y: 24, duration: 1, stagger: 0.15 }, 0.3)
+        gsap.utils.toArray('[data-feature]').forEach(feature => {
+          gsap
+            .timeline({
+              defaults: { ease: 'expo.out' },
+              scrollTrigger: { trigger: feature, start: 'top 80%', toggleActions: 'play none none reverse' },
+            })
+            .from(feature.querySelector('[data-feature-label]'), { autoAlpha: 0, x: -12, duration: 0.8 })
+            .from(feature.querySelector('[data-feature-title]'), { yPercent: 115, duration: 1.1 }, 0.1)
+            .from(feature.querySelector('[data-feature-body]'), { autoAlpha: 0, y: 24, duration: 1 }, 0.3)
+        })
 
         // A little further down, the membership button rises in under the logo.
         gsap.from('[data-member-cta]', {
@@ -182,6 +231,25 @@ export default function Home() {
 
       // Fonts change text metrics, so re-measure triggers once they load.
       document.fonts?.ready.then(() => ScrollTrigger.refresh())
+
+      // Re-measure whenever the page's height changes after load (images or
+      // fonts arriving late, a section changing size), so the About panel's
+      // hold and the black section's slide-over start at the right place
+      // instead of positions measured for the old layout.
+      let lastHeight = root.current.offsetHeight
+      let pending = 0
+      const heightWatcher = new ResizeObserver(() => {
+        const height = root.current?.offsetHeight ?? 0
+        if (Math.abs(height - lastHeight) < 2) return
+        lastHeight = height
+        clearTimeout(pending)
+        pending = setTimeout(() => ScrollTrigger.refresh(), 150)
+      })
+      heightWatcher.observe(root.current)
+      return () => {
+        heightWatcher.disconnect()
+        clearTimeout(pending)
+      }
     },
     { scope: root },
   )
@@ -195,7 +263,6 @@ export default function Home() {
         <div data-hero-veil className="absolute inset-0 origin-top">
           <DarkVeil color="#6e2406" paused={veilPaused} />
         </div>
-        <div data-hero-dim className="pointer-events-none absolute inset-0 bg-ink opacity-0" />
 
 
         <div
@@ -207,17 +274,20 @@ export default function Home() {
             id="hero-title"
             ref={heroTitleRef}
             data-hero-title
-            className="text-[clamp(2.75rem,15.5vw,3.75rem)] leading-[0.92] sm:text-[clamp(3.75rem,11vw,12rem)] font-medium tracking-[-0.055em]"
+            className="type-display"
           >
-            {/* "It's always Day" is set in Inter, whose letters thicken as the cursor
-                nears (React Bits VariableProximity); the payoff word "One" switches
-                to the italic serif with the orange gradient, on the same baseline.
-                Each piece sits in a mask so the intro can raise it into view. */}
+            {/* "Let's make" is set in Inter, whose letters thicken as the cursor
+                nears (React Bits VariableProximity); the payoff word "history"
+                switches to the italic serif with the orange gradient. Each piece
+                sits in a mask so the intro can raise it into view. The gradient
+                is clipped to the text but only painted inside the word's box, so
+                "history" gets extra bottom and right padding (cancelled by the
+                mask's negative margin) to keep the y's tail coloured. */}
             <span className="block">
               <span className="mr-[0.1em] inline-block overflow-hidden pr-[0.1em] pb-[0.08em] align-bottom">
                 <span data-word className="text-hero-sheen inline-block">
                   <VariableProximity
-                    label="It’s Always"
+                    label="Let’s make"
                     fromFontVariationSettings="'wght' 500"
                     toFontVariationSettings="'wght' 900"
                     containerRef={heroTitleRef}
@@ -229,60 +299,85 @@ export default function Home() {
               </span>
             </span>
             <span className="block">
-              <span className="mr-[0.1em] inline-block overflow-hidden pr-[0.1em] pb-[0.08em] align-bottom">
-                <span data-word className="text-hero-sheen inline-block">
-                  <VariableProximity
-                    label="Day"
-                    fromFontVariationSettings="'wght' 500"
-                    toFontVariationSettings="'wght' 900"
-                    containerRef={heroTitleRef}
-                    radius={100}
-                    falloff="linear"
-                    smoothing={0.2}
-                  />
-                </span>
-              </span>{' '}
               <SplitWords
-                text="One"
-                wordClassName="text-genesis-gradient type-accent leading-[0.82]"
+                text="history"
+                wordClassName="text-genesis-gradient type-accent leading-[0.82] pr-[0.1em] pb-[0.3em]"
+                maskClassName="-mb-[0.3em]"
               />
             </span>
           </h1>
         </div>
       </section>
 
-      {/* White panel that rises over the hero. */}
+      {/* White panel that rises over the hero. Its top margin keeps the hero on
+          screen for an extra 60% of a screen of scrolling before the glow starts. */}
       <section
         id="about"
         data-panel
-        className="relative z-10 min-h-svh rounded-t-[3rem] bg-paper px-5 py-24 text-ink sm:px-10 sm:py-36"
+        className="relative z-10 mt-[60svh] min-h-svh bg-paper px-5 py-24 text-ink sm:px-10 sm:py-36"
         aria-label="About the club"
       >
-        <div className="mx-auto max-w-6xl">
-          <p
-            data-statement
-            className="type-statement"
-          >
-            <SplitWords text={STATEMENT} />
-          </p>
-
-          <div className="flex flex-col items-center pt-24 sm:pt-36">
-            <div data-aws-logo className="w-[min(58vw,21rem)] text-[#232f3e] will-change-transform">
-              <AwsLogo className="h-auto w-full" />
+        {/* Gradient band above the panel: it fades the hero through ember orange
+            into the paper. It reaches 4rem down into the panel so the panel's own
+            top edge stays covered and no seam line can show at any screen scale. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 -top-[160svh] h-[calc(160svh+4rem)] overflow-hidden"
+        >
+          <div data-panel-glow className="absolute inset-0 origin-bottom">
+            <div className="panel-glow-fill absolute inset-0" />
+          </div>
+        </div>
+        {/* Split layout: on large screens the left column (logo and headline)
+            sticks in place while the right column (statement and the three
+            points) scrolls past it. On small screens the two simply stack. */}
+        <div data-about-split className="grid items-start gap-16 lg:grid-cols-[minmax(0,1fr)_min(42rem,38vw)] lg:gap-20">
+          {/* Fills the screen height while stuck, so the logo sits at the top and
+              the headline at the bottom-left corner. */}
+          <div className="lg:sticky lg:top-28 lg:flex lg:h-[calc(100svh-16rem)] lg:flex-col lg:justify-end">
+            {/* On wide screens (1280px and up) the headline sits at the
+                bottom-left and the logo beside it, centred on the page: its left
+                is half the screen width, minus the panel's 2.5rem side padding,
+                minus half the logo's width. The right column is kept narrow
+                (at most 42rem or 38% of the screen) so it clears the logo. On
+                narrower screens the logo sits above the headline. The logo pops
+                up into place as you scroll (see the scrubbed tween above). */}
+            <div className="relative flex flex-col gap-12 xl:flex-row xl:items-center">
+              <div data-aws-logo className="w-[min(45vw,12rem)] shrink-0 origin-bottom-left text-[#232f3e] will-change-transform lg:w-[min(14vw,15rem)] xl:absolute xl:top-1/2 xl:left-[calc(50vw-2.5rem-min(5vw,6rem))] xl:w-[min(10vw,12rem)] xl:-translate-y-1/2 xl:origin-center">
+                <AwsLogo className="h-auto w-full" />
+              </div>
+              <h2 data-about-title className="type-h1 whitespace-nowrap">
+                <span className="block overflow-hidden pb-[0.06em]">
+                  <span data-about-line className="block text-ink/35">
+                    It’s Always
+                  </span>
+                </span>
+                <span className="block overflow-hidden pb-[0.12em]">
+                  <span data-about-line className="block">
+                    Day <span className="text-genesis-gradient type-accent">One</span>
+                  </span>
+                </span>
+              </h2>
             </div>
+          </div>
 
-            <ul data-features className="mt-40 grid w-full gap-12 sm:mt-[20svh] lg:grid-cols-3 lg:gap-10">
+          <div>
+            <p data-statement className="type-statement">
+              <SplitWords text={STATEMENT} />
+            </p>
+
+            <ul data-features className="mt-24 sm:mt-36">
               {FEATURES.map((feature, i) => (
-                <li key={feature.title} data-feature>
+                <li key={feature.title} data-feature className="border-t border-ink/10 py-14 sm:py-20">
                   <p data-feature-label className="type-label text-ink/55">
                     No.{i + 1}
                   </p>
-                  <h3 className="type-h3 mt-6 overflow-hidden pb-[0.1em]">
+                  <h3 className="type-h2 mt-8 overflow-hidden pb-[0.1em]">
                     <span data-feature-title className="block">
                       {feature.title}
                     </span>
                   </h3>
-                  <p data-feature-body className="type-body mt-4 max-w-[36ch] text-ink/60">
+                  <p data-feature-body className="type-body mt-6 max-w-[40ch] text-ink/60">
                     {feature.body}
                   </p>
                 </li>
@@ -294,7 +389,14 @@ export default function Home() {
         {/* Events strip spans the full screen width, so it cancels the panel's side padding. */}
         <EventsSection className="-mx-5 mt-[20svh] sm:-mx-10" />
 
-        <div className="mx-auto flex max-w-6xl flex-col items-center">
+        {/* Meet the Team, just before the Become a Member button. */}
+        <TeamSection className="mt-[20svh]" />
+
+        {/* The button gets the whole last screen of the panel to itself, centred
+            in it. The negative bottom margin cancels the panel's bottom padding,
+            so this block ends exactly at the panel's bottom edge; when the panel
+            is held in place there, the button sits in the middle of the screen. */}
+        <div className="-mb-24 flex min-h-svh flex-col items-center justify-center sm:-mb-36">
           <a
             data-member-cta
             href="#contact"
@@ -310,7 +412,7 @@ export default function Home() {
                 event.preventDefault()
               }
             }}
-            className="mt-[20svh] block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
+            className="block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
           >
             <CircularText
               text="* BECOME * A * MEMBER "
@@ -362,30 +464,30 @@ export default function Home() {
           )}
         </div>
 
-        {/* Content for this section goes here. It sits above the ASCII
-            background, and the section grows if the content needs more room. */}
-        <div className="relative pt-[100svh] pb-24 sm:pb-36">
-          <div aria-labelledby="partners-title" role="region">
-            <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
-              <h2
-                id="partners-title"
-                className="type-h2 text-white"
-              >
-                Our{' '}
-                <span className="text-genesis-gradient type-accent">
-                  Partners
-                </span>
-              </h2>
-              <p className="type-body hidden max-w-[32ch] pb-2 text-white/55 sm:block">
-                The companies and communities helping Genesis bring the cloud to campus.
-              </p>
-            </div>
-
-            <div className="mt-8 sm:mt-14">
-              <PartnersMarquee />
-            </div>
+        {/* Partners fill the first screen, over the ASCII effect: the title sits
+            at the top and the logo strip runs through the bright middle band of
+            the effect, in dark ink so it reads against the light. */}
+        <div aria-labelledby="partners-title" role="region" className="relative h-svh">
+          <div className="flex items-end justify-between gap-6 px-5 pt-24 sm:px-10 sm:pt-32 lg:px-16">
+            <h2 id="partners-title" className="type-h2 text-white">
+              Our{' '}
+              <span className="text-genesis-gradient type-accent">
+                Partners
+              </span>
+            </h2>
+            <p className="type-body hidden max-w-[32ch] pb-2 text-white/70 sm:block">
+              The companies and communities helping Genesis bring the cloud to campus.
+            </p>
           </div>
 
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2">
+            <PartnersMarquee tone="dark" />
+          </div>
+        </div>
+
+        {/* The rest of the section sits on the black below the effect, and the
+            section grows if the content needs more room. */}
+        <div className="relative pb-24 sm:pb-36">
           {/* Principal sponsor, set open on the black like the rest of the page:
               a hairline and label, the sponsor's logo large on the left, and a
               statement and link on the right. AWS is a placeholder; swap the
@@ -404,7 +506,7 @@ export default function Home() {
             </div>
 
             <div className="mt-16 grid items-center gap-14 sm:mt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
-              <div className="flex justify-center lg:justify-start">
+              <div className="flex justify-center">
                 <AwsLogo title="Amazon Web Services" className="h-auto w-[min(70vw,30rem)]" />
               </div>
 
