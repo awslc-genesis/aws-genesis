@@ -75,18 +75,18 @@ function EventCard({ event, index }) {
           shadow={0.5}
           backContent={
             <div className="flex size-full flex-col justify-between bg-ink p-6 text-paper sm:p-8">
-              <p className="font-mono text-[11px] tracking-[0.2em] text-paper/55 uppercase">
+              <p className="type-label text-paper/55">
                 {event.date} · {event.place}
               </p>
-              <p className="max-w-[36ch] text-base leading-relaxed text-paper/80 sm:text-lg">{event.summary}</p>
-              <p className="font-mono text-[11px] tracking-[0.2em] text-paper/40 uppercase">Click to flip back</p>
+              <p className="type-body max-w-[36ch] text-paper/80">{event.summary}</p>
+              <p className="type-label text-paper/40">Click to flip back</p>
             </div>
           }
         >
           <TiltedCardLayer depth={30}>
             {/* Darkens the bottom of the photo so the title stays readable. */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/70 to-transparent" />
-            <h3 className="absolute bottom-5 left-6 right-6 text-xl font-medium tracking-[-0.03em] text-white sm:bottom-6 sm:left-7 sm:text-2xl">
+            <h3 className="type-h3 absolute right-6 bottom-5 left-6 text-white sm:bottom-6 sm:left-7">
               {event.title}
             </h3>
           </TiltedCardLayer>
@@ -96,10 +96,10 @@ function EventCard({ event, index }) {
       {/* Caption in the same style as the About points: mono label, details, link. */}
       <div className="flex items-end justify-between gap-4 pt-5">
         <div className="min-w-0">
-          <p className="font-mono text-[11px] tracking-[0.2em] text-ink/55 uppercase">
+          <p className="type-label text-ink/55">
             No.{number} · {event.type}
           </p>
-          <p className="mt-2 text-sm text-ink/55">
+          <p className="type-body mt-2 text-ink/55">
             {event.date} · {event.place}
           </p>
         </div>
@@ -194,14 +194,14 @@ export default function EventsSection({ className }) {
         <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
           <h2
             id="events-title"
-            className="text-[clamp(2.25rem,6vw,5rem)] leading-[0.95] font-medium tracking-[-0.045em]"
+            className="type-h2"
           >
             Latest{' '}
-            <span className="text-genesis-gradient font-display pr-[0.1em] text-[1.1em] font-normal tracking-[-0.01em] italic">
+            <span className="text-genesis-gradient type-accent">
               Events
             </span>
           </h2>
-          <p className="hidden max-w-[32ch] pb-2 text-[15px] leading-relaxed text-ink/60 sm:block">
+          <p className="type-body hidden max-w-[32ch] pb-2 text-ink/60 sm:block">
             Workshops, study jams and talks where Genesis members learn and build together.
           </p>
         </div>

@@ -11,6 +11,66 @@
   --color-gold: #e2b25c;
 }
 
+/* Type scale. The site uses only two fonts: Inter for everything, and
+   Instrument Serif italic for single accent words (type-accent). Weights are
+   400 for body text and 500 for headings and labels. */
+
+/* Small uppercase label: numbers, eyebrows, column titles, meta. */
+@utility type-label {
+  font-size: 11px;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Body copy and links. */
+@utility type-body {
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* Titles of items: features, event cards, the sponsor line, the footer line. */
+@utility type-h3 {
+  font-size: 1.5rem;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+
+  @media (width >= 40rem) {
+    font-size: 1.875rem;
+  }
+}
+
+/* Section titles: Our Partners, Latest Events. */
+@utility type-h2 {
+  font-size: clamp(2.25rem, 6vw, 5rem);
+  line-height: 0.95;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+/* The large About statement. */
+@utility type-statement {
+  font-size: clamp(2rem, 5.2vw, 4.75rem);
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+/* The serif italic accent word inside a heading ("One", "Partners", "Events"),
+   sized slightly up to match the sans cap height. Pair with
+   text-genesis-gradient for the orange fill. */
+@utility type-accent {
+  font-family: var(--font-display);
+  font-size: 1.1em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  padding-right: 0.1em;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

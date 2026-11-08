@@ -95,7 +95,7 @@ export default function Navbar() {
             <img src={logo} alt="" className="size-10 sm:size-11" />
             <span className="flex flex-col leading-tight">
               <span className="text-sm font-medium tracking-tight">AWSLC - Genesis</span>
-              <span className={`text-xs font-thin tracking-wide ${open ? 'text-ink/70' : 'text-white/70'}`}>
+              <span className={`text-xs font-normal tracking-wide ${open ? 'text-ink/70' : 'text-white/70'}`}>
                 Tarlac State University
               </span>
             </span>
@@ -118,7 +118,7 @@ export default function Navbar() {
                     data-menu-link
                     href={link.href}
                     onClick={goTo(link.href)}
-                    className={`inline-block text-[clamp(2rem,min(9svh,15vw),6.5rem)] leading-[1.08] font-semibold tracking-[-0.045em] uppercase transition-opacity duration-300 group-hover/menu:opacity-20 group-has-[a:focus-visible]/menu:opacity-20 hover:!opacity-100 focus-visible:!opacity-100 focus-visible:outline-ink ${focusRing}`}
+                    className={`inline-block text-[clamp(2rem,min(9svh,15vw),6.5rem)] leading-[1.08] font-medium tracking-[-0.045em] uppercase transition-opacity duration-300 group-hover/menu:opacity-20 group-has-[a:focus-visible]/menu:opacity-20 hover:!opacity-100 focus-visible:!opacity-100 focus-visible:outline-ink ${focusRing}`}
                   >
                     {link.label}
                   </a>

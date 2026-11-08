@@ -244,7 +244,7 @@ export default function Home() {
               </span>{' '}
               <SplitWords
                 text="One"
-                wordClassName="text-genesis-gradient font-display pr-[0.12em] text-[1.12em] leading-[0.82] font-normal italic tracking-[-0.01em]"
+                wordClassName="text-genesis-gradient type-accent leading-[0.82]"
               />
             </span>
           </h1>
@@ -261,7 +261,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl">
           <p
             data-statement
-            className="text-[clamp(2rem,5.2vw,4.75rem)] leading-[1.05] font-medium tracking-[-0.035em]"
+            className="type-statement"
           >
             <SplitWords text={STATEMENT} />
           </p>
@@ -274,15 +274,15 @@ export default function Home() {
             <ul data-features className="mt-40 grid w-full gap-12 sm:mt-[20svh] lg:grid-cols-3 lg:gap-10">
               {FEATURES.map((feature, i) => (
                 <li key={feature.title} data-feature>
-                  <p data-feature-label className="font-mono text-[11px] tracking-[0.2em] text-ink/55 uppercase">
+                  <p data-feature-label className="type-label text-ink/55">
                     No.{i + 1}
                   </p>
-                  <h3 className="mt-6 overflow-hidden pb-[0.1em] text-2xl font-medium tracking-[-0.03em] sm:text-3xl">
+                  <h3 className="type-h3 mt-6 overflow-hidden pb-[0.1em]">
                     <span data-feature-title className="block">
                       {feature.title}
                     </span>
                   </h3>
-                  <p data-feature-body className="mt-4 max-w-[36ch] text-[15px] leading-relaxed text-ink/60">
+                  <p data-feature-body className="type-body mt-4 max-w-[36ch] text-ink/60">
                     {feature.body}
                   </p>
                 </li>
@@ -319,6 +319,7 @@ export default function Home() {
               spinDuration={20}
               size={150}
               fontSize={18}
+              fontWeight={700}
               draggable
               hoverTilt={20}
             >
@@ -355,6 +356,7 @@ export default function Home() {
                 characters=" .:-=+*#%@"
                 cellSize={16}
                 density={0.8}
+                fontFamily='"Inter", sans-serif'
               />
             </Suspense>
           )}
@@ -367,14 +369,14 @@ export default function Home() {
             <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
               <h2
                 id="partners-title"
-                className="text-[clamp(2.25rem,6vw,5rem)] leading-[0.95] font-medium tracking-[-0.045em] text-white"
+                className="type-h2 text-white"
               >
                 Our{' '}
-                <span className="text-genesis-gradient font-display pr-[0.1em] text-[1.1em] font-normal tracking-[-0.01em] italic">
+                <span className="text-genesis-gradient type-accent">
                   Partners
                 </span>
               </h2>
-              <p className="hidden max-w-[32ch] pb-2 text-[15px] leading-relaxed text-white/55 sm:block">
+              <p className="type-body hidden max-w-[32ch] pb-2 text-white/55 sm:block">
                 The companies and communities helping Genesis bring the cloud to campus.
               </p>
             </div>
@@ -395,10 +397,10 @@ export default function Home() {
             className="mt-28 px-5 text-white sm:mt-40 sm:px-10 lg:px-16"
           >
             <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-6">
-              <p id="sponsor-title" className="font-mono text-[11px] tracking-[0.2em] text-white/55 uppercase">
+              <p id="sponsor-title" className="type-label text-white/55">
                 Principal Sponsor
               </p>
-              <p className="font-mono text-[11px] tracking-[0.2em] text-white/35 uppercase">No.01</p>
+              <p className="type-label text-white/35">No.01</p>
             </div>
 
             <div className="mt-16 grid items-center gap-14 sm:mt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
@@ -407,13 +409,13 @@ export default function Home() {
               </div>
 
               <div>
-                <p className="text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.05] font-medium tracking-[-0.035em]">
+                <p className="type-h3">
                   Building on the cloud that{' '}
-                  <span className="text-genesis-gradient font-display pr-[0.1em] text-[1.1em] font-normal tracking-[-0.01em] italic">
+                  <span className="text-genesis-gradient type-accent">
                     started it all
                   </span>
                 </p>
-                <p className="mt-6 max-w-[44ch] text-[15px] leading-relaxed text-white/55">
+                <p className="type-body mt-6 max-w-[44ch] text-white/55">
                   Amazon Web Services powers Genesis with credits, training and mentorship, so every member can build
                   on real cloud infrastructure.
                 </p>
@@ -421,7 +423,7 @@ export default function Home() {
                   href="https://aws.amazon.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="group mt-10 inline-flex items-center gap-3 rounded-sm text-[15px] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                  className="type-body group mt-10 inline-flex items-center gap-3 rounded-sm text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                 >
                   <span className="border-b border-white/30 pb-1 transition-colors group-hover:border-white">
                     Visit Amazon Web Services
