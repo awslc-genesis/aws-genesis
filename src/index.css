@@ -386,3 +386,36 @@ html[data-cursor-hidden] .scroll-cursor {
   -webkit-mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
   mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
 }
+
+/* Black-and-white version of the glow, between About and the black partners
+   section: see-through at the top (the cream page shows), easing through soft
+   greys into solid black at the bottom, where it meets the black section. The
+   same oval cut-out as the hero glow gives it a curved, horizon-like top edge. */
+.cover-glow-fill {
+  background: linear-gradient(
+    to bottom,
+    rgb(14 12 17 / 0.000) 0%,
+    rgb(14 12 17 / 0.000) 5%,
+    rgb(14 12 17 / 0.001) 10%,
+    rgb(14 12 17 / 0.004) 15%,
+    rgb(14 12 17 / 0.012) 20%,
+    rgb(14 12 17 / 0.029) 25%,
+    rgb(14 12 17 / 0.056) 30%,
+    rgb(14 12 17 / 0.096) 35%,
+    rgb(14 12 17 / 0.150) 40%,
+    rgb(14 12 17 / 0.220) 45%,
+    rgb(14 12 17 / 0.304) 50%,
+    rgb(14 12 17 / 0.400) 55%,
+    rgb(14 12 17 / 0.503) 60%,
+    rgb(14 12 17 / 0.610) 65%,
+    rgb(14 12 17 / 0.713) 70%,
+    rgb(14 12 17 / 0.807) 75%,
+    rgb(14 12 17 / 0.886) 80%,
+    rgb(14 12 17 / 0.944) 85%,
+    rgb(14 12 17 / 0.981) 90%,
+    rgb(14 12 17 / 0.997) 95%,
+    rgb(14 12 17 / 1.000) 100%
+  );
+  -webkit-mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
+  mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
+}

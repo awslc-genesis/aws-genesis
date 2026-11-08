@@ -204,14 +204,35 @@ export default function Home() {
           scrollTrigger: { trigger: '[data-sponsor]', start: 'top 95%', end: 'top 60%', scrub: 0.6 },
         })
 
-        // While the black section covers About: About darkens and the black
-        // section's top corners flatten as it reaches the top.
-        const coverAbout = { trigger: '[data-cover]', start: 'top bottom', end: 'top top', scrub: true }
-        gsap.to('[data-about-dim]', { opacity: 0.65, ease: 'none', scrollTrigger: coverAbout })
+        // As the black section comes up under About, a black-and-white glow
+        // grows up from its edge: the same curved, rising gradient as the hero
+        // hand-off, fading the cream page through soft greys into black. It is
+        // anchored to the black section and only grows (never fades), so its
+        // black end always meets the section with no line. It starts while the
+        // section is still COVER_LEAD screens below the bottom of the screen:
+        // at that moment it is scaled so its top edge sits exactly at the
+        // bottom of the screen, so it begins rising into view right away.
+        const COVER_LEAD = 0.6
+        const coverGlow = document.querySelector('[data-cover-glow]')
+        const coverGlowStart = () => {
+          const box = coverGlow.parentElement.getBoundingClientRect()
+          const overlap = box.bottom - coverRef.current.getBoundingClientRect().top
+          return Math.min(1, Math.max(0, (COVER_LEAD * window.innerHeight + overlap) / box.height))
+        }
         gsap.fromTo(
-          '[data-cover]',
-          { borderTopLeftRadius: '3rem', borderTopRightRadius: '3rem' },
-          { borderTopLeftRadius: 0, borderTopRightRadius: 0, ease: 'none', scrollTrigger: coverAbout },
+          coverGlow,
+          { scaleY: coverGlowStart },
+          {
+            scaleY: 1,
+            ease: 'power1.inOut',
+            scrollTrigger: {
+              trigger: '[data-cover]',
+              start: `top ${100 + COVER_LEAD * 100}%`,
+              end: 'top 35%',
+              scrub: 2.2,
+              invalidateOnRefresh: true,
+            },
+          },
         )
 
         return cancelHeroIntro
@@ -459,26 +480,31 @@ export default function Home() {
           </TransitionLink>
         </div>
 
-        {/* Darkens the About panel while the black section slides over it. */}
-        <div
-          data-about-dim
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 rounded-[inherit] bg-ink opacity-0"
-        />
       </section>
 
       {/* Black section after About. It slides up over the About panel (which is
-          pinned once its end is reached), with rounded top corners that flatten
-          as it lands. */}
+          pinned once its end is reached on desktop), led by a black-and-white
+          glow that grows up from its top edge into the cream page. */}
       <section
         ref={coverRef}
         data-cover
-        className="relative z-10 min-h-[200svh] pinned:mt-[70svh] overflow-hidden rounded-t-[3rem] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem]"
+        className="relative z-10 min-h-[200svh] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem] pinned:mt-[70svh]"
       >
+        {/* The glow band: sits above the section's top edge and reaches 4rem
+            into it (covered there by the ASCII effect, which is drawn after it),
+            so no seam can show. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 -top-[130svh] h-[calc(130svh+4rem)] overflow-hidden"
+        >
+          <div data-cover-glow className="absolute inset-0 origin-bottom">
+            <div className="cover-glow-fill absolute inset-0" />
+          </div>
+        </div>
         {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
             at the top of the section so its shape doesn't stretch as the section grows. */}
         {/* The mask fades its bottom edge into the section's black, so there's no hard line. */}
-        <div className="absolute inset-x-0 top-0 h-svh [mask-image:linear-gradient(to_bottom,#000_55%,transparent)]">
+        <div className="absolute inset-x-0 top-[30svh] h-svh overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_18%,#000_55%,transparent)]">
           {showAscii && (
             <Suspense fallback={null}>
               <GradientASCII
@@ -494,11 +520,13 @@ export default function Home() {
           )}
         </div>
 
-        {/* Partners fill the first screen, over the ASCII effect: the title sits
-            at the top and the logo strip runs through the bright middle band of
-            the effect, in dark ink so it reads against the light. */}
-        <div aria-labelledby="partners-title" role="region" className="relative h-svh">
-          <div className="flex items-end justify-between gap-6 px-5 pt-24 sm:px-10 sm:pt-32 lg:px-16">
+        {/* Partners, over the ASCII effect: the effect starts 30svh down (below
+            the black-and-white glow that leads into this section) with its top
+            and bottom faded out; the title sits just above its bright middle
+            band and the logo strip runs through that band (80svh down), so both
+            fit on screen together. Logos are in dark ink to read on the light. */}
+        <div aria-labelledby="partners-title" role="region" className="relative h-[130svh]">
+          <div className="flex items-end justify-between gap-6 px-5 pt-[48svh] sm:px-10 lg:px-16">
             <h2 id="partners-title" className="type-h2 text-white">
               Our{' '}
               <span className="text-genesis-gradient type-accent">
@@ -510,7 +538,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2">
+          <div className="absolute inset-x-0 top-[80svh] -translate-y-1/2">
             <PartnersMarquee tone="dark" />
           </div>
         </div>
