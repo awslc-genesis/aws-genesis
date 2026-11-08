@@ -15,6 +15,13 @@
   --color-ink: #0e0c11;
   --color-paper: #f6f3ee;
   --color-gold: #e2b25c;
+  --background-image-genesis: radial-gradient(
+    ellipse 60% 90% at 62% 55%,
+    #ffb24f 0%,
+    #f68a2c 40%,
+    #e8691b 75%,
+    #d95a14 100%
+  );
 }
 
 /* Type scale, smallest to largest: label, body, h3, statement, h2, h1,
@@ -222,13 +229,7 @@
    painted area. */
 .text-genesis-gradient {
   color: #f07a22; /* fallback when background-clip: text is unsupported */
-  background-image: radial-gradient(
-    ellipse 60% 90% at 62% 55%,
-    #ffb24f 0%,
-    #f68a2c 40%,
-    #e8691b 75%,
-    #d95a14 100%
-  );
+  background-image: var(--background-image-genesis);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -336,16 +337,19 @@ html[data-cursor-hidden] .scroll-cursor {
   will-change: transform;
 }
 
+.scroll-cursor__ring {
+  transform-origin: top left;
+}
+
 .scroll-cursor__ring svg {
   display: block;
-  /* Centre the ring on the pointer. */
-  margin: -32px 0 0 -32px;
+  transform: translate(-50%, -50%);
 }
 
 .scroll-cursor__dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
   border-radius: 9999px;
   background: currentColor;
 }

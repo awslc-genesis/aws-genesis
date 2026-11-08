@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 
-const SIZE = 64
-const RADIUS = 30
+const SIZE = 76
+const CENTER = SIZE / 2
+const RADIUS = 36
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+const INITIAL_ARC_OFFSET = CIRCUMFERENCE - 9
 const INTERACTIVE = 'a, button, [role="button"], label, summary, select'
+const RING_FOLLOW_MS = 120
 
 // Custom cursor that doubles as the scrollbar: a dot follows the pointer, and a
-// ring trails just behind it with an arc that fills as you scroll down the
+// ring trails just behind it with an arc that grows as you scroll down the
 // page. Only used with a mouse or trackpad; touch devices keep their usual
 // scrolling. Drawn white with a "difference" blend, so it reads dark on the
 // cream sections and light on the black ones.
@@ -31,6 +34,7 @@ export default function ScrollCursor() {
     let hovering = false
     let scale = 1
     let raf = 0
+    let lastFrame
 
     const readProgress = () => {
       const max = html.scrollHeight - window.innerHeight
@@ -38,9 +42,12 @@ export default function ScrollCursor() {
     }
     progress = readProgress()
 
-    const frame = () => {
-      // The ring and the arc ease toward their targets; the dot is exact.
-      const follow = reduced ? 1 : 0.2
+    const frame = time => {
+      // Keep the ring's lag consistent across refresh rates. The dot still
+      // uses the latest pointer position on every frame.
+      const elapsed = time - (lastFrame ?? time)
+      lastFrame = time
+      const follow = reduced ? 1 : 1 - Math.exp(-elapsed / RING_FOLLOW_MS)
       ring.x += (target.x - ring.x) * follow
       ring.y += (target.y - ring.y) * follow
       progress += (readProgress() - progress) * (reduced ? 1 : 0.25)
@@ -48,7 +55,7 @@ export default function ScrollCursor() {
 
       dotRef.current.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`
       ringRef.current.style.transform = `translate3d(${ring.x}px, ${ring.y}px, 0) scale(${scale.toFixed(3)})`
-      arcRef.current.style.strokeDashoffset = (CIRCUMFERENCE * (1 - progress)).toFixed(2)
+      arcRef.current.style.strokeDashoffset = (INITIAL_ARC_OFFSET * (1 - progress)).toFixed(2)
       raf = requestAnimationFrame(frame)
     }
     raf = requestAnimationFrame(frame)
@@ -96,20 +103,20 @@ export default function ScrollCursor() {
       <div ref={ringRef} className="scroll-cursor__ring">
         <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
           {/* Faint full circle: the track of the "scrollbar". */}
-          <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="currentColor" strokeOpacity="0.25" strokeWidth="1" />
-          {/* Arc from 12 o'clock, clockwise, as long as the share of the page scrolled. */}
+          <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="none" stroke="currentColor" strokeOpacity="0.16" strokeWidth="1" />
+          {/* A short mark grows clockwise until it fills the track. */}
           <circle
             ref={arcRef}
-            cx={SIZE / 2}
-            cy={SIZE / 2}
+            cx={CENTER}
+            cy={CENTER}
             r={RADIUS}
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
+            strokeLinecap="butt"
             strokeDasharray={CIRCUMFERENCE.toFixed(2)}
-            strokeDashoffset={CIRCUMFERENCE.toFixed(2)}
-            transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
+            strokeDashoffset={INITIAL_ARC_OFFSET.toFixed(2)}
+            transform={`rotate(-90 ${CENTER} ${CENTER})`}
           />
         </svg>
       </div>

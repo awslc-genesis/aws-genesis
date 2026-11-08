@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 
 import AwsLogo from '@/components/AwsLogo'
 import CircularText from '@/components/CircularText'
@@ -25,6 +25,8 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const STATEMENT =
   'Genesis is where students of Tarlac State University start building in the cloud, learning AWS side by side and shipping real things together.'
+
+const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
 
 // Draft copy for the three points under the AWS logo; replace with the club's own wording.
 const FEATURES = [
@@ -86,6 +88,7 @@ export default function Home() {
             duration: 1.4,
             stagger: 0.08,
           })
+          .from('[data-hero-actions]', { autoAlpha: 0, y: 12, duration: 0.65 }, '-=0.75')
         const cancelHeroIntro = onPageReveal(() => heroIntro.play())
 
         // The headline scrolls up with the page like normal content, while the
@@ -317,6 +320,20 @@ export default function Home() {
               />
             </span>
           </h1>
+          <div data-hero-actions className="mt-5 sm:mt-8 lg:flex lg:items-end lg:justify-between lg:gap-8">
+            <p className="type-body max-w-xl text-white/75">
+              Join fellow Tarlac State University students to learn AWS through hands-on projects.
+              Start with the basics, experiment with cloud services, and work with a team to get your ideas online.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2.5 lg:mt-0 lg:shrink-0">
+              <TransitionLink to="/contact" className={`${HERO_LINK_CLASS} bg-genesis hover:brightness-110`}>
+                Join Us <ArrowRight className="size-4" aria-hidden="true" />
+              </TransitionLink>
+              <a href="#events" className={`${HERO_LINK_CLASS} bg-white hover:bg-white/85`}>
+                Events
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
