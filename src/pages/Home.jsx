@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
@@ -8,10 +8,12 @@ import AwsLogo from '@/components/AwsLogo'
 import CircularText from '@/components/CircularText'
 import DarkVeil from '@/components/DarkVeil'
 import Footer from '@/components/Footer'
-import GradientASCII from '@/components/GradientASCII'
 import Navbar from '@/components/Navbar'
 import SplitWords from '@/components/SplitWords'
 import VariableProximity from '@/components/VariableProximity'
+
+// Loaded on demand: its code is only downloaded once the black section nears the screen.
+const GradientASCII = lazy(() => import('@/components/GradientASCII'))
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -39,6 +41,27 @@ export default function Home() {
   const [veilPaused, setVeilPaused] = useState(false)
   const pressStart = useRef(null)
   const heroTitleRef = useRef(null)
+  const coverRef = useRef(null)
+  const [showAscii, setShowAscii] = useState(false)
+
+  // Mount the ASCII background only when the black section is about to scroll
+  // into view (within a quarter screen of the bottom edge), so its WebGL setup
+  // and intro animation happen when the visitor actually gets there.
+  useEffect(() => {
+    const section = coverRef.current
+    if (!section || showAscii) return undefined
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries.some(entry => entry.isIntersecting)) {
+          setShowAscii(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '0px 0px 25% 0px' },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [showAscii])
 
   useGSAP(
     () => {
@@ -219,12 +242,9 @@ export default function Home() {
         id="about"
         data-panel
         className="relative z-10 min-h-svh rounded-t-[3rem] bg-paper px-5 py-24 text-ink sm:px-10 sm:py-36"
-        aria-labelledby="about-title"
+        aria-label="About the club"
       >
         <div className="mx-auto max-w-6xl">
-          <h2 id="about-title" className="mb-10 text-xs uppercase tracking-[0.25em] text-ink/50 sm:text-sm">
-            About the club
-          </h2>
           <p
             data-statement
             className="text-[clamp(2rem,5.2vw,4.75rem)] leading-[1.05] font-medium tracking-[-0.035em]"
@@ -300,19 +320,24 @@ export default function Home() {
           pinned once its end is reached), with rounded top corners that flatten
           as it lands. */}
       <section
+        ref={coverRef}
         data-cover
         className="relative z-10 min-h-[200svh] overflow-hidden rounded-t-[3rem] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem]"
       >
         {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
             at the top of the section so its shape doesn't stretch as the section grows. */}
         <div className="absolute inset-x-0 top-0 h-svh">
-          <GradientASCII
-            colors={['#f97316', '#f9bf16', '#f0fdfa']}
-            shape="pinch"
-            characters=" .:-=+*#%@"
-            cellSize={16}
-            density={0.8}
-          />
+          {showAscii && (
+            <Suspense fallback={null}>
+              <GradientASCII
+                colors={['#f97316', '#f9bf16', '#f0fdfa']}
+                shape="pinch"
+                characters=" .:-=+*#%@"
+                cellSize={16}
+                density={0.8}
+              />
+            </Suspense>
+          )}
         </div>
 
         {/* Content for this section goes here. It sits above the ASCII
