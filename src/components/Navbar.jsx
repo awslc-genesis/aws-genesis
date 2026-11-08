@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
-import logo from '@/assets/logo.webp'
 import TransitionLink from '@/components/TransitionLink'
 import { NAV_LINKS } from '@/lib/navigation'
 
@@ -12,7 +11,7 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-4'
 const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
 // tone: "light" for pages that start on a dark section (the home hero), so the
-// logo text is white; "dark" for pages that start on cream, so it is ink.
+// header text is white; "dark" for pages that start on cream, so it is ink.
 export default function Navbar({ tone = 'light' }) {
   const onCream = tone === 'dark'
   const [open, setOpen] = useState(false)
@@ -82,11 +81,10 @@ export default function Navbar({ tone = 'light' }) {
           <TransitionLink
             to="/"
             onClick={() => setOpen(false)}
-            className={`flex w-fit items-center gap-3 rounded-full transition-colors duration-500 ${focusRing} ${
+            className={`flex min-h-10 w-fit items-center rounded-full transition-colors duration-500 sm:min-h-11 ${focusRing} ${
               open || onCream ? 'text-ink focus-visible:outline-ink' : 'text-white focus-visible:outline-gold'
             }`}
           >
-            <img src={logo} alt="" className="size-10 sm:size-11" />
             <span className="flex flex-col leading-tight">
               <span className="text-sm font-medium tracking-tight">AWS Learning Club - Genesis</span>
               <span className={`text-xs font-normal tracking-wide ${open || onCream ? 'text-ink/70' : 'text-white/70'}`}>

@@ -351,10 +351,11 @@ export default function Home() {
                 is half the screen width, minus the panel's 2.5rem side padding,
                 minus half the logo's width. The right column is kept narrow
                 (at most 42rem or 38% of the screen) so it clears the logo. On
-                narrower screens the logo sits above the headline. The logo pops
+                narrower screens the logo sits above the headline and centers
+                when the columns stack. The logo pops
                 up into place as you scroll (see the scrubbed tween above). */}
             <div className="relative flex flex-col gap-12 xl:flex-row xl:items-center">
-              <div data-aws-logo className="w-[min(45vw,12rem)] shrink-0 origin-bottom-left text-[#232f3e] will-change-transform lg:w-[min(14vw,15rem)] xl:absolute xl:top-1/2 xl:left-[calc(50vw-2.5rem-min(5vw,6rem))] xl:w-[min(10vw,12rem)] xl:-translate-y-1/2 xl:origin-center">
+              <div data-aws-logo className="w-[min(38vw,10rem)] shrink-0 origin-bottom self-center text-[#232f3e] will-change-transform lg:w-[min(14vw,15rem)] lg:origin-bottom-left lg:self-auto xl:absolute xl:top-1/2 xl:left-[calc(50vw-2.5rem-min(5vw,6rem))] xl:w-[min(10vw,12rem)] xl:-translate-y-1/2 xl:origin-center">
                 <AwsLogo className="h-auto w-full" />
               </div>
               <h2 data-about-title className="type-h1 whitespace-nowrap">
