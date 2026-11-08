@@ -165,3 +165,30 @@
     scroll-behavior: smooth;
   }
 }
+
+/* Partner logo marquee: the track holds two identical rows and slides left by
+   one row's width, then repeats. Edges fade out so logos enter and leave softly. */
+.partners-marquee {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.partners-marquee-track {
+  animation: partners-marquee 40s linear infinite;
+}
+
+.partners-marquee:hover .partners-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes partners-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-marquee-track {
+    animation-play-state: paused;
+  }
+}

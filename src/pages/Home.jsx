@@ -9,6 +9,7 @@ import CircularText from '@/components/CircularText'
 import DarkVeil from '@/components/DarkVeil'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
+import PartnersMarquee from '@/components/PartnersMarquee'
 import SplitWords from '@/components/SplitWords'
 import VariableProximity from '@/components/VariableProximity'
 
@@ -135,6 +136,14 @@ export default function Home() {
           autoAlpha: 0,
           ease: 'power2.out',
           scrollTrigger: { trigger: '[data-member-cta]', start: 'top 98%', end: 'top 78%', scrub: 0.6 },
+        })
+
+        // The principal sponsor block rises and fades in as it scrolls into view.
+        gsap.from('[data-sponsor]', {
+          y: 80,
+          autoAlpha: 0,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '[data-sponsor]', start: 'top 95%', end: 'top 60%', scrub: 0.6 },
         })
 
         // While the black section covers About: About darkens and the black
@@ -326,7 +335,8 @@ export default function Home() {
       >
         {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
             at the top of the section so its shape doesn't stretch as the section grows. */}
-        <div className="absolute inset-x-0 top-0 h-svh">
+        {/* The mask fades its bottom edge into the section's black, so there's no hard line. */}
+        <div className="absolute inset-x-0 top-0 h-svh [mask-image:linear-gradient(to_bottom,#000_55%,transparent)]">
           {showAscii && (
             <Suspense fallback={null}>
               <GradientASCII
@@ -342,7 +352,80 @@ export default function Home() {
 
         {/* Content for this section goes here. It sits above the ASCII
             background, and the section grows if the content needs more room. */}
-        <div className="relative px-5 py-24 sm:px-10 sm:py-36 lg:px-16"></div>
+        <div className="relative pt-[100svh] pb-24 sm:pb-36">
+          <div aria-labelledby="partners-title" role="region">
+            <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
+              <h2
+                id="partners-title"
+                className="text-[clamp(2.25rem,6vw,5rem)] leading-[0.95] font-medium tracking-[-0.045em] text-white"
+              >
+                Our{' '}
+                <span className="text-genesis-gradient font-display pr-[0.1em] text-[1.1em] font-normal tracking-[-0.01em] italic">
+                  Partners
+                </span>
+              </h2>
+              <p className="hidden max-w-[32ch] pb-2 text-[15px] leading-relaxed text-white/55 sm:block">
+                The companies and communities helping Genesis bring the cloud to campus.
+              </p>
+            </div>
+
+            <div className="mt-8 sm:mt-14">
+              <PartnersMarquee />
+            </div>
+          </div>
+
+          {/* Principal sponsor, set open on the black like the rest of the page:
+              a hairline and label, the sponsor's logo large on the left, and a
+              statement and link on the right. AWS is a placeholder; swap the
+              logo, copy and link for the real sponsor. */}
+          <div
+            data-sponsor
+            role="region"
+            aria-labelledby="sponsor-title"
+            className="mt-28 px-5 text-white sm:mt-40 sm:px-10 lg:px-16"
+          >
+            <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-6">
+              <p id="sponsor-title" className="font-mono text-[11px] tracking-[0.2em] text-white/55 uppercase">
+                Principal Sponsor
+              </p>
+              <p className="font-mono text-[11px] tracking-[0.2em] text-white/35 uppercase">No.01</p>
+            </div>
+
+            <div className="mt-16 grid items-center gap-14 sm:mt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
+              <div className="flex justify-center lg:justify-start">
+                <AwsLogo title="Amazon Web Services" className="h-auto w-[min(70vw,30rem)]" />
+              </div>
+
+              <div>
+                <p className="text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.05] font-medium tracking-[-0.035em]">
+                  Building on the cloud that{' '}
+                  <span className="text-genesis-gradient font-display pr-[0.1em] text-[1.1em] font-normal tracking-[-0.01em] italic">
+                    started it all
+                  </span>
+                </p>
+                <p className="mt-6 max-w-[44ch] text-[15px] leading-relaxed text-white/55">
+                  Amazon Web Services powers Genesis with credits, training and mentorship, so every member can build
+                  on real cloud infrastructure.
+                </p>
+                <a
+                  href="https://aws.amazon.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group mt-10 inline-flex items-center gap-3 rounded-sm text-[15px] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                >
+                  <span className="border-b border-white/30 pb-1 transition-colors group-hover:border-white">
+                    Visit Amazon Web Services
+                  </span>
+                  <ArrowUpRight
+                    className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <Footer />
