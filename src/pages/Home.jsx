@@ -11,6 +11,7 @@ import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
 import PartnersMarquee from '@/components/PartnersMarquee'
 import SplitWords from '@/components/SplitWords'
+import EventsSection from '@/components/EventsSection'
 import VariableProximity from '@/components/VariableProximity'
 
 // Loaded on demand: its code is only downloaded once the black section nears the screen.
@@ -159,10 +160,14 @@ export default function Home() {
 
       // Hold the About panel in place once its bottom reaches the bottom of the
       // screen, so the next section scrolls up over it instead of pushing it away.
+      // The black section sits a gap below the panel (its top margin), so the
+      // panel first rests on the Become a Member button for that much scrolling
+      // before the black section starts sliding over it.
+      const coverGap = () => parseFloat(getComputedStyle(coverRef.current).marginTop) || 0
       ScrollTrigger.create({
         trigger: '[data-panel]',
         start: 'bottom bottom',
-        end: () => `+=${window.innerHeight}`,
+        end: () => `+=${window.innerHeight + coverGap()}`,
         pin: true,
         pinSpacing: false,
       })
@@ -283,38 +288,43 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-
-            <a
-              data-member-cta
-              href="#contact"
-              aria-label="Become a member"
-              onPointerDown={event => {
-                pressStart.current = { x: event.clientX, y: event.clientY }
-              }}
-              onClick={event => {
-                // The ring can be dragged to spin it; don't follow the link
-                // when the press was a drag rather than a click.
-                const start = pressStart.current
-                if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) {
-                  event.preventDefault()
-                }
-              }}
-              className="mt-[35svh] block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
-            >
-              <CircularText
-                text="* BECOME * A * MEMBER "
-                onHover="speedUp"
-                direction="clockwise"
-                spinDuration={20}
-                size={150}
-                fontSize={18}
-                draggable
-                hoverTilt={20}
-              >
-                <ArrowUpRight className="size-9" strokeWidth={1.5} aria-hidden="true" />
-              </CircularText>
-            </a>
           </div>
+        </div>
+
+        {/* Events strip spans the full screen width, so it cancels the panel's side padding. */}
+        <EventsSection className="-mx-5 mt-[20svh] sm:-mx-10" />
+
+        <div className="mx-auto flex max-w-6xl flex-col items-center">
+          <a
+            data-member-cta
+            href="#contact"
+            aria-label="Become a member"
+            onPointerDown={event => {
+              pressStart.current = { x: event.clientX, y: event.clientY }
+            }}
+            onClick={event => {
+              // The ring can be dragged to spin it; don't follow the link
+              // when the press was a drag rather than a click.
+              const start = pressStart.current
+              if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) {
+                event.preventDefault()
+              }
+            }}
+            className="mt-[20svh] block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
+          >
+            <CircularText
+              text="* BECOME * A * MEMBER "
+              onHover="speedUp"
+              direction="clockwise"
+              spinDuration={20}
+              size={150}
+              fontSize={18}
+              draggable
+              hoverTilt={20}
+            >
+              <ArrowUpRight className="size-9" strokeWidth={1.5} aria-hidden="true" />
+            </CircularText>
+          </a>
         </div>
 
         {/* Darkens the About panel while the black section slides over it. */}
@@ -331,7 +341,7 @@ export default function Home() {
       <section
         ref={coverRef}
         data-cover
-        className="relative z-10 min-h-[200svh] overflow-hidden rounded-t-[3rem] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem]"
+        className="relative z-10 mt-[70svh] min-h-[200svh] overflow-hidden rounded-t-[3rem] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem]"
       >
         {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
             at the top of the section so its shape doesn't stretch as the section grows. */}

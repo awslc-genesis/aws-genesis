@@ -56,11 +56,11 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Giant wordmark spanning the page, in the hero's serif-italic gradient. */}
+        {/* Giant wordmark spanning the page: Inter in a faint gray, like a silhouette. */}
         <div data-footer-mask className="mt-16 overflow-hidden pb-[2vw] sm:mt-24" aria-hidden="true">
           <p
             data-footer-mark
-            className="text-genesis-gradient font-display pr-[0.08em] text-[35vw] leading-[0.95] tracking-[-0.03em] italic select-none"
+            className="text-[26vw] leading-[0.85] font-semibold tracking-[-0.07em] whitespace-nowrap text-ink/[0.07] select-none"
           >
             Genesis
           </p>

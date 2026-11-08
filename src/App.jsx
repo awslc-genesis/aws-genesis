@@ -1,13 +1,18 @@
 import { Route, Routes } from 'react-router-dom'
 
+import ScrollCursor from '@/components/ScrollCursor'
 import Home from '@/pages/Home'
 import NotFound from '@/pages/NotFound'
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {/* Custom cursor with a scroll-progress ring; replaces the scrollbar on mouse devices. */}
+      <ScrollCursor />
+    </>
   )
 }

@@ -192,3 +192,70 @@
     animation-play-state: paused;
   }
 }
+
+/* Event cards (React Bits TiltedCard): photos stay black and white until the
+   card is hovered or focused, matching the site's monochrome photo style. */
+.event-tilt .tilted-card__img {
+  filter: grayscale(1);
+  transition: filter 0.7s ease-out;
+}
+
+.event-tilt[data-active] .tilted-card__img {
+  filter: none;
+}
+
+/* Scroll cursor (components/ScrollCursor.jsx): with a mouse, the custom
+   cursor replaces both the system pointer and the scrollbar, since its ring
+   shows how far down the page you are. Text fields keep the text cursor. */
+html.has-scroll-cursor {
+  scrollbar-width: none;
+}
+
+html.has-scroll-cursor::-webkit-scrollbar {
+  display: none;
+}
+
+html.has-scroll-cursor,
+html.has-scroll-cursor * {
+  cursor: none !important;
+}
+
+html.has-scroll-cursor :is(input, textarea, [contenteditable='true']) {
+  cursor: text !important;
+}
+
+.scroll-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  color: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+html[data-cursor-hidden] .scroll-cursor {
+  opacity: 0;
+}
+
+.scroll-cursor__ring,
+.scroll-cursor__dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.scroll-cursor__ring svg {
+  display: block;
+  /* Centre the ring on the pointer. */
+  margin: -32px 0 0 -32px;
+}
+
+.scroll-cursor__dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 9999px;
+  background: currentColor;
+}
