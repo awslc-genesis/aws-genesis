@@ -382,11 +382,3 @@ html[data-cursor-hidden] .scroll-cursor {
   -webkit-mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
   mask-image: radial-gradient(ellipse 62% 70% at 50% 0%, transparent 58%, rgb(0 0 0 / 0.55) 80%, #000 100%);
 }
-
-/* The tilt cards only allow vertical scrolling by default (touch-action:
-   pan-y), so a finger on an event card could not swipe the Latest Events row
-   sideways on phones. Allow both directions; a tap still flips the card, and a
-   drag is ignored as a tap, so swiping never flips one by accident. */
-.event-tilt.tilted-card {
-  touch-action: pan-x pan-y pinch-zoom;
-}

@@ -49,6 +49,7 @@ export default function Home() {
   const heroTitleRef = useRef(null)
   const coverRef = useRef(null)
   const [showAscii, setShowAscii] = useState(false)
+  const [touchScreen] = useState(isCoarsePointer)
 
   // Mount the ASCII background only when the black section is about to scroll
   // into view (within a quarter screen of the bottom edge), so its WebGL setup
@@ -88,16 +89,19 @@ export default function Home() {
           })
         const cancelHeroIntro = onPageReveal(() => heroIntro.play())
 
-        // The headline scrolls up with the page like normal content, while the
-        // hero background stays pinned and full size behind it. It travels the
-        // same distance as the page scroll until the panel reaches the top, so it
-        // moves exactly 1:1 with the scroll; it also fades as the panel rises.
-        ScrollTrigger.create({
-          start: 0,
-          endTrigger: '[data-panel]',
-          end: 'top top',
-          onUpdate: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
-          onRefresh: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
+        // Desktop: the hero is pinned (CSS sticky) and the headline is moved up
+        // 1:1 with the scroll, so it scrolls like normal content over the fixed
+        // background until the panel reaches the top. On phones and tablets the
+        // whole hero simply scrolls natively instead (no script moving it on
+        // every scroll event, which lags behind the finger on touch screens).
+        gsap.matchMedia().add(PINNED, () => {
+          ScrollTrigger.create({
+            start: 0,
+            endTrigger: '[data-panel]',
+            end: 'top top',
+            onUpdate: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
+            onRefresh: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
+          })
         })
         const cover = {
           trigger: '[data-panel]',
@@ -114,7 +118,9 @@ export default function Home() {
         // a quarter screen below the bottom of the screen (GLOW_LEAD). At that
         // moment it is scaled so its top edge sits exactly at the bottom of the
         // screen, so the light starts rising into view from there.
-        const GLOW_LEAD = 0.25
+        // No head start on touch screens: there the panel sits right under the
+        // hero, so any lead would show the glow over the headline on load.
+        const GLOW_LEAD = isCoarsePointer() ? 0 : 0.25
         const glowEl = document.querySelector('[data-panel-glow]')
         const glowStartScale = () => {
           const box = glowEl.parentElement.getBoundingClientRect()
@@ -269,8 +275,9 @@ export default function Home() {
     <div ref={root} className="relative bg-ink">
       {/* Page-level so the full-screen menu stacks above every section. */}
       <Navbar />
-      {/* Hero stays pinned (CSS sticky) while the next section slides over it. */}
-      <section id="home" className="sticky top-0 h-svh overflow-hidden text-white" aria-labelledby="hero-title">
+      {/* Hero stays pinned (CSS sticky) on desktop while the next section slides
+          over it; on phones and tablets it scrolls away normally. */}
+      <section id="home" className="h-svh overflow-hidden text-white pinned:sticky pinned:top-0" aria-labelledby="hero-title">
         <div data-hero-veil className="absolute inset-0 origin-top">
           <DarkVeil color="#6e2406" paused={veilPaused} dpr={isCoarsePointer() ? 1 : undefined} />
         </div>
@@ -297,15 +304,24 @@ export default function Home() {
             <span className="block">
               <span className="mr-[0.1em] inline-block overflow-hidden pr-[0.1em] pb-[0.08em] align-bottom">
                 <span data-word className="text-hero-sheen inline-block">
-                  <VariableProximity
-                    label="Let’s make"
-                    fromFontVariationSettings="'wght' 500"
-                    toFontVariationSettings="'wght' 900"
-                    containerRef={heroTitleRef}
-                    radius={100}
-                    falloff="linear"
-                    smoothing={0.2}
-                  />
+                  {/* Touch screens have no hovering pointer to react to, and the
+                      effect re-measures on every scroll, so they get plain text. */}
+                  {touchScreen ? (
+                    <>
+                      <span className="sr-only">Let’s make</span>
+                      <span aria-hidden="true">Let’s make</span>
+                    </>
+                  ) : (
+                    <VariableProximity
+                      label="Let’s make"
+                      fromFontVariationSettings="'wght' 500"
+                      toFontVariationSettings="'wght' 900"
+                      containerRef={heroTitleRef}
+                      radius={100}
+                      falloff="linear"
+                      smoothing={0.2}
+                    />
+                  )}
                 </span>
               </span>
             </span>
@@ -325,7 +341,7 @@ export default function Home() {
       <section
         id="about"
         data-panel
-        className="relative z-10 mt-[60svh] min-h-svh bg-paper px-5 py-24 text-ink sm:px-10 sm:py-36"
+        className="relative z-10 min-h-svh bg-paper pinned:mt-[60svh] px-5 py-24 text-ink sm:px-10 sm:py-36"
         aria-label="About the club"
       >
         {/* Gradient band above the panel: it fades the hero through ember orange

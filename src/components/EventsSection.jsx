@@ -5,7 +5,7 @@ import { useGSAP } from '@gsap/react'
 import { ArrowUpRight } from 'lucide-react'
 
 import TiltedCard, { TiltedCardLayer } from '@/components/TiltedCard'
-import { PINNED } from '@/lib/motion'
+import { FREE, PINNED } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
@@ -119,26 +119,25 @@ function EventCard({ event, index }) {
 // Latest events: a full-width strip that sticks to the screen while the page
 // scrolls, moving the cards sideways instead. The outer block is made as tall
 // as the sideways distance (so vertical scroll maps 1:1 onto it) plus a short
-// hold at the end.
+// hold at the end. On phones and tablets it also snaps: when you stop
+// scrolling, the strip glides to the nearest card, centred on screen.
 export default function EventsSection({ className }) {
   const root = useRef(null)
   const track = useRef(null)
 
   useGSAP(
     () => {
-      // Wide screens with a mouse or trackpad: the strip sticks and vertical
-      // scroll moves the cards sideways. Phones and tablets skip all of this
-      // and swipe the row natively (see the `free:` classes below).
-      gsap.matchMedia().add(PINNED, () => {
+      gsap.matchMedia().add({ desktop: PINNED, touch: FREE }, context => {
+        const { touch } = context.conditions
         const section = root.current
         const row = track.current
         const distance = () => Math.max(0, row.scrollWidth - window.innerWidth)
         // Extra scroll before the cards start moving, so the first card can be
         // seen while the strip holds still...
-        const lead = () => window.innerHeight * 0.5
+        const lead = () => window.innerHeight * (touch ? 0.25 : 0.5)
         // ...and after the last card arrives, so the strip rests with every
         // event in view before the page moves on to the next section.
-        const hold = () => window.innerHeight * 0.6
+        const hold = () => window.innerHeight * (touch ? 0.35 : 0.6)
 
         // Re-measured on every refresh (resize, font load) before triggers recalc.
         const setHeight = () => {
@@ -146,6 +145,17 @@ export default function EventsSection({ className }) {
         }
         setHeight()
         ScrollTrigger.addEventListener('refreshInit', setHeight)
+
+        // Where the strip's progress (0 to 1) has each card centred on screen,
+        // clamped to the ends; used for snapping on touch screens.
+        const cardStops = () => {
+          const total = distance()
+          if (!total) return [0]
+          return [...row.children].map(card => {
+            const centred = card.offsetLeft + card.offsetWidth / 2 - window.innerWidth / 2
+            return Math.min(1, Math.max(0, centred / total))
+          })
+        }
 
         // The strip sticks at the top, holds for `lead`, slides over `distance`,
         // then holds again for the rest of the block.
@@ -156,8 +166,11 @@ export default function EventsSection({ className }) {
             trigger: section,
             start: () => `top top-=${lead()}`,
             end: () => `+=${distance()}`,
-            scrub: 0.5,
+            scrub: touch ? 0.3 : 0.5,
             invalidateOnRefresh: true,
+            snap: touch
+              ? { snapTo: value => gsap.utils.snap(cardStops(), value), duration: { min: 0.25, max: 0.6 }, delay: 0.08, ease: 'power2.inOut' }
+              : false,
           },
         })
 
@@ -194,9 +207,9 @@ export default function EventsSection({ className }) {
       ref={root}
       id="events"
       aria-labelledby="events-title"
-      className={cn('relative pinned:h-[300svh]', className)}
+      className={cn('relative h-[300svh]', className)}
     >
-      <div className="flex flex-col pt-24 pb-8 sm:pt-28 sm:pb-10 pinned:sticky pinned:top-0 pinned:h-svh pinned:overflow-hidden">
+      <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-24 pb-8 sm:pt-28 sm:pb-10">
         <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
           <h2
             id="events-title"
@@ -212,18 +225,14 @@ export default function EventsSection({ className }) {
           </p>
         </div>
 
-        {/* On phones and tablets this wrapper is a native sideways swipe area
-            (no snapping); on desktop it just holds the row the scroll moves. */}
-        <div className="mt-8 flex min-h-0 flex-1 sm:mt-10 free:overflow-x-auto free:overscroll-x-contain free:py-[6svh] free:[scrollbar-width:none] free:[&::-webkit-scrollbar]:hidden">
         <ul
           ref={track}
-          className="flex w-max gap-12 px-5 will-change-transform sm:gap-24 sm:px-10 lg:gap-40 lg:px-16 pinned:min-h-0 pinned:flex-1"
+          className="mt-8 flex min-h-0 w-max flex-1 gap-12 px-5 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
         >
           {EVENTS.map((event, i) => (
             <EventCard key={event.seed} event={event} index={i} />
           ))}
         </ul>
-        </div>
       </div>
     </section>
   )
