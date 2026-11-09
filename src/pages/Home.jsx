@@ -5,10 +5,12 @@ import { useGSAP } from '@gsap/react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 
 import AwsLogo from '@/components/AwsLogo'
+import CardSwap from '@/components/CardSwap'
 import CircularText from '@/components/CircularText'
 import DarkVeil from '@/components/DarkVeil'
 import Footer from '@/components/Footer'
 import Navbar from '@/components/Navbar'
+import PixelTrail from '@/components/PixelTrail'
 import PartnersMarquee from '@/components/PartnersMarquee'
 import SplitWords from '@/components/SplitWords'
 import EventsSection from '@/components/EventsSection'
@@ -25,6 +27,15 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const STATEMENT =
   'Genesis is where students of Tarlac State University start building in the cloud, learning AWS side by side and shipping real things together.'
+
+// Cards cycling on the right of the hero (React Bits CardSwap). The photos are
+// placeholders, like the event images; swap in the club's own shots later.
+const HERO_CARDS = [
+  { title: 'Cloud workshops', image: 'https://picsum.photos/seed/genesis-workshop/900/640' },
+  { title: 'Build nights', image: 'https://picsum.photos/seed/genesis-build/900/640' },
+  { title: 'Study jams', image: 'https://picsum.photos/seed/genesis-study/900/640' },
+  { title: 'Demo days', image: 'https://picsum.photos/seed/genesis-demo/900/640' },
+]
 
 const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
 
@@ -304,6 +315,23 @@ export default function Home() {
           data-hero-content
           className="relative flex h-full flex-col justify-end px-5 pb-10 sm:px-10 sm:pb-14"
         >
+          {/* Card stack in the empty space of the hero. On phones and tablets it
+              fills the gap between the navbar and the headline; on wide screens
+              it sits to the right of the headline instead. */}
+          <div className="relative mt-24 mb-8 min-h-0 flex-1 lg:absolute lg:top-[18%] lg:right-10 lg:m-0 lg:h-[52%] lg:w-[38%] lg:flex-none">
+            <CardSwap
+              items={HERO_CARDS}
+              delay={4000}
+              cardDistance={0}
+              verticalDistance={56}
+              depth={100}
+              skewAmount={0}
+              cardRadius={0}
+              theme="light"
+              className="card-swap-polaroid"
+            />
+          </div>
+
           {/* Tight sans set against an italic serif, sharing one size and baseline. */}
           <h1
             id="hero-title"
@@ -446,7 +474,20 @@ export default function Home() {
             in it. The negative bottom margin cancels the panel's bottom padding,
             so this block ends exactly at the panel's bottom edge; when the panel
             is held in place there, the button sits in the middle of the screen. */}
-        <div className="-mb-24 flex min-h-svh flex-col items-center justify-center sm:-mb-36">
+        <div className="relative -mx-5 -mb-24 flex min-h-svh flex-col items-center justify-center overflow-hidden sm:-mx-10 sm:-mb-36">
+          {/* Pixel trail (React Bits PixelTrail) follows the cursor across this
+              screen, behind the button. It ignores pointer events itself. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            <PixelTrail
+              gridSize={50}
+              trailSize={0.1}
+              maxAge={500}
+              interpolate={5}
+              color="#f97316"
+              trailColor="#f9bf16"
+              gooeyFilter={false}
+            />
+          </div>
           <TransitionLink
             data-member-cta
             to="/contact"
@@ -462,7 +503,7 @@ export default function Home() {
                 event.preventDefault()
               }
             }}
-            className="block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
+            className="relative z-10 block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
           >
             <CircularText
               text="* BECOME * A * MEMBER "
