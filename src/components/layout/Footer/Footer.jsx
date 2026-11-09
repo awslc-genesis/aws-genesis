@@ -2,9 +2,9 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
-import TechText from '@/components/TechText'
-import TransitionLink from '@/components/TransitionLink'
-import { NAV_LINKS } from '@/lib/navigation'
+import TechText from '@/components/animations/TechText'
+import TransitionLink from '@/components/common/TransitionLink'
+import { NAV_LINKS } from '@/config/navigation'
 
 const COLUMNS = [
   { title: 'Club', links: NAV_LINKS.slice(0, 3) },

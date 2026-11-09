@@ -4,9 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { ArrowUpRight } from 'lucide-react'
 
-import TiltedCard, { TiltedCardLayer } from '@/components/TiltedCard'
-import { FREE, PINNED } from '@/lib/motion'
-import { cn } from '@/lib/utils'
+import TiltedCard, { TiltedCardLayer } from '@/components/animations/TiltedCard'
+import { FREE, PINNED } from '@/utils/motion'
+import { cn } from '@/utils/cn'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -58,7 +58,7 @@ function EventCard({ event, index }) {
       {/* Landscape photo as a React Bits TiltedCard: it tilts toward the
           pointer with a glare, the title floats on a parallax layer, and a
           click flips it over to the event's summary. Black and white until
-          hovered (see .event-tilt in index.css). */}
+          hovered (see .event-tilt in styles/index.css). */}
       <div className="aspect-[3/2]">
         <TiltedCard
           className="event-tilt"

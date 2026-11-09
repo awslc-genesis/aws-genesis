@@ -1,8 +1,8 @@
 import { useRef } from 'react'
 
-import AwsLogo from '@/components/AwsLogo'
-import PageLayout from '@/components/PageLayout'
-import useReveal from '@/lib/useReveal'
+import AwsLogo from '@/components/common/AwsLogo'
+import PageLayout from '@/components/layout/PageLayout'
+import useReveal from '@/hooks/useReveal'
 
 // Draft copy: replace with the club's own mission, story and numbers.
 const PILLARS = [

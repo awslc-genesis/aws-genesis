@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import { Link } from 'react-router-dom'
 
-import { usePageTransition } from '@/components/PageTransition'
+import { usePageTransition } from '@/components/layout/PageTransition'
 
 // A router Link that plays the page transition: a normal click covers the page
 // with the curtain, changes route behind it and reveals the new page. Clicks

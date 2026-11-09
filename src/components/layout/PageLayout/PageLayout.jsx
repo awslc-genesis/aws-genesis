@@ -1,5 +1,5 @@
-import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
+import Footer from '@/components/layout/Footer'
+import Navbar from '@/components/layout/Navbar'
 
 // Shared frame for the inner pages: the menu bar (dark text, since these pages
 // start on cream), the page's own content on a cream panel whose rounded

@@ -5,7 +5,7 @@
 
 /* Wide screens with a mouse or trackpad, where sections may be pinned and
    scroll can drive sideways movement; `free` is everything else (phones and
-   tablets), which scroll natively. Keep in sync with src/lib/motion.js. */
+   tablets), which scroll natively. Keep in sync with src/utils/motion.js. */
 @custom-variant pinned (@media (min-width: 1024px) and (pointer: fine));
 @custom-variant free (@media (max-width: 1023px), (pointer: coarse));
 
@@ -295,7 +295,7 @@
   filter: none;
 }
 
-/* Scroll cursor (components/ScrollCursor.jsx): with a mouse, the custom
+/* Scroll cursor (components/layout/ScrollCursor): with a mouse, the custom
    cursor replaces both the system pointer and the scrollbar, since its ring
    shows how far down the page you are. Text fields keep the text cursor. */
 html.has-scroll-cursor {
@@ -423,43 +423,4 @@ html[data-cursor-hidden] .scroll-cursor {
 /* Square corners on the event cards' hover label, to match the cards. */
 .event-tilt .tilted-card__caption {
   border-radius: 0;
-}
-
-/* Hero CardSwap styled as polaroids: white frame, black-and-white photo, and the
-   caption in the thicker bottom border. Scoped to .card-swap-polaroid so the
-   React Bits component's own CSS stays untouched. */
-.card-swap.card-swap-polaroid {
-  --swap-tile: #fff;
-  --swap-tile-highlight: #fff;
-  --swap-media-edge: rgba(0, 0, 0, 0.08);
-}
-
-.card-swap-polaroid .card-swap-item {
-  gap: 0;
-  padding: 14px 14px 0;
-}
-
-.card-swap-polaroid .card-swap-media {
-  order: 1;
-  border-radius: 0;
-  background: #e5e5e5;
-}
-
-.card-swap-polaroid .card-swap-media img {
-  filter: grayscale(1) contrast(1.05);
-}
-
-.card-swap-polaroid .card-swap-head {
-  order: 2;
-  justify-content: center;
-  height: 64px;
-  padding: 0 8px;
-}
-
-.card-swap-polaroid .card-swap-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-style: italic;
-  font-weight: 400;
-  color: #1a1a1a;
 }

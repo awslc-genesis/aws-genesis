@@ -1,4 +1,4 @@
-import PageLayout from '@/components/PageLayout'
+import PageLayout from '@/components/layout/PageLayout'
 
 // Contact page: intentionally empty for now, waiting on a new design. The
 // route, menu bar, screen-reader title and footer still work, so links to

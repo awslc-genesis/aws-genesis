@@ -1,8 +1,8 @@
 import { useRef } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 
-import PageLayout from '@/components/PageLayout'
-import useReveal from '@/lib/useReveal'
+import PageLayout from '@/components/layout/PageLayout'
+import useReveal from '@/hooks/useReveal'
 
 // Free, official AWS learning resources, grouped by what you want to do next.
 const GROUPS = [

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import { markCovered, markRevealed } from '@/lib/pageReveal'
+import { markCovered, markRevealed } from '@/utils/pageReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -20,7 +20,7 @@ const nextPaint = () => new Promise(resolve => requestAnimationFrame(() => reque
 // its intro plays as soon as it mounts. Moving between pages: a dark curtain
 // wipes up from the bottom, the route changes behind it and the new page starts
 // at the top, then the curtain carries on up and away. Pages start their intro
-// animations as it lifts (see lib/pageReveal).
+// animations as it lifts (see utils/pageReveal).
 export default function PageTransition({ children }) {
   const navigate = useNavigate()
   const location = useLocation()

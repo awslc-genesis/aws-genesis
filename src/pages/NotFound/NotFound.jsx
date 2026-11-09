@@ -1,4 +1,4 @@
-import TransitionLink from '@/components/TransitionLink'
+import TransitionLink from '@/components/common/TransitionLink'
 import { Button } from '@/components/ui/button'
 
 export default function NotFound() {

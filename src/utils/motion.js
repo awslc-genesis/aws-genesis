@@ -7,7 +7,7 @@ gsap.registerPlugin(ScrollTrigger)
 // vertical scroll into sideways movement) only run on wide screens with a mouse
 // or trackpad. Phones and tablets scroll freely and natively instead: nothing
 // is held in place or snapped, and swipeable rows are real swipes.
-// Keep in sync with the `pinned` / `free` variants in index.css.
+// Keep in sync with the `pinned` / `free` variants in styles/index.css.
 export const PINNED = '(min-width: 1024px) and (pointer: fine)'
 export const FREE = '(max-width: 1023px), (pointer: coarse)'
 

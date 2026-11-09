@@ -36,21 +36,33 @@ Open http://localhost:5173.
 ## Project structure
 
 ```
-public/                 static files served as-is (favicon, icons)
+public/                     static files served as-is (favicon, icons)
 src/
-  assets/               images imported in code (logo)
-  components/           shared components
-    ui/                 shadcn/ui components
-  lib/utils.js          cn() helper for class names
-  pages/                one file per page/route
-  App.jsx               route definitions
-  main.jsx              app entry
-  index.css             Tailwind + theme colors
+  assets/images/            images imported in code (logo, partner logos)
+  components/
+    animations/             React Bits effects (CardSwap, DarkVeil, PixelTrail, ...)
+    common/                 small shared pieces (AwsLogo, SplitWords, TransitionLink)
+    layout/                 site chrome (Navbar, Footer, PageLayout, PageTransition, ScrollCursor)
+    ui/                     shadcn/ui components
+  features/                 sections grouped by topic, each with components/ and an index.js
+    events/  partners/  team/
+  pages/                    one folder per page (Home/Home.jsx, Home/Home.css, Home/index.js)
+  routes/AppRoutes.jsx      every page and its URL
+  hooks/                    shared hooks (useReveal)
+  utils/                    helpers (cn, motion, pageReveal)
+  config/                   site data (navigation links)
+  styles/index.css          Tailwind, theme colours and global styles
+  App.jsx                   app shell: page transition, routes, cursor
+  main.jsx                  app entry
 ```
 
+Each component lives in its own folder with its CSS beside it and an `index.js`
+that re-exports it, so imports stay short: `import Navbar from '@/components/layout/Navbar'`.
+
 - Import from `src` with the `@/` alias: `import { Button } from '@/components/ui/button'`
-- Add a page: create `src/pages/About.jsx`, then add `<Route path="/about" element={<About />} />` in `src/App.jsx`
+- Add a page: create `src/pages/About/About.jsx` and `src/pages/About/index.js`, then add `<Route path="/about" element={<About />} />` in `src/routes/AppRoutes.jsx`
 - Add a shadcn component: `npx shadcn@latest add card` (it lands in `src/components/ui`)
+- Add a React Bits component: `npx shadcn@latest add @react-bits/<Name>-JS-CSS` lands it in `src/components`; move it into `src/components/animations/<Name>/` with an `index.js`
 
 ## Collaborating with Git
 

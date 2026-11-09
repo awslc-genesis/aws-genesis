@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 
-import TransitionLink from '@/components/TransitionLink'
-import { NAV_LINKS } from '@/lib/navigation'
+import TransitionLink from '@/components/common/TransitionLink'
+import { NAV_LINKS } from '@/config/navigation'
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-4'
 

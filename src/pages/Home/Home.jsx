@@ -4,24 +4,26 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 
-import AwsLogo from '@/components/AwsLogo'
-import CardSwap from '@/components/CardSwap'
-import CircularText from '@/components/CircularText'
-import DarkVeil from '@/components/DarkVeil'
-import Footer from '@/components/Footer'
-import Navbar from '@/components/Navbar'
-import PixelTrail from '@/components/PixelTrail'
-import PartnersMarquee from '@/components/PartnersMarquee'
-import SplitWords from '@/components/SplitWords'
-import EventsSection from '@/components/EventsSection'
-import TransitionLink from '@/components/TransitionLink'
-import { isCoarsePointer, PINNED } from '@/lib/motion'
-import { onPageReveal } from '@/lib/pageReveal'
-import TeamSection from '@/components/TeamSection'
-import VariableProximity from '@/components/VariableProximity'
+import CardSwap from '@/components/animations/CardSwap'
+import CircularText from '@/components/animations/CircularText'
+import DarkVeil from '@/components/animations/DarkVeil'
+import PixelTrail from '@/components/animations/PixelTrail'
+import VariableProximity from '@/components/animations/VariableProximity'
+import AwsLogo from '@/components/common/AwsLogo'
+import SplitWords from '@/components/common/SplitWords'
+import TransitionLink from '@/components/common/TransitionLink'
+import Footer from '@/components/layout/Footer'
+import Navbar from '@/components/layout/Navbar'
+import { EventsSection } from '@/features/events'
+import { PartnersMarquee } from '@/features/partners'
+import { TeamSection } from '@/features/team'
+import { isCoarsePointer, PINNED } from '@/utils/motion'
+import { onPageReveal } from '@/utils/pageReveal'
+
+import './Home.css'
 
 // Loaded on demand: its code is only downloaded once the black section nears the screen.
-const GradientASCII = lazy(() => import('@/components/GradientASCII'))
+const GradientASCII = lazy(() => import('@/components/animations/GradientASCII'))
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
