@@ -36,29 +36,70 @@ export default function ScrollCursor() {
     let raf = 0
     let lastFrame
 
-    const readProgress = () => {
-      const max = html.scrollHeight - window.innerHeight
-      return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0
+    // Cache the scroll range so the loop never reads scrollHeight (which can
+    // force a layout right after GSAP writes styles). Refreshed on resize and
+    // whenever the page's height changes.
+    let max = 0
+    const updateMax = () => {
+      const next = html.scrollHeight - window.innerHeight
+      if (next === max) return
+      max = next
+      wake()
     }
+    const readProgress = () => (max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0)
+    max = html.scrollHeight - window.innerHeight
     progress = readProgress()
+
+    const write = () => {
+      dotRef.current.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`
+      ringRef.current.style.transform = `translate3d(${ring.x}px, ${ring.y}px, 0) scale(${scale.toFixed(3)})`
+      arcRef.current.style.strokeDashoffset = (INITIAL_ARC_OFFSET * (1 - progress)).toFixed(2)
+    }
 
     const frame = time => {
       // Keep the ring's lag consistent across refresh rates. The dot still
       // uses the latest pointer position on every frame.
-      const elapsed = time - (lastFrame ?? time)
+      const elapsed = Math.max(0, time - (lastFrame ?? time))
       lastFrame = time
       const follow = reduced ? 1 : 1 - Math.exp(-elapsed / RING_FOLLOW_MS)
+      const goalProgress = readProgress()
+      const goalScale = hovering ? 1.35 : 1
       ring.x += (target.x - ring.x) * follow
       ring.y += (target.y - ring.y) * follow
-      progress += (readProgress() - progress) * (reduced ? 1 : 0.25)
-      scale += ((hovering ? 1.35 : 1) - scale) * (reduced ? 1 : 0.2)
+      progress += (goalProgress - progress) * (reduced ? 1 : 0.25)
+      scale += (goalScale - scale) * (reduced ? 1 : 0.2)
+      write()
 
-      dotRef.current.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`
-      ringRef.current.style.transform = `translate3d(${ring.x}px, ${ring.y}px, 0) scale(${scale.toFixed(3)})`
-      arcRef.current.style.strokeDashoffset = (INITIAL_ARC_OFFSET * (1 - progress)).toFixed(2)
+      // Everything has settled: snap to the targets, draw once more and go
+      // idle until the pointer, scroll or layout moves again.
+      if (
+        Math.abs(target.x - ring.x) < 0.1 &&
+        Math.abs(target.y - ring.y) < 0.1 &&
+        Math.abs(goalProgress - progress) < 0.0005 &&
+        Math.abs(goalScale - scale) < 0.001
+      ) {
+        ring.x = target.x
+        ring.y = target.y
+        progress = goalProgress
+        scale = goalScale
+        write()
+        raf = 0
+        lastFrame = undefined
+        return
+      }
       raf = requestAnimationFrame(frame)
     }
-    raf = requestAnimationFrame(frame)
+    function wake() {
+      if (raf) return
+      // Re-read the range once per wake (not per frame), in case the page's
+      // scroll height changed without the body resizing.
+      max = html.scrollHeight - window.innerHeight
+      // Count the first frame after idling as a normal frame step, so the ring
+      // starts following right away, as it did when the loop never stopped.
+      lastFrame = performance.now() - 1000 / 60
+      raf = requestAnimationFrame(frame)
+    }
+    wake()
 
     const show = value => {
       if (shown === value) return
@@ -75,9 +116,11 @@ export default function ScrollCursor() {
       target.x = event.clientX
       target.y = event.clientY
       show(true)
+      wake()
     }
     const onOver = event => {
       hovering = Boolean(event.target.closest?.(INTERACTIVE))
+      wake()
     }
     const onLeave = () => show(false)
 
@@ -85,12 +128,19 @@ export default function ScrollCursor() {
     window.addEventListener('pointermove', onMove, { passive: true })
     document.addEventListener('pointerover', onOver, { passive: true })
     document.documentElement.addEventListener('pointerleave', onLeave)
+    window.addEventListener('scroll', wake, { passive: true })
+    window.addEventListener('resize', updateMax)
+    const sizeWatcher = new ResizeObserver(updateMax)
+    sizeWatcher.observe(document.body)
 
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onMove)
       document.removeEventListener('pointerover', onOver)
       document.documentElement.removeEventListener('pointerleave', onLeave)
+      window.removeEventListener('scroll', wake)
+      window.removeEventListener('resize', updateMax)
+      sizeWatcher.disconnect()
       html.classList.remove('has-scroll-cursor')
       html.removeAttribute('data-cursor-hidden')
     }

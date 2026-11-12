@@ -7,7 +7,6 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import CardSwap from '@/components/animations/CardSwap'
 import CircularText from '@/components/animations/CircularText'
 import DarkVeil from '@/components/animations/DarkVeil'
-import PixelTrail from '@/components/animations/PixelTrail'
 import VariableProximity from '@/components/animations/VariableProximity'
 import AwsLogo from '@/components/common/AwsLogo'
 import SplitWords from '@/components/common/SplitWords'
@@ -33,10 +32,10 @@ const STATEMENT =
 // Cards cycling on the right of the hero (React Bits CardSwap). The photos are
 // placeholders, like the event images; swap in the club's own shots later.
 const HERO_CARDS = [
-  { title: 'Cloud workshops', image: 'https://picsum.photos/seed/genesis-workshop/900/640' },
-  { title: 'Build nights', image: 'https://picsum.photos/seed/genesis-build/900/640' },
-  { title: 'Study jams', image: 'https://picsum.photos/seed/genesis-study/900/640' },
-  { title: 'Demo days', image: 'https://picsum.photos/seed/genesis-demo/900/640' },
+  { title: 'Cloud workshops', image: 'https://picsum.photos/seed/genesis-workshop/1280/720' },
+  { title: 'Build nights', image: 'https://picsum.photos/seed/genesis-build/1280/720' },
+  { title: 'Study jams', image: 'https://picsum.photos/seed/genesis-study/1280/720' },
+  { title: 'Demo days', image: 'https://picsum.photos/seed/genesis-demo/1280/720' },
 ]
 
 const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
@@ -315,17 +314,27 @@ export default function Home() {
 
         <div
           data-hero-content
-          className="relative flex h-full flex-col justify-end px-5 pb-10 sm:px-10 sm:pb-14"
+          className="relative flex h-full flex-col justify-end px-5 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-0"
         >
-          {/* Card stack in the empty space of the hero. On phones and tablets it
-              fills the gap between the navbar and the headline; on wide screens
-              it sits to the right of the headline instead. */}
-          <div className="relative mt-24 mb-8 min-h-0 flex-1 lg:absolute lg:top-[18%] lg:right-10 lg:m-0 lg:h-[52%] lg:w-[38%] lg:flex-none">
+          {/* Card stack in the empty space of the hero. On phones and tablets the
+              headline, text and buttons sit at the top (just under the navbar)
+              and the stack fills the space below the buttons; on wide screens it
+              sits to the right of the headline instead. */}
+          <div className="relative order-last mt-8 min-h-0 flex-1 lg:order-none lg:absolute lg:top-[13%] lg:right-10 lg:m-0 lg:h-[71%] lg:w-[46%] lg:flex-none">
             <CardSwap
               items={HERO_CARDS}
+              // Polaroid sized so the photo is 16:9: 14px side borders around an
+              // 800px-wide image (800 x 450), plus 14px top and the 64px caption.
+              // CardSwap scales the stack down to fit its box, so this sets the
+              // shape and the stack fills the available space.
+              width={828}
+              height={528}
               delay={4000}
+              // The hero is sticky, so CardSwap always sees itself in view; stop
+              // cycling once the panel covers it, resume on scroll back.
+              autoplay={!veilPaused}
               cardDistance={0}
-              verticalDistance={56}
+              verticalDistance={70}
               depth={100}
               skewAmount={0}
               cardRadius={0}
@@ -403,7 +412,7 @@ export default function Home() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-[160svh] h-[calc(160svh+4rem)] overflow-hidden"
         >
-          <div data-panel-glow className="absolute inset-0 origin-bottom">
+          <div data-panel-glow className="absolute inset-0 origin-bottom will-change-transform">
             <div className="panel-glow-fill absolute inset-0" />
           </div>
         </div>
@@ -477,19 +486,6 @@ export default function Home() {
             so this block ends exactly at the panel's bottom edge; when the panel
             is held in place there, the button sits in the middle of the screen. */}
         <div className="relative -mx-5 -mb-24 flex min-h-svh flex-col items-center justify-center overflow-hidden sm:-mx-10 sm:-mb-36">
-          {/* Pixel trail (React Bits PixelTrail) follows the cursor across this
-              screen, behind the button. It ignores pointer events itself. */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-            <PixelTrail
-              gridSize={50}
-              trailSize={0.1}
-              maxAge={500}
-              interpolate={5}
-              color="#f97316"
-              trailColor="#f9bf16"
-              gooeyFilter={false}
-            />
-          </div>
           <TransitionLink
             data-member-cta
             to="/contact"
@@ -540,7 +536,7 @@ export default function Home() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-[130svh] h-[calc(130svh+4rem)] overflow-hidden"
         >
-          <div data-cover-glow className="absolute inset-0 origin-bottom">
+          <div data-cover-glow className="absolute inset-0 origin-bottom will-change-transform">
             <div className="cover-glow-fill absolute inset-0" />
           </div>
         </div>
