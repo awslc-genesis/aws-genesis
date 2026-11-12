@@ -4,7 +4,6 @@ const SIZE = 76
 const CENTER = SIZE / 2
 const RADIUS = 36
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-const INITIAL_ARC_OFFSET = CIRCUMFERENCE - 9
 const INTERACTIVE = 'a, button, [role="button"], label, summary, select'
 const RING_FOLLOW_MS = 120
 
@@ -53,7 +52,7 @@ export default function ScrollCursor() {
     const write = () => {
       dotRef.current.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`
       ringRef.current.style.transform = `translate3d(${ring.x}px, ${ring.y}px, 0) scale(${scale.toFixed(3)})`
-      arcRef.current.style.strokeDashoffset = (INITIAL_ARC_OFFSET * (1 - progress)).toFixed(2)
+      arcRef.current.style.strokeDashoffset = (CIRCUMFERENCE * (1 - progress)).toFixed(2)
     }
 
     const frame = time => {
@@ -154,7 +153,7 @@ export default function ScrollCursor() {
         <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
           {/* Faint full circle: the track of the "scrollbar". */}
           <circle cx={CENTER} cy={CENTER} r={RADIUS} fill="none" stroke="currentColor" strokeOpacity="0.16" strokeWidth="1" />
-          {/* A short mark grows clockwise until it fills the track. */}
+          {/* Empty at the top of the page; the mark grows clockwise until it fills the track. */}
           <circle
             ref={arcRef}
             cx={CENTER}
@@ -165,7 +164,7 @@ export default function ScrollCursor() {
             strokeWidth="2"
             strokeLinecap="butt"
             strokeDasharray={CIRCUMFERENCE.toFixed(2)}
-            strokeDashoffset={INITIAL_ARC_OFFSET.toFixed(2)}
+            strokeDashoffset={CIRCUMFERENCE.toFixed(2)}
             transform={`rotate(-90 ${CENTER} ${CENTER})`}
           />
         </svg>
