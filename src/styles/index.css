@@ -235,20 +235,13 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* White text that warms to a very light orange toward the bottom. Applied to
-   each letter (VariableProximity renders every glyph as its own aria-hidden
-   span), so the vertical gradient reads evenly across the whole line. */
-.text-hero-sheen [aria-hidden='true'] {
+/* White text that warms to a very light orange toward the bottom. */
+.text-hero-sheen {
   color: #fff; /* fallback when background-clip: text is unsupported */
   background-image: linear-gradient(180deg, #ffffff 30%, #ffdcb8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  /* The headline's negative tracking makes each letter's box narrower than its
-     glyph; extend the painted area so the right edge isn't left unpainted,
-     without changing the spacing. */
-  padding-right: 0.08em;
-  margin-right: -0.08em;
 }
 
 @media (prefers-reduced-motion: no-preference) {

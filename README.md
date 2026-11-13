@@ -40,13 +40,13 @@ public/                     static files served as-is (favicon, icons)
 src/
   assets/images/            images imported in code (logo, partner logos)
   components/
-    animations/             React Bits effects (CardSwap, DarkVeil, PixelTrail, ...)
+    animations/             React Bits effects (DarkVeil, PixelTrail, ...)
     common/                 small shared pieces (AwsLogo, SplitWords, TransitionLink)
     layout/                 site chrome (Navbar, Footer, PageLayout, PageTransition, ScrollCursor)
     ui/                     shadcn/ui components
   features/                 sections grouped by topic, each with components/ and an index.js
     events/  partners/  team/
-  pages/                    one folder per page (Home/Home.jsx, Home/Home.css, Home/index.js)
+  pages/                    one folder per page (Home/Home.jsx, Home/index.js)
   routes/AppRoutes.jsx      every page and its URL
   hooks/                    shared hooks (useReveal)
   utils/                    helpers (cn, motion, pageReveal)

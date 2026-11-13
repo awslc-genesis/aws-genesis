@@ -4,10 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 
-import CardSwap from '@/components/animations/CardSwap'
 import CircularText from '@/components/animations/CircularText'
 import DarkVeil from '@/components/animations/DarkVeil'
-import VariableProximity from '@/components/animations/VariableProximity'
 import AwsLogo from '@/components/common/AwsLogo'
 import SplitWords from '@/components/common/SplitWords'
 import TransitionLink from '@/components/common/TransitionLink'
@@ -19,8 +17,6 @@ import { TeamSection } from '@/features/team'
 import { isCoarsePointer, PINNED } from '@/utils/motion'
 import { onPageReveal } from '@/utils/pageReveal'
 
-import './Home.css'
-
 // Loaded on demand: its code is only downloaded once the black section nears the screen.
 const GradientASCII = lazy(() => import('@/components/animations/GradientASCII'))
 
@@ -28,15 +24,6 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 const STATEMENT =
   'Genesis is where students of Tarlac State University start building in the cloud, learning AWS side by side and shipping real things together.'
-
-// Cards cycling on the right of the hero (React Bits CardSwap). The photos are
-// placeholders, like the event images; swap in the club's own shots later.
-const HERO_CARDS = [
-  { title: 'Cloud workshops', image: 'https://picsum.photos/seed/genesis-workshop/1280/720' },
-  { title: 'Build nights', image: 'https://picsum.photos/seed/genesis-build/1280/720' },
-  { title: 'Study jams', image: 'https://picsum.photos/seed/genesis-study/1280/720' },
-  { title: 'Demo days', image: 'https://picsum.photos/seed/genesis-demo/1280/720' },
-]
 
 const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
 
@@ -60,7 +47,6 @@ export default function Home() {
   const root = useRef(null)
   const [veilPaused, setVeilPaused] = useState(false)
   const pressStart = useRef(null)
-  const heroTitleRef = useRef(null)
   const coverRef = useRef(null)
   const [showAscii, setShowAscii] = useState(false)
 
@@ -94,8 +80,7 @@ export default function Home() {
         // screen or page curtain has lifted so the visitor sees it play.
         const heroIntro = gsap
           .timeline({ defaults: { ease: 'expo.out' }, paused: true })
-          // VariableProximity also marks its own inner words with data-word; skip those.
-          .from('[data-hero-title] [data-word]:not(.variable-proximity [data-word])', {
+          .from('[data-hero-title] [data-word]', {
             yPercent: 115,
             duration: 1.4,
             stagger: 0.08,
@@ -314,61 +299,13 @@ export default function Home() {
 
         <div
           data-hero-content
-          className="relative flex h-full flex-col justify-end px-5 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-0"
+          className="relative flex h-full flex-col px-5 pt-28 pb-10 sm:px-10 sm:pb-14 lg:justify-end lg:pt-0"
         >
-          {/* Card stack in the empty space of the hero. On phones and tablets the
-              headline, text and buttons sit at the top (just under the navbar)
-              and the stack fills the space below the buttons; on wide screens it
-              sits to the right of the headline instead. */}
-          <div className="relative order-last mt-8 min-h-0 flex-1 lg:order-none lg:absolute lg:top-[13%] lg:right-10 lg:m-0 lg:h-[71%] lg:w-[46%] lg:flex-none">
-            <CardSwap
-              items={HERO_CARDS}
-              // Polaroid sized so the photo is 16:9: 14px side borders around an
-              // 800px-wide image (800 x 450), plus 14px top and the 64px caption.
-              // CardSwap scales the stack down to fit its box, so this sets the
-              // shape and the stack fills the available space.
-              width={828}
-              height={528}
-              delay={4000}
-              // The hero is sticky, so CardSwap always sees itself in view; stop
-              // cycling once the panel covers it, resume on scroll back.
-              autoplay={!veilPaused}
-              cardDistance={0}
-              verticalDistance={70}
-              depth={100}
-              skewAmount={0}
-              cardRadius={0}
-              theme="light"
-              className="card-swap-polaroid"
-            />
-          </div>
-
-          {/* Tight sans set against an italic serif, sharing one size and baseline. */}
-          <h1
-            id="hero-title"
-            ref={heroTitleRef}
-            data-hero-title
-            className="type-display"
-          >
-            {/* "Let's make" is set in Inter, whose letters thicken as the cursor
-                nears (React Bits VariableProximity); the payoff word "history"
-                switches to the italic serif with the orange gradient. Each piece
-                sits in a mask so the intro can raise it into view. The gradient
-                is clipped to the text but only painted inside the word's box, so
-                "history" gets extra bottom and right padding (cancelled by the
-                mask's negative margin) to keep the y's tail coloured. */}
+          <h1 id="hero-title" data-hero-title className="type-display">
             <span className="block">
-              <span className="mr-[0.1em] inline-block overflow-hidden pr-[0.1em] pb-[0.08em] align-bottom">
-                <span data-word className="text-hero-sheen inline-block">
-                  <VariableProximity
-                    label="Let’s make"
-                    fromFontVariationSettings="'wght' 500"
-                    toFontVariationSettings="'wght' 900"
-                    containerRef={heroTitleRef}
-                    radius={100}
-                    falloff="linear"
-                    smoothing={0.2}
-                  />
+              <span className="mr-[0.1em] inline-block overflow-hidden pb-[0.08em] align-bottom">
+                <span data-word className="text-hero-sheen inline-block pr-[0.1em]">
+                  Let’s make
                 </span>
               </span>
             </span>
