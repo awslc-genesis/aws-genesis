@@ -423,7 +423,13 @@ export default function Home() {
         {/* Meet the Team, just before the Become a Member button. */}
         <TeamSection className="mt-[20svh]" />
 
-        <div className="mx-auto mt-14 max-w-4xl pb-8 sm:mt-20">
+        {/* The vision closes the About panel, so it gets room on both sides:
+            space above sets it apart from the team, and a long run of empty
+            paper below lets the black section's glow fade in through open space
+            instead of over the text. On wide screens the panel is held once its
+            bottom reaches the screen's bottom; the smaller bottom space there
+            leaves the vision sitting near the middle of the screen while held. */}
+        <div className="mx-auto mt-[16svh] max-w-4xl pb-[55svh] sm:mt-[24svh] pinned:pb-[22svh]">
           <TransitionLink
             data-member-cta
             to="/contact"
@@ -470,14 +476,20 @@ export default function Home() {
         data-cover
         className="relative z-10 min-h-[200svh] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem] pinned:mt-[70svh]"
       >
-        {/* The glow extends 4rem into the section to hide its top edge. Keep it
-            shorter when the page scrolls freely so the vision stays readable. */}
+        {/* The glow extends 4rem into the section to hide its top edge. It is
+            sized to rise through the empty space left below the vision, so it
+            stays long and soft without darkening the text before the section
+            itself slides over it. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-[34svh] h-[calc(34svh+4rem)] overflow-hidden pinned:-top-[130svh] pinned:h-[calc(130svh+4rem)]"
+          className="pointer-events-none absolute inset-x-0 -top-[65svh] h-[calc(65svh+4rem)] overflow-hidden pinned:-top-[90svh] pinned:h-[calc(90svh+4rem)]"
         >
           <div data-cover-glow className="absolute inset-0 origin-bottom will-change-transform">
-            <div className="cover-glow-fill absolute inset-0" />
+            {/* The gradient ends at the section's top edge (4rem up) and the
+                overlap below it is solid ink, so the glow is fully black where it
+                meets the section even when the band is short on phones. */}
+            <div className="cover-glow-fill absolute inset-x-0 top-0 bottom-16" />
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-ink" />
           </div>
         </div>
         {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
