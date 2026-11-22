@@ -50,7 +50,7 @@ const TEAM = [
     role: 'CTO',
     program: 'BS Information Technology',
     quote:
-      'From study jams to Cloud Day, every event is a chance to meet people who build. We bring in speakers from the wider AWS community so members see where this can take them.',
+      'This isn’t why I came here, thinking I have all the answers. This is my effort at learning alongside people with just as much curiosity as I. As your Tech Lead, it’s important to me that we foster a community of people where no one is afraid to question or break something or even start from zero, because this is where everyone starts from. Our success is shown by every single piece of code and every projects we create as a team.',
   },
 ]
 
