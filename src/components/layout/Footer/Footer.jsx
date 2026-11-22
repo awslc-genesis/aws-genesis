@@ -98,7 +98,7 @@ export default function Footer({ tone = 'light' }) {
               reveal="letter"
               dashLength={4}
               dashGap={2}
-              specks={15}
+              specks={0}
               intro="none"
               introDuration={2}
               clickKick

@@ -29,7 +29,7 @@ const TEAM = [
     role: 'Executive Secretary',
     program: 'BS Information Technology',
     quote:
-      'My favourite part is pairing new members with mentors. Most of us walked in not knowing what a VPC was. A semester later the same people are helping the next batch get unstuck.',
+      "Technology continues to challenge me to explore unfamiliar grounds, but I’ve learned that growth comes in many forms, and there’s always room to discover new things about ourselves. I hope to contribute to building not just an organization, but a community where people with different strengths and levels of experience can find their place, share what they know, and grow together. After all, meaningful things are built not only by what we know, but by what we’re willing to bring to the table.",
   },
   {
     name: 'John Michael Sapad ',
@@ -49,6 +49,7 @@ const TEAM = [
     name: 'Elton John Lennon',
     role: 'CTO',
     program: 'BS Information Technology',
+    photoFile: 'BUNDUKIN-CTO.jpg',
     quote:
       'This isn’t why I came here, thinking I have all the answers. This is my effort at learning alongside people with just as much curiosity as I. As your Tech Lead, it’s important to me that we foster a community of people where no one is afraid to question or break something or even start from zero, because this is where everyone starts from. Our success is shown by every single piece of code and every projects we create as a team.',
   },
