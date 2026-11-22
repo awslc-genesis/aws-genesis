@@ -25,6 +25,10 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 const STATEMENT =
   'Genesis is where students of Tarlac State University start building in the cloud, learning AWS side by side and shipping real things together.'
 
+const VISION_STATEMENT =
+  'Genesis will not only be a university organization, it will soon become an independent initiative that will ' +
+  "create bridges for the community and reach beyond the typical. Stay tuned and let's make history."
+
 const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
 
 // Draft copy for the three points under the AWS logo; replace with the club's own wording.
@@ -139,17 +143,19 @@ export default function Home() {
           },
         )
 
-        // Statement words brighten one by one while it scrolls through the viewport.
-        gsap.fromTo(
-          '[data-statement] [data-word]',
-          { opacity: 0.14 },
-          {
-            opacity: 1,
-            ease: 'none',
-            stagger: 0.1,
-            scrollTrigger: { trigger: '[data-statement]', start: 'top 80%', end: 'bottom 45%', scrub: true },
-          },
-        )
+        // Each statement brightens word by word as it scrolls into view.
+        root.current.querySelectorAll('[data-statement]').forEach(statement => {
+          gsap.fromTo(
+            statement.querySelectorAll('[data-word]'),
+            { opacity: 0.14 },
+            {
+              opacity: 1,
+              ease: 'none',
+              stagger: 0.1,
+              scrollTrigger: { trigger: statement, start: 'top 80%', end: 'bottom 45%', scrub: true },
+            },
+          )
+        })
 
         // When the About split reaches the screen, the headline lines rise out
         // of their masks; the left column then sticks.
@@ -185,7 +191,7 @@ export default function Home() {
             .from(feature.querySelector('[data-feature-body]'), { autoAlpha: 0, y: 24, duration: 1 }, 0.3)
         })
 
-        // A little further down, the membership button rises in under the logo.
+        // The membership button rises in after the team section.
         gsap.from('[data-member-cta]', {
           y: 40,
           autoAlpha: 0,
@@ -237,9 +243,8 @@ export default function Home() {
 
       // Hold the About panel in place once its bottom reaches the bottom of the
       // screen, so the next section scrolls up over it instead of pushing it away.
-      // The black section sits a gap below the panel (its top margin), so the
-      // panel first rests on the Become a Member button for that much scrolling
-      // before the black section starts sliding over it.
+      // The black section's top margin leaves time to read the vision before
+      // the black section starts sliding over it.
       // Only on wide screens with a mouse or trackpad: on phones and tablets the
       // panel just scrolls away naturally, with nothing held in place.
       const coverGap = () => parseFloat(getComputedStyle(coverRef.current).marginTop) || 0
@@ -418,11 +423,7 @@ export default function Home() {
         {/* Meet the Team, just before the Become a Member button. */}
         <TeamSection className="mt-[20svh]" />
 
-        {/* The button gets the whole last screen of the panel to itself, centred
-            in it. The negative bottom margin cancels the panel's bottom padding,
-            so this block ends exactly at the panel's bottom edge; when the panel
-            is held in place there, the button sits in the middle of the screen. */}
-        <div className="relative -mx-5 -mb-24 flex min-h-svh flex-col items-center justify-center overflow-hidden sm:-mx-10 sm:-mb-36">
+        <div className="mx-auto mt-14 max-w-4xl pb-8 sm:mt-20">
           <TransitionLink
             data-member-cta
             to="/contact"
@@ -438,7 +439,7 @@ export default function Home() {
                 event.preventDefault()
               }
             }}
-            className="relative z-10 block rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
+            className="relative z-10 mx-auto block w-fit rounded-full text-ink focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-ink"
           >
             <CircularText
               text="* BECOME * A * MEMBER "
@@ -454,8 +455,11 @@ export default function Home() {
               <ArrowUpRight className="size-9" strokeWidth={1.5} aria-hidden="true" />
             </CircularText>
           </TransitionLink>
-        </div>
 
+          <p data-statement className="type-statement mt-10 sm:mt-14">
+            <SplitWords text={VISION_STATEMENT} />
+          </p>
+        </div>
       </section>
 
       {/* Black section after About. It slides up over the About panel (which is
@@ -466,12 +470,11 @@ export default function Home() {
         data-cover
         className="relative z-10 min-h-[200svh] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem] pinned:mt-[70svh]"
       >
-        {/* The glow band: sits above the section's top edge and reaches 4rem
-            into it (covered there by the ASCII effect, which is drawn after it),
-            so no seam can show. */}
+        {/* The glow extends 4rem into the section to hide its top edge. Keep it
+            shorter when the page scrolls freely so the vision stays readable. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-[130svh] h-[calc(130svh+4rem)] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 -top-[34svh] h-[calc(34svh+4rem)] overflow-hidden pinned:-top-[130svh] pinned:h-[calc(130svh+4rem)]"
         >
           <div data-cover-glow className="absolute inset-0 origin-bottom will-change-transform">
             <div className="cover-glow-fill absolute inset-0" />

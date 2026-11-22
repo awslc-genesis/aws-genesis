@@ -7,35 +7,48 @@ import { cn } from '@/utils/cn'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-// Placeholder team: replace the names, roles, programs and quotes with the
-// club's real officers. Add `photo` (an imported image or a URL, ideally a
-// square portrait) to show it instead of the initials tile.
+const leadPhotos = import.meta.glob('/src/assets/images/leads/*.{avif,jpeg,jpg,png,webp}', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+})
+
+// To add a portrait, put the image in src/assets/images/leads and set the
+// member's photoFile to its exact filename. Entries without a match show initials.
 const TEAM = [
   {
-    name: 'Alex Santos',
-    role: 'President',
-    program: 'BS Computer Science',
+    name: 'Kacey Francisco',
+    role: 'CEO / Lead',
+    program: 'BS Electronics Engineering',
+    photoFile: 'FRANCISCO-CEO.jpg',
     quote:
-      'I started Genesis because I wanted a place where TSU students could learn AWS together and ship real projects, not just pass exams. Every week someone deploys something for the first time, and that never gets old.',
+      "AWSLC - Genesis began as a dream during Senior High School, making it was far from easy. There were doubts, hurdles, and moments when I felt like I should wait until next year. However, building something that will bring opportunities and open doors for people cannot wait. So, do it even when your hand shakes and even when your mind races— for you, for the people, and for the community. Here's to growth. 🍀",
   },
   {
-    name: 'Bea Reyes',
-    role: 'Vice President',
+    name: 'Jasmine Madronio',
+    role: 'Executive Secretary',
     program: 'BS Information Technology',
     quote:
       'My favourite part is pairing new members with mentors. Most of us walked in not knowing what a VPC was. A semester later the same people are helping the next batch get unstuck.',
   },
   {
-    name: 'Carlo Mendoza',
-    role: 'Technical Lead',
-    program: 'BS Computer Engineering',
+    name: 'John Michael Sapad ',
+    role: 'COO',
+    program: 'BS Information Technology',
     quote:
-      'Our workshops are hands-on from the first minute. You leave with something running in the cloud, a repo you can show, and the confidence to break it and fix it again on your own.',
+      'As the Chief Operations Officer I am committed to maintaining teamwork, communication and organization within our team. I believe that a good leader listens, supports their members, and ensures that everyone works together toward our common goals. I am open to suggestions, willing to learn, and ready to help whenever needed to make our organization better.',
   },
   {
-    name: 'Dana Cruz',
-    role: 'Events Lead',
-    program: 'BS Information Systems',
+    name: 'Mic Andre Gawat',
+    role: 'CFO',
+    program: 'BS Information Technology',
+    quote:
+      'From study jams to Cloud Day, every event is a chance to meet people who build. We bring in speakers from the wider AWS community so members see where this can take them.',
+  },
+  {
+    name: 'Elton John Lennon',
+    role: 'CTO',
+    program: 'BS Information Technology',
     quote:
       'From study jams to Cloud Day, every event is a chance to meet people who build. We bring in speakers from the wider AWS community so members see where this can take them.',
   },
@@ -54,12 +67,14 @@ const initials = name =>
 // On wide screens the list is indented a quarter of the width, like the
 // reference, with the quote taking the larger share of each row.
 function MemberRow({ member }) {
+  const photo = leadPhotos[`/src/assets/images/leads/${member.photoFile}`]
+
   return (
     <li data-member className="grid gap-8 border-t border-ink/10 py-14 sm:py-20 lg:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] lg:gap-16">
       <div>
         <div className="relative size-44 overflow-hidden bg-ink sm:size-52">
-          {member.photo ? (
-            <img src={member.photo} alt="" className="size-full object-cover" />
+          {photo ? (
+            <img src={photo} alt="" loading="lazy" className="size-full object-cover" />
           ) : (
             // Stand-in until a photo is added: initials in the orange serif
             // over a warm glow, the same palette as the rest of the page.
