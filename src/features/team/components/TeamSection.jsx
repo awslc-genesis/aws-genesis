@@ -43,7 +43,7 @@ const TEAM = [
     role: 'CFO',
     program: 'BS Information Technology',
     quote:
-      'From study jams to Cloud Day, every event is a chance to meet people who build. We bring in speakers from the wider AWS community so members see where this can take them.',
+      'Managing numbers by day and exploring cybersecurity by night. Driven by hard work and goals; down to always wanting to learn new things. Come and join me achieve my dream, one step at a time.',
   },
   {
     name: 'Elton John Lennon',

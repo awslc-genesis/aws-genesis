@@ -10,33 +10,26 @@ import { cn } from '@/utils/cn'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-// Placeholder events with stock photos (picsum.photos, fixed per seed so they
-// don't change between visits). Replace with the club's real events, photos,
-// summaries and links, newest first.
+const eventPhotos = import.meta.glob('/src/assets/images/events/*.{avif,jpeg,jpg,png,webp}', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+})
+
+// Placeholder events; replace with the club's real events, summaries and links,
+// newest first. To add a photo, put the image in src/assets/images/events and
+// set the event's photoFile to its exact filename. Entries without a match show
+// a stock photo (picsum.photos, fixed per seed so it doesn't change between visits).
 const EVENTS = [
   {
-    title: 'AWS Cloud Day 2026',
-    type: 'Conference',
-    date: 'Nov 5, 2026',
-    place: 'TSU Main Campus',
-    seed: 'genesis-cloud-day',
-    summary: 'A full day of talks and demos on how students and startups build on AWS, closing with a community mixer.',
-  },
-  {
-    title: 'Serverless 101 Workshop',
-    type: 'Workshop',
-    date: 'Oct 24, 2026',
-    place: 'CCS Laboratory',
-    seed: 'genesis-serverless',
-    summary: 'Members built and deployed their first Lambda function behind API Gateway, start to finish in one afternoon.',
-  },
-  {
-    title: 'Build Your First Website',
-    type: 'Hands-on',
-    date: 'Oct 10, 2026',
-    place: 'Online',
-    seed: 'genesis-website',
-    summary: 'A beginner-friendly session on hosting a static website with Amazon S3 and CloudFront.',
+    title: 'tba', //'AWS Cloud Day 2026'
+    type: 'tba', // 'Conference'
+    date: 'tba', // 'Nov 5, 2026'
+    place: 'tba', // 'TSU Main Campus'
+    photoFile: '', // 'cloud-day.jpg'
+    seed: 'tba', // 'genesis-cloud-day'
+    summary: 'tba', // 'A full day of talks and demos on how students and startups build on AWS, closing with a community mixer.'
+    photoFile: 'tbaEvent.png',
   },
 ]
 
@@ -44,6 +37,7 @@ function EventCard({ event, index }) {
   // Cards alternate a little above and below the row's center for an editorial rhythm.
   const raised = index % 2 === 1
   const number = String(index + 1).padStart(2, '0')
+  const photo = eventPhotos[`/src/assets/images/events/${event.photoFile}`]
 
   return (
     <li
@@ -62,7 +56,7 @@ function EventCard({ event, index }) {
       <div className="aspect-[3/2]">
         <TiltedCard
           className="event-tilt"
-          imageSrc={`https://picsum.photos/seed/${event.seed}/1200/800`}
+          imageSrc={photo ?? `https://picsum.photos/seed/${event.seed}/1200/800`}
           altText={event.title}
           captionText={event.title}
           containerHeight="100%"

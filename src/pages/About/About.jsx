@@ -21,10 +21,10 @@ const PILLARS = [
 ]
 
 const STATS = [
-  { value: '120+', label: 'Members' },
-  { value: '30+', label: 'Workshops run' },
-  { value: '15', label: 'Events this year' },
-  { value: '40+', label: 'Projects shipped' },
+  { value: '18', label: 'Members' },
+  { value: 'soon', label: 'Workshops run' },
+  { value: 'soon', label: 'Events this year' },
+  { value: 'soon', label: 'Projects shipped' },
 ]
 
 export default function About() {

@@ -428,8 +428,10 @@ export default function Home() {
             paper below lets the black section's glow fade in through open space
             instead of over the text. On wide screens the panel is held once its
             bottom reaches the screen's bottom; the smaller bottom space there
-            leaves the vision sitting near the middle of the screen while held. */}
-        <div className="mx-auto mt-[16svh] max-w-4xl pb-[55svh] sm:mt-[24svh] pinned:pb-[22svh]">
+            leaves the vision sitting near the middle of the screen while held.
+            The button sits midway between the team's closing line and the
+            vision, so the space above and below it must match. */}
+        <div className="mx-auto mt-[calc(8svh+1.25rem)] max-w-4xl pb-[55svh] sm:mt-[calc(12svh+1.75rem)] pinned:pb-[22svh]">
           <TransitionLink
             data-member-cta
             to="/contact"
@@ -462,7 +464,7 @@ export default function Home() {
             </CircularText>
           </TransitionLink>
 
-          <p data-statement className="type-statement mt-10 sm:mt-14">
+          <p data-statement className="type-statement mt-[calc(8svh+1.25rem)] sm:mt-[calc(12svh+1.75rem)]">
             <SplitWords text={VISION_STATEMENT} />
           </p>
         </div>
