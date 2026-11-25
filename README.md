@@ -45,7 +45,7 @@ src/
     layout/                 site chrome (Navbar, Footer, PageLayout, PageTransition, ScrollCursor)
     ui/                     shadcn/ui components
   features/                 sections grouped by topic, each with components/ and an index.js
-    events/  partners/  team/
+    events/  join/  partners/  team/
   pages/                    one folder per page (Home/Home.jsx, Home/index.js)
   routes/AppRoutes.jsx      every page and its URL
   hooks/                    shared hooks (useReveal)
@@ -60,6 +60,7 @@ Each component lives in its own folder with its CSS beside it and an `index.js`
 that re-exports it, so imports stay short: `import Navbar from '@/components/layout/Navbar'`.
 
 - Import from `src` with the `@/` alias: `import { Button } from '@/components/ui/button'`
+- The Join form saves to Google Sheets; set it up with [integrations/google-sheets](integrations/google-sheets/README.md)
 - Add a page: create `src/pages/About/About.jsx` and `src/pages/About/index.js`, then add `<Route path="/about" element={<About />} />` in `src/routes/AppRoutes.jsx`
 - Add a shadcn component: `npx shadcn@latest add card` (it lands in `src/components/ui`)
 - Add a React Bits component: `npx shadcn@latest add @react-bits/<Name>-JS-CSS` lands it in `src/components`; move it into `src/components/animations/<Name>/` with an `index.js`

@@ -328,7 +328,7 @@ export default function Home() {
               Start with the basics, experiment with cloud services, and work with a team to get your ideas online.
             </p>
             <div className="mt-5 flex flex-wrap gap-2.5 lg:mt-0 lg:shrink-0">
-              <TransitionLink to="/contact" className={`${HERO_LINK_CLASS} bg-genesis hover:brightness-110`}>
+              <TransitionLink to="/join" className={`${HERO_LINK_CLASS} bg-genesis hover:brightness-110`}>
                 Join Us <ArrowRight className="size-4" aria-hidden="true" />
               </TransitionLink>
               <a href="#events" className={`${HERO_LINK_CLASS} bg-white hover:bg-white/85`}>
@@ -434,7 +434,7 @@ export default function Home() {
         <div className="mx-auto mt-[calc(8svh+1.25rem)] max-w-4xl pb-[55svh] sm:mt-[calc(12svh+1.75rem)] pinned:pb-[22svh]">
           <TransitionLink
             data-member-cta
-            to="/contact"
+            to="/join"
             aria-label="Become a member"
             onPointerDown={event => {
               pressStart.current = { x: event.clientX, y: event.clientY }

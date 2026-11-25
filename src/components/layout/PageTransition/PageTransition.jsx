@@ -52,7 +52,9 @@ export default function PageTransition({ children }) {
 
       markCovered()
       navigate(to)
-      window.scrollTo(0, 0)
+      // Instant, because the site's smooth scrolling would be cut short by the
+      // refresh below and leave the new page partway down.
+      window.scrollTo({ top: 0, behavior: 'instant' })
       await nextPaint()
       ScrollTrigger.refresh()
       markRevealed()
