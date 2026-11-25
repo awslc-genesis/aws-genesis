@@ -26,10 +26,9 @@ const EVENTS = [
     type: 'tba', // 'Conference'
     date: 'tba', // 'Nov 5, 2026'
     place: 'tba', // 'TSU Main Campus'
-    photoFile: '', // 'cloud-day.jpg'
     seed: 'tba', // 'genesis-cloud-day'
     summary: 'tba', // 'A full day of talks and demos on how students and startups build on AWS, closing with a community mixer.'
-    photoFile: 'tbaEvent.png',
+    photoFile: 'tbaEvent.png', // 'cloud-day.jpg'
   },
 ]
 
@@ -78,9 +77,9 @@ function EventCard({ event, index }) {
             </div>
           }
         >
-          <TiltedCardLayer depth={30}>
-            {/* Darkens the bottom of the photo so the title stays readable. */}
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/70 to-transparent" />
+          {/* Blended so the title inverts against the photo: dark on light
+              photos, white on dark ones. */}
+          <TiltedCardLayer depth={30} className="mix-blend-difference">
             <h3 className="type-h3 absolute right-6 bottom-5 left-6 text-white sm:bottom-6 sm:left-7">
               {event.title}
             </h3>
