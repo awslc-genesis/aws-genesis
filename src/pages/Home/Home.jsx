@@ -1,11 +1,11 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 
 import CircularText from '@/components/animations/CircularText'
-import DarkVeil from '@/components/animations/DarkVeil'
+import DitherClouds from '@/components/animations/DitherClouds'
 import AwsLogo from '@/components/common/AwsLogo'
 import SplitWords from '@/components/common/SplitWords'
 import TransitionLink from '@/components/common/TransitionLink'
@@ -14,11 +14,8 @@ import Navbar from '@/components/layout/Navbar'
 import { EventsSection } from '@/features/events'
 import { PartnersMarquee } from '@/features/partners'
 import { TeamSection } from '@/features/team'
-import { isCoarsePointer, PINNED } from '@/utils/motion'
+import { isCoarsePointer } from '@/utils/motion'
 import { onPageReveal } from '@/utils/pageReveal'
-
-// Loaded on demand: its code is only downloaded once the black section nears the screen.
-const GradientASCII = lazy(() => import('@/components/animations/GradientASCII'))
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -51,29 +48,6 @@ export default function Home() {
   const root = useRef(null)
   const [veilPaused, setVeilPaused] = useState(false)
   const pressStart = useRef(null)
-  const coverRef = useRef(null)
-  const [showAscii, setShowAscii] = useState(false)
-
-  // Mount the ASCII background only when the black section is about to scroll
-  // into view (within a quarter screen of the bottom edge), so its WebGL setup
-  // and intro animation happen when the visitor actually gets there. Scrolling
-  // back up until the section is below the screen again unmounts it, which
-  // resets the intro so it plays again the next time you scroll down to it.
-  useEffect(() => {
-    const section = coverRef.current
-    if (!section) return undefined
-    const observer = new IntersectionObserver(
-      entries => {
-        const entry = entries[entries.length - 1]
-        if (entry.isIntersecting) setShowAscii(true)
-        // Out of range and below the screen: the visitor scrolled back up.
-        else if (entry.boundingClientRect.top > 0) setShowAscii(false)
-      },
-      { rootMargin: '0px 0px 25% 0px' },
-    )
-    observer.observe(section)
-    return () => observer.disconnect()
-  }, [])
 
   useGSAP(
     () => {
@@ -207,55 +181,7 @@ export default function Home() {
           scrollTrigger: { trigger: '[data-sponsor]', start: 'top 95%', end: 'top 60%', scrub: 0.6 },
         })
 
-        // As the black section comes up under About, a black-and-white glow
-        // grows up from its edge: the same curved, rising gradient as the hero
-        // hand-off, fading the cream page through soft greys into black. It is
-        // anchored to the black section and only grows (never fades), so its
-        // black end always meets the section with no line. It starts while the
-        // section is still COVER_LEAD screens below the bottom of the screen:
-        // at that moment it is scaled so its top edge sits exactly at the
-        // bottom of the screen, so it begins rising into view right away.
-        const COVER_LEAD = 0.6
-        const coverGlow = document.querySelector('[data-cover-glow]')
-        const coverGlowStart = () => {
-          const box = coverGlow.parentElement.getBoundingClientRect()
-          const overlap = box.bottom - coverRef.current.getBoundingClientRect().top
-          return Math.min(1, Math.max(0, (COVER_LEAD * window.innerHeight + overlap) / box.height))
-        }
-        gsap.fromTo(
-          coverGlow,
-          { scaleY: coverGlowStart },
-          {
-            scaleY: 1,
-            ease: 'power1.inOut',
-            scrollTrigger: {
-              trigger: '[data-cover]',
-              start: `top ${100 + COVER_LEAD * 100}%`,
-              end: 'top 35%',
-              scrub: 2.2,
-              invalidateOnRefresh: true,
-            },
-          },
-        )
-
         return cancelHeroIntro
-      })
-
-      // Hold the About panel in place once its bottom reaches the bottom of the
-      // screen, so the next section scrolls up over it instead of pushing it away.
-      // The black section's top margin leaves time to read the vision before
-      // the black section starts sliding over it.
-      // Only on wide screens with a mouse or trackpad: on phones and tablets the
-      // panel just scrolls away naturally, with nothing held in place.
-      const coverGap = () => parseFloat(getComputedStyle(coverRef.current).marginTop) || 0
-      gsap.matchMedia().add(PINNED, () => {
-        ScrollTrigger.create({
-          trigger: '[data-panel]',
-          start: 'bottom bottom',
-          end: () => `+=${window.innerHeight + coverGap()}`,
-          pin: true,
-          pinSpacing: false,
-        })
       })
 
       // Stop the shader animating once the panel fully covers it.
@@ -270,9 +196,8 @@ export default function Home() {
       document.fonts?.ready.then(() => ScrollTrigger.refresh())
 
       // Re-measure whenever the page's height changes after load (images or
-      // fonts arriving late, a section changing size), so the About panel's
-      // hold and the black section's slide-over start at the right place
-      // instead of positions measured for the old layout.
+      // fonts arriving late, a section changing size), so scroll animations
+      // start at the right place instead of positions measured for the old layout.
       let lastHeight = root.current.offsetHeight
       let pending = 0
       const heightWatcher = new ResizeObserver(() => {
@@ -298,7 +223,7 @@ export default function Home() {
       {/* Hero stays pinned (CSS sticky) while the next section slides over it. */}
       <section id="home" className="sticky top-0 h-svh overflow-hidden text-white" aria-labelledby="hero-title">
         <div data-hero-veil className="absolute inset-0 origin-top">
-          <DarkVeil color="#6e2406" paused={veilPaused} dpr={isCoarsePointer() ? 1 : undefined} />
+          <DitherClouds paused={veilPaused} cellSize={isCoarsePointer() ? 2 : 3} />
         </div>
 
 
@@ -424,14 +349,11 @@ export default function Home() {
         <TeamSection className="mt-[20svh]" />
 
         {/* The vision closes the About panel, so it gets room on both sides:
-            space above sets it apart from the team, and a long run of empty
-            paper below lets the black section's glow fade in through open space
-            instead of over the text. On wide screens the panel is held once its
-            bottom reaches the screen's bottom; the smaller bottom space there
-            leaves the vision sitting near the middle of the screen while held.
+            space above sets it apart from the team, and empty paper below sets
+            it apart from Partners.
             The button sits midway between the team's closing line and the
             vision, so the space above and below it must match. */}
-        <div className="mx-auto mt-[calc(8svh+1.25rem)] max-w-4xl pb-[55svh] sm:mt-[calc(12svh+1.75rem)] pinned:pb-[22svh]">
+        <div className="mx-auto mt-[calc(8svh+1.25rem)] max-w-4xl pb-[22svh] sm:mt-[calc(12svh+1.75rem)]">
           <TransitionLink
             data-member-cta
             to="/join"
@@ -470,76 +392,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Black section after About. It slides up over the About panel (which is
-          pinned once its end is reached on desktop), led by a black-and-white
-          glow that grows up from its top edge into the cream page. */}
-      <section
-        ref={coverRef}
-        data-cover
-        className="relative z-10 min-h-[200svh] rounded-b-[2.5rem] bg-ink sm:rounded-b-[4rem] pinned:mt-[70svh]"
-      >
-        {/* The glow extends 4rem into the section to hide its top edge. It is
-            sized to rise through the empty space left below the vision, so it
-            stays long and soft without darkening the text before the section
-            itself slides over it. */}
+      {/* Partners, then the sponsor. Overlaps the panel by a pixel so no seam shows. */}
+      <section className="relative z-10 -mt-px bg-paper text-ink">
+        {/* Partners, set on the same plain paper as the rest of the page, with
+            logos in dark ink. */}
         <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-[65svh] h-[calc(65svh+4rem)] overflow-hidden pinned:-top-[90svh] pinned:h-[calc(90svh+4rem)]"
+          aria-labelledby="partners-title"
+          role="region"
+          className="relative flex min-h-[80svh] flex-col justify-center gap-[12svh] py-24 sm:py-32"
         >
-          <div data-cover-glow className="absolute inset-0 origin-bottom will-change-transform">
-            {/* The gradient ends at the section's top edge (4rem up) and the
-                overlap below it is solid ink, so the glow is fully black where it
-                meets the section even when the band is short on phones. */}
-            <div className="cover-glow-fill absolute inset-x-0 top-0 bottom-16" />
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-ink" />
-          </div>
-        </div>
-        {/* Animated ASCII gradient (React Bits GradientASCII), kept one screen tall
-            at the top of the section so its shape doesn't stretch as the section grows. */}
-        {/* The mask fades its bottom edge into the section's black, so there's no hard line. */}
-        <div className="absolute inset-x-0 top-[30svh] h-svh overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_18%,#000_55%,transparent)]">
-          {showAscii && (
-            <Suspense fallback={null}>
-              <GradientASCII
-                colors={['#f97316', '#f9bf16', '#f0fdfa']}
-                shape="pinch"
-                characters=" .:-=+*#%@"
-                cellSize={16}
-                density={0.8}
-                fontFamily='"Inter", sans-serif'
-                dpr={isCoarsePointer() ? 1 : undefined}
-              />
-            </Suspense>
-          )}
-        </div>
-
-        {/* Partners, over the ASCII effect: the effect starts 30svh down (below
-            the black-and-white glow that leads into this section) with its top
-            and bottom faded out; the title sits just above its bright middle
-            band and the logo strip runs through that band (80svh down), so both
-            fit on screen together. Logos are in dark ink to read on the light. */}
-        <div aria-labelledby="partners-title" role="region" className="relative h-[130svh]">
-          <div className="flex items-end justify-between gap-6 px-5 pt-[48svh] sm:px-10 lg:px-16">
-            <h2 id="partners-title" className="type-h2 text-white">
-              Our{' '}
-              <span className="text-genesis-gradient type-accent">
-                Partners
-              </span>
+          <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
+            <h2 id="partners-title" className="type-h2">
+              Our <span className="text-genesis-gradient type-accent">Partners</span>
             </h2>
-            <p className="type-body hidden max-w-[32ch] pb-2 text-white/70 sm:block">
+            <p className="type-body hidden max-w-[32ch] pb-2 text-ink/75 sm:block">
               The companies and communities helping Genesis bring the cloud to campus.
             </p>
           </div>
 
-          <div className="absolute inset-x-0 top-[80svh] -translate-y-1/2">
-            <PartnersMarquee tone="dark" />
-          </div>
+          <PartnersMarquee tone="dark" />
         </div>
 
-        {/* The rest of the section sits on the black below the effect, and the
-            section grows if the content needs more room. */}
         <div className="relative pb-24 sm:pb-36">
-          {/* Principal sponsor, set open on the black like the rest of the page:
+          {/* Principal sponsor, set open on the paper like the rest of the page:
               a hairline and label, the sponsor's logo large on the left, and a
               statement and link on the right. AWS is a placeholder; swap the
               logo, copy and link for the real sponsor. */}
@@ -547,18 +422,18 @@ export default function Home() {
             data-sponsor
             role="region"
             aria-labelledby="sponsor-title"
-            className="mt-28 px-5 text-white sm:mt-40 sm:px-10 lg:px-16"
+            className="mt-28 px-5 sm:mt-40 sm:px-10 lg:px-16"
           >
-            <div className="flex items-center justify-between gap-6 border-t border-white/10 pt-6">
-              <p id="sponsor-title" className="type-label text-white/55">
+            <div className="flex items-center justify-between gap-6 border-t border-ink/10 pt-6">
+              <p id="sponsor-title" className="type-label text-ink/55">
                 Principal Sponsor
               </p>
-              <p className="type-label text-white/55">No.01</p>
+              <p className="type-label text-ink/55">No.01</p>
             </div>
 
             <div className="mt-16 grid items-center gap-14 sm:mt-24 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
               <div className="flex justify-center">
-                <AwsLogo title="Amazon Web Services" className="h-auto w-[min(70vw,30rem)]" />
+                <AwsLogo title="Amazon Web Services" className="h-auto w-[min(70vw,30rem)] text-[#232f3e]" />
               </div>
 
               <div>
@@ -568,7 +443,7 @@ export default function Home() {
                     started it all
                   </span>
                 </p>
-                <p className="type-body mt-6 max-w-[44ch] text-white/60">
+                <p className="type-body mt-6 max-w-[44ch] text-ink/60">
                   Amazon Web Services powers Genesis with credits, training and mentorship, so every member can build
                   on real cloud infrastructure.
                 </p>
@@ -576,9 +451,9 @@ export default function Home() {
                   href="https://aws.amazon.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="type-body group mt-10 inline-flex items-center gap-3 rounded-sm text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+                  className="type-body group mt-10 inline-flex items-center gap-3 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                 >
-                  <span className="border-b border-white/30 pb-1 transition-colors group-hover:border-white">
+                  <span className="border-b border-ink/30 pb-1 transition-colors group-hover:border-ink">
                     Visit Amazon Web Services
                   </span>
                   <ArrowUpRight

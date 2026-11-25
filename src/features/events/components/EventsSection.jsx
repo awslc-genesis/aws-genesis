@@ -66,7 +66,7 @@ function EventCard({ event, index }) {
           rotateAmplitude={12}
           scaleOnHover={1.05}
           glare={0.5}
-          shadow={0.5}
+          shadow={0.2}
           backContent={
             <div className="flex size-full flex-col justify-between bg-ink p-6 text-paper sm:p-8">
               <p className="type-label text-paper/55">
