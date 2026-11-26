@@ -392,8 +392,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Partners, then the sponsor. Overlaps the panel by a pixel so no seam shows. */}
-      <section className="relative z-10 -mt-px bg-paper text-ink">
+      {/* Partners, then the sponsor. Overlaps the panel by a pixel so no seam
+          shows. Its rounded bottom tucks over the dark footer, as on the inner pages. */}
+      <section className="relative z-10 -mt-px rounded-b-[2.5rem] bg-paper text-ink sm:rounded-b-[4rem]">
         {/* Partners, set on the same plain paper as the rest of the page, with
             logos in dark ink. */}
         <div
@@ -468,7 +469,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer />
+      <Footer tone="dark" />
     </div>
   )
 }
