@@ -1,0 +1,444 @@
+/* The application as a sheet of paper with a ticket stub at the foot, joined by a
+   perforated seam. The stub fills in as you write, and tears off as your
+   receipt once the application is sent. */
+
+/* A4: 210 × 297 mm, stub included, like a form with a tear-off slip at the
+   bottom. On narrow screens the content is taller than an A4 page that wide, so
+   the sheet simply grows to fit. */
+.paper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 210mm;
+  /* Centered in its column, so on wide screens it sits nearer the middle. */
+  margin-inline: auto;
+  aspect-ratio: 210 / 297;
+  /* Real shadow around the cut shape (notches included). */
+  filter: drop-shadow(0 1px 1px rgb(14 12 17 / 0.08)) drop-shadow(0 18px 40px rgb(14 12 17 / 0.1));
+}
+
+/* Two fold creases, as if the letter was folded in three for an envelope and
+   opened out again: a soft shadow into each fold, a bright ridge along it. */
+.paper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      #0000 calc(33.33% - 22px),
+      rgb(14 12 17 / 0.035) calc(33.33% - 1px),
+      rgb(255 255 255 / 0.85) 33.33%,
+      rgb(14 12 17 / 0.06) calc(33.33% + 1px),
+      #0000 calc(33.33% + 16px)
+    ),
+    linear-gradient(
+      to bottom,
+      #0000 calc(66.67% - 16px),
+      rgb(14 12 17 / 0.06) calc(66.67% - 1px),
+      rgb(255 255 255 / 0.85) 66.67%,
+      rgb(14 12 17 / 0.035) calc(66.67% + 1px),
+      #0000 calc(66.67% + 22px)
+    );
+}
+
+/* On desktop the sheet lies a little crooked on the desk, and straightens
+   when you pick it up to write. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .paper {
+    rotate: -1deg;
+    transition: rotate 0.6s var(--ease-out);
+  }
+  .paper:hover,
+  .paper:focus-within {
+    rotate: 0deg;
+  }
+}
+
+/* ───────── Stub ───────── */
+.paper-stub {
+  position: relative;
+  padding: clamp(20px, 3vw, 26px) clamp(20px, 3.4vw, 32px);
+  border-radius: 0 0 3px 3px;
+  background: var(--color-ink);
+  color: #fff;
+  /* The top edge is the stub's half of the perforation: a half-circle notch at
+     each corner, and a row of half-holes between them (lined up with the
+     sheet's half in .paper-perf). The same edge stays once it's torn off, so
+     the receipt is plainly the piece that came off this sheet. */
+  -webkit-mask:
+    radial-gradient(circle 11px at left top, #0000 10.5px, #000 11px),
+    radial-gradient(circle 11px at right top, #0000 10.5px, #000 11px),
+    radial-gradient(circle 2px at 5px 0, #0000 1.6px, #000 2px) 18px 0 / 10px 100% repeat-x;
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle 11px at left top, #0000 10.5px, #000 11px),
+    radial-gradient(circle 11px at right top, #0000 10.5px, #000 11px),
+    radial-gradient(circle 2px at 5px 0, #0000 1.6px, #000 2px) 18px 0 / 10px 100% repeat-x;
+  mask-composite: intersect;
+}
+
+.paper-barcode {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 34px;
+  color: rgb(255 255 255 / 0.7);
+}
+.paper-barcode span {
+  width: var(--w);
+  background: currentColor;
+  border-radius: 0.5px;
+}
+
+/* The perforation: a row of punched holes along the seam, between the notches. */
+.paper-perf {
+  position: relative;
+  z-index: 1;
+  height: 0;
+}
+.paper-perf::before {
+  content: '';
+  position: absolute;
+  inset: -2px 18px auto;
+  height: 4px;
+  background: radial-gradient(circle, var(--color-paper) 1.6px, #0000 2px) 0 50% / 10px 4px repeat-x;
+}
+
+/* ───────── Sheet ───────── */
+.paper-sheet {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: clamp(24px, 3.6vw, 40px) clamp(20px, 4.4vw, 48px);
+  border-radius: 3px 3px 0 0;
+  /* Warm, slightly off-white paper with a fine fibre grain. */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4  0 0 0 0 .34  0 0 0 0 .26  .09 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 80% at 50% 40%, #fffdf8 60%, #f8f3e8);
+  color: var(--color-ink);
+  -webkit-mask:
+    radial-gradient(circle 11px at left bottom, #0000 10.5px, #000 11px) left / 51% 100% no-repeat,
+    radial-gradient(circle 11px at right bottom, #0000 10.5px, #000 11px) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle 11px at left bottom, #0000 10.5px, #000 11px) left / 51% 100% no-repeat,
+    radial-gradient(circle 11px at right bottom, #0000 10.5px, #000 11px) right / 51% 100% no-repeat;
+}
+
+/* Top-right corner folded over: the desk shows where the corner was, and the
+   back of the flap lies on the page with a little shadow under it. */
+.paper-sheet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(225deg, var(--color-paper) 50%, #e6dfd1 50%, #f4eee2 72%, #fbf7ee);
+  filter: drop-shadow(-1.5px 1.5px 1.5px rgb(14 12 17 / 0.12));
+  pointer-events: none;
+}
+
+/* Two binder holes down the left margin, punched through the sheet. */
+.paper-hole {
+  display: none;
+  position: absolute;
+  left: 15px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--color-paper);
+  box-shadow:
+    inset 0 1px 2px rgb(14 12 17 / 0.28),
+    0 0.5px 0 rgb(255 255 255 / 0.9);
+}
+@media (min-width: 768px) {
+  .paper-hole {
+    display: block;
+  }
+}
+
+/* What you write goes down in ballpoint blue, like a real pen. */
+.paper-ink {
+  color: #1f2d5c;
+}
+
+/* Notebook lines for the long answer; the text sits on them. */
+.paper-lined {
+  line-height: 32px;
+  background-image: linear-gradient(#0000 31px, rgb(14 12 17 / 0.14) 31px);
+  background-size: 100% 32px;
+  background-attachment: local;
+  resize: vertical;
+}
+
+/* A choice is circled in orange pen when picked. */
+.paper-choice svg {
+  position: absolute;
+  inset: 3px -3px;
+  width: calc(100% + 6px);
+  height: calc(100% - 6px);
+  overflow: visible;
+  pointer-events: none;
+  color: #f07a22;
+}
+.paper-choice path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  /* The round cap would otherwise leave a dot where the stroke starts. */
+  opacity: 0;
+  transition:
+    stroke-dashoffset 0.15s,
+    opacity 0s 0.15s;
+}
+.paper-choice:has(input:checked) path {
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transition: stroke-dashoffset 0.55s var(--ease-out);
+}
+
+/* ───────── Stamp ───────── */
+/* A rectangular rubber stamp: a heavy outer frame, a thin inner one, spaced
+   capitals, and uneven ink (the SVG filter roughens the edges and lifts
+   speckles out of the ink, like a real impression). */
+.paper-stamp {
+  position: absolute;
+  z-index: 2;
+  padding: 3px;
+  border: 3px solid currentColor;
+  border-radius: 3px;
+  color: #b8400f;
+  rotate: -7deg;
+  opacity: 0.92;
+  mix-blend-mode: multiply;
+  filter: url(#paper-stamp-ink);
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.paper-stamp-inner {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 7px 18px 8px;
+  border: 1.5px solid currentColor;
+  border-radius: 1px;
+}
+.paper-stamp-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.22em;
+}
+.paper-stamp-top::before,
+.paper-stamp-top::after {
+  content: '';
+  width: 14px;
+  height: 1.5px;
+  background: currentColor;
+}
+.paper-stamp-main {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+}
+.paper-stamp-date {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .paper-stamp {
+    animation: paper-stamp 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+}
+
+/* The torn-off stub: exactly the stub from the sheet, at the sheet's width,
+   lying where it landed after the rip. */
+.paper-receipt {
+  position: relative;
+  width: 100%;
+  max-width: 210mm;
+  margin-inline: auto;
+  rotate: -1.5deg;
+  filter: drop-shadow(0 1px 1px rgb(14 12 17 / 0.08)) drop-shadow(0 18px 40px rgb(14 12 17 / 0.1));
+}
+
+/* ───────── Rip ─────────
+   The stub is pulled down from its left end, so the tear runs along the
+   perforation from left to right in a few jerks, pivoting on the far corner;
+   when it reaches the corner the stub drops free and settles, and the sheet
+   lifts away. */
+@media (prefers-reduced-motion: no-preference) {
+  .paper.is-tearing .paper-stub {
+    transform-origin: right top;
+    animation: paper-rip 0.95s both;
+  }
+  .paper.is-tearing .paper-sheet,
+  .paper.is-tearing .paper-perf,
+  .paper.is-tearing::after {
+    animation: paper-sheet-away 0.95s both;
+  }
+}
+
+@keyframes paper-rip {
+  0% {
+    rotate: 0deg;
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.3, 0, 0.5, 1);
+  }
+  14% {
+    rotate: -0.9deg;
+    animation-timing-function: linear;
+  }
+  22% {
+    rotate: -1.1deg;
+    animation-timing-function: cubic-bezier(0.3, 0, 0.5, 1);
+  }
+  34% {
+    rotate: -2.3deg;
+    animation-timing-function: linear;
+  }
+  40% {
+    rotate: -2.5deg;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  /* Torn through to the far corner: it lets go. */
+  50% {
+    rotate: -3.4deg;
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  74% {
+    rotate: -1.3deg;
+    translate: 0 16px;
+    animation-timing-function: ease-in-out;
+  }
+  to {
+    rotate: -1.5deg;
+    translate: 0 14px;
+  }
+}
+
+/* The confirmation under the receipt fades up once the stub has landed. */
+@media (prefers-reduced-motion: no-preference) {
+  .paper-sent-note {
+    animation: paper-note-in 0.5s var(--ease-out) 0.35s both;
+  }
+}
+@keyframes paper-note-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+@keyframes paper-sheet-away {
+  0%,
+  50% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  to {
+    opacity: 0;
+    translate: 0 -22px;
+  }
+}
+
+/* Comes down from above, presses in a touch, and lifts off leaving the ink. */
+@keyframes paper-stamp {
+  from {
+    scale: 1.9;
+    opacity: 0;
+  }
+  55% {
+    scale: 0.96;
+    opacity: 0.95;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+/* ───────── Pen cursor (PenCursor.jsx) ─────────
+   Custom cursor on the Join page. Hides the system cursor everywhere, text
+   fields included, since the pen's point marks where you'll click. */
+html.has-pen-cursor,
+html.has-pen-cursor body :is(*, input, textarea, [contenteditable='true']) {
+  cursor: none !important;
+}
+
+.pen-cursor {
+  --tilt: 28deg;
+  --lift: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.2s;
+}
+html[data-pen-hidden] .pen-cursor {
+  opacity: 0;
+}
+
+/* Both copies turn around the ball point, which sits on the pointer. */
+.pen-cursor__pen,
+.pen-cursor__shadow {
+  position: absolute;
+  left: -10px;
+  top: -104px;
+  width: 20px;
+  height: 104px;
+  transform-origin: 50% 100%;
+  rotate: var(--tilt);
+}
+.pen-cursor svg {
+  display: block;
+}
+/* A faint light edge keeps the pen visible over the dark footer. */
+.pen-cursor__pen {
+  filter: drop-shadow(0 0 0.6px rgb(255 255 255 / 0.55));
+}
+/* The pen's shadow on the page: further away and softer the higher it's lifted. */
+.pen-cursor__shadow {
+  translate: calc(var(--lift) * 10px) calc(var(--lift) * 6px);
+  filter: brightness(0) blur(calc(1px + var(--lift) * 2.5px));
+  opacity: calc(0.3 - var(--lift) * 0.14);
+}
+
+/* ───────── Scratch pad (ScratchPad.jsx) ─────────
+   The desk around the sheet, where you can try the pen out on desktop. */
+.scratch-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scratch-hint {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  rotate: -3deg;
+  font-style: italic;
+}
+
+.scratch-hint svg {
+  margin-top: 0.6em;
+}

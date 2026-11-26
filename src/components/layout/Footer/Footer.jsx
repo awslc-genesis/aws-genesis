@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 
 import TechText from '@/components/animations/TechText'
@@ -52,6 +53,25 @@ export default function Footer({ tone = 'light' }) {
           scrollTrigger: { trigger: '[data-footer-mask]', start: 'top bottom', end: 'bottom bottom', scrub: 0.6 },
         })
       })
+
+      // ScrollTrigger measures positions once, so when the page above
+      // changes height without a window resize (e.g. the Join form swapping
+      // to its short receipt), the footer's trigger would be left pointing at
+      // the old spot and the wordmark stuck half-hidden. Re-measure then.
+      let lastHeight = document.body.scrollHeight
+      let timer = 0
+      const observer = new ResizeObserver(() => {
+        const height = document.body.scrollHeight
+        if (height === lastHeight) return
+        lastHeight = height
+        clearTimeout(timer)
+        timer = setTimeout(() => ScrollTrigger.refresh(), 100)
+      })
+      observer.observe(document.body)
+      return () => {
+        observer.disconnect()
+        clearTimeout(timer)
+      }
     },
     { scope: root },
   )

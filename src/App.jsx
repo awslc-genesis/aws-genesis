@@ -1,5 +1,4 @@
 import PageTransition from '@/components/layout/PageTransition'
-import ScrollCursor from '@/components/layout/ScrollCursor'
 import AppRoutes from '@/routes/AppRoutes'
 
 export default function App() {
@@ -9,8 +8,6 @@ export default function App() {
       <PageTransition>
         <AppRoutes />
       </PageTransition>
-      {/* Custom cursor with a scroll-progress ring; replaces the scrollbar on mouse devices. */}
-      <ScrollCursor />
     </>
   )
 }
