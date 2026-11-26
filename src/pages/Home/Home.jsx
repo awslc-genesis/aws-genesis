@@ -26,7 +26,7 @@ const VISION_STATEMENT =
   'Genesis will not only be a university organization, it will soon become an independent initiative that will ' +
   "create bridges for the community and reach beyond the typical. Stay tuned and let's make history."
 
-const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white'
+const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink'
 
 // Draft copy for the three points under the AWS logo; replace with the club's own wording.
 const FEATURES = [
@@ -66,17 +66,7 @@ export default function Home() {
           .from('[data-hero-actions]', { autoAlpha: 0, y: 12, duration: 0.65 }, '-=0.75')
         const cancelHeroIntro = onPageReveal(() => heroIntro.play())
 
-        // The headline scrolls up with the page like normal content, while the
-        // hero background stays pinned and full size behind it. It travels the
-        // same distance as the page scroll until the panel reaches the top, so it
-        // moves exactly 1:1 with the scroll; it also fades as the panel rises.
-        ScrollTrigger.create({
-          start: 0,
-          endTrigger: '[data-panel]',
-          end: 'top top',
-          onUpdate: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
-          onRefresh: self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) }),
-        })
+        // The hero text fades as the panel rises over it.
         const cover = {
           trigger: '[data-panel]',
           start: 'top bottom',
@@ -184,6 +174,21 @@ export default function Home() {
         return cancelHeroIntro
       })
 
+      // From tablet width up, the headline scrolls up with the page like normal
+      // content, while the hero background stays pinned and full size behind it.
+      // It travels the same distance as the page scroll until the panel reaches
+      // the top, so it moves exactly 1:1 with the scroll. On phones it stays put.
+      mm.add('(prefers-reduced-motion: no-preference) and (min-width: 768px)', () => {
+        const follow = self => gsap.set('[data-hero-content]', { y: -Math.min(self.scroll(), self.end) })
+        ScrollTrigger.create({
+          start: 0,
+          endTrigger: '[data-panel]',
+          end: 'top top',
+          onUpdate: follow,
+          onRefresh: follow,
+        })
+      })
+
       // Stop the shader animating once the panel fully covers it.
       ScrollTrigger.create({
         trigger: '[data-panel]',
@@ -219,9 +224,9 @@ export default function Home() {
   return (
     <div ref={root} className="relative bg-ink">
       {/* Page-level so the full-screen menu stacks above every section. */}
-      <Navbar />
+      <Navbar tone="dark" />
       {/* Hero stays pinned (CSS sticky) while the next section slides over it. */}
-      <section id="home" className="sticky top-0 h-svh overflow-hidden text-white" aria-labelledby="hero-title">
+      <section id="home" className="sticky top-0 h-svh overflow-hidden text-ink" aria-labelledby="hero-title">
         <div data-hero-veil className="absolute inset-0 origin-top">
           <DitherClouds paused={veilPaused} cellSize={isCoarsePointer() ? 2 : 3} />
         </div>
@@ -229,12 +234,12 @@ export default function Home() {
 
         <div
           data-hero-content
-          className="relative flex h-full flex-col px-5 pt-28 pb-10 sm:px-10 sm:pb-14 lg:justify-end lg:pt-0"
+          className="relative mx-auto flex h-full w-full max-w-5xl flex-col px-5 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-[20svh]"
         >
-          <h1 id="hero-title" data-hero-title className="type-display">
+          <h1 id="hero-title" data-hero-title className="type-h2 !text-[clamp(3.25rem,16vw,4.5rem)] sm:!text-[clamp(3.75rem,6.2vw,6.5rem)]">
             <span className="block">
               <span className="mr-[0.1em] inline-block overflow-hidden pb-[0.08em] align-bottom">
-                <span data-word className="text-hero-sheen inline-block pr-[0.1em]">
+                <span data-word className="inline-block pr-[0.1em]">
                   Let’s make
                 </span>
               </span>
@@ -247,16 +252,12 @@ export default function Home() {
               />
             </span>
           </h1>
-          <div data-hero-actions className="mt-5 sm:mt-8 lg:flex lg:items-end lg:justify-between lg:gap-8">
-            <p className="type-body max-w-xl text-white/75">
-              Join fellow Tarlac State University students to learn AWS through hands-on projects.
-              Start with the basics, experiment with cloud services, and work with a team to get your ideas online.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2.5 lg:mt-0 lg:shrink-0">
+          <div data-hero-actions className="mt-5 sm:mt-8">
+            <div className="flex flex-wrap gap-2.5">
               <TransitionLink to="/join" className={`${HERO_LINK_CLASS} bg-genesis hover:brightness-110`}>
                 Join Us <ArrowRight className="size-4" aria-hidden="true" />
               </TransitionLink>
-              <a href="#events" className={`${HERO_LINK_CLASS} bg-white hover:bg-white/85`}>
+              <a href="#events" className={`${HERO_LINK_CLASS} bg-ink !text-white hover:bg-ink/85`}>
                 Events
               </a>
             </div>

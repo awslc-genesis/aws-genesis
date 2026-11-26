@@ -108,14 +108,13 @@ void main() {
   // 0 on narrow ones, where it sits at the top over the sky.
   float wide = smoothstep(0.8, 1.5, uSize.x / uSize.y);
   // Lower skyline on narrow screens, to stay clear of that text.
-  vec2 span = vec2(view.x, view.y * mix(0.64, 1.0, wide));
+  vec2 span = vec2(view.x, view.y * mix(0.64, 0.72, wide));
 
   float rise = (1.0 - uPresence) * 0.45;
   vec2 far = bank(p + vec2(0.0, rise * 0.5), span, 1.0, 0.075, 0.36, 0.5, uTime * 0.006 + 3.0);
   vec2 mid = bank(p + vec2(0.0, rise * 0.8), span, 2.0, 0.11, 0.2, 0.42, uTime * 0.011 + 7.0);
   vec2 front = bank(p + vec2(0.0, rise * 1.2), span, 3.0, 0.15, 0.03, 0.3, uTime * 0.018 + 1.0);
 
-  vec2 uv = (cell + 0.5) / uSize;
   float threshold = bayer8(cell);
   vec3 color = uSky;
 
@@ -125,10 +124,6 @@ void main() {
   tone = mix(tone, front.x, front.y);
   float cloud = max(far.y, max(mid.y, front.y));
   tone += near * 0.22 * cloud;
-  // Dim the clouds behind the text.
-  tone *= mix(1.0, mix(0.36, 1.0, smoothstep(0.28, 0.72, uv.x)), wide);
-  // Same for the corner where the buttons sit, so the orange one stands out.
-  tone *= 1.0 - 0.6 * wide * smoothstep(0.3, 0.06, length((uv - vec2(0.93, 0.07)) * vec2(1.0, 0.8)));
   tone *= mix(0.4, 1.0, uPresence);
 
   if (cloud > 0.5) {
@@ -166,7 +161,7 @@ const link = gl => {
 }
 
 // Ember sunset, all in one orange hue. Clouds: shadow to lit top.
-const SKY = '#3b1a10'
+const SKY = '#ffffff'
 const CLOUD = ['#2b110a', '#4a1a08', '#b8480f', '#ffb056']
 
 /**
