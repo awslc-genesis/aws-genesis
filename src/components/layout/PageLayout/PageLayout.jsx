@@ -3,7 +3,7 @@ import Navbar from '@/components/layout/Navbar'
 
 // Shared frame for the inner pages: the menu bar (dark text, since these pages
 // start on cream), the page's own content on a cream panel whose rounded
-// bottom tucks over the dark footer, and the footer. `title` names the page
+// bottom tucks over the footer, and the footer. `title` names the page
 // for screen readers and search engines; the page's visible headings come from
 // its own content.
 export default function PageLayout({ title, children }) {
@@ -14,7 +14,7 @@ export default function PageLayout({ title, children }) {
         <h1 className="sr-only">{title}</h1>
         {children}
       </main>
-      <Footer tone="dark" />
+      <Footer />
     </div>
   )
 }

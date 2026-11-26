@@ -28,3 +28,33 @@ New version → Deploy**. This keeps the same URL; a new deployment would not.
 
 The year and department choices are in both `Code.gs` and
 `src/features/join/fields.js`; change them together.
+
+# Event registrations → Google Sheets
+
+Event pages (`/events/<slug>`) that take registrations send each one to a
+second Apps Script, [Registrations.gs](Registrations.gs). Each event gets its
+own tab, named after its slug, and every question becomes a column. Events
+without a `registration` entry in `src/features/events/data/events.js` (or
+with `registration.url` pointing to an outside form) never send anything here.
+
+## Set it up (once)
+
+1. Create a **separate** Google Sheet for registrations (a script can only
+   have one `doPost`, so it can't share the Join sheet's script).
+2. **Extensions → Apps Script**, replace `Code.gs` with the contents of
+   [Registrations.gs](Registrations.gs), and save.
+3. **Deploy → New deployment → Web app**, Execute as **Me**, access
+   **Anyone**. Copy the Web app URL.
+4. Set `VITE_EVENTS_SHEET_URL` to that URL in `.env.local` (restart
+   `npm run dev`) and in Vercel's Environment Variables (then redeploy).
+5. Send a test registration. A tab named after the event appears with it.
+
+## Adding an event or changing its questions
+
+Only the website changes: edit `src/features/events/data/events.js` (and
+`forms.js` for new kinds of forms). New questions become new columns in that
+event's tab automatically. Every form needs at least one email question (or
+an email in the members list), which is used to limit repeat sign-ups.
+
+To stop an event accepting registrations even from an old copy of the site,
+add its slug to `CLOSED` in the script and deploy a new version.

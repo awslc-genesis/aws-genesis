@@ -6,6 +6,9 @@
   /* Shown until the canvas draws, and where WebGL is unavailable. */
   background: #3b1a10;
 }
+.dither-clouds-clear {
+  background: none;
+}
 
 /* The canvas holds one pixel per dither cell; its size is set in JS so every
    cell lands on whole device pixels and stays perfectly square. */

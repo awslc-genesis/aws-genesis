@@ -6,37 +6,21 @@ import { ArrowUpRight } from 'lucide-react'
 
 import TiltedCard, { TiltedCardLayer } from '@/components/animations/TiltedCard'
 import { FREE, PINNED } from '@/utils/motion'
+import TransitionLink from '@/components/common/TransitionLink'
 import { cn } from '@/utils/cn'
+
+import { formatDates, latestEvents, photoOf } from '../eventUtils'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const eventPhotos = import.meta.glob('/src/assets/images/events/*.{avif,jpeg,jpg,png,webp}', {
-  eager: true,
-  import: 'default',
-  query: '?url',
-})
-
-// Placeholder events; replace with the club's real events, summaries and links,
-// newest first. To add a photo, put the image in src/assets/images/events and
-// set the event's photoFile to its exact filename. Entries without a match show
-// a stock photo (picsum.photos, fixed per seed so it doesn't change between visits).
-const EVENTS = [
-  {
-    title: 'tba', //'AWS Cloud Day 2026'
-    type: 'tba', // 'Conference'
-    date: 'tba', // 'Nov 5, 2026'
-    place: 'tba', // 'TSU Main Campus'
-    seed: 'tba', // 'genesis-cloud-day'
-    summary: 'tba', // 'A full day of talks and demos on how students and startups build on AWS, closing with a community mixer.'
-    photoFile: 'tbaEvent.png', // 'cloud-day.jpg'
-  },
-]
+// The home page strip shows what's coming up, then the latest past events.
+// Edit events in ../data/events.js; this strip and the Events page both read it.
+const EVENTS = latestEvents(6)
 
 function EventCard({ event, index }) {
   // Cards alternate a little above and below the row's center for an editorial rhythm.
   const raised = index % 2 === 1
   const number = String(index + 1).padStart(2, '0')
-  const photo = eventPhotos[`/src/assets/images/events/${event.photoFile}`]
 
   return (
     <li
@@ -49,13 +33,13 @@ function EventCard({ event, index }) {
       )}
     >
       {/* Landscape photo as a React Bits TiltedCard: it tilts toward the
-          pointer with a glare, the title floats on a parallax layer, and a
+          pointer (no glare), the title floats on a parallax layer, and a
           click flips it over to the event's summary. Black and white until
           hovered (see .event-tilt in styles/index.css). */}
       <div className="aspect-[3/2]">
         <TiltedCard
           className="event-tilt"
-          imageSrc={photo ?? `https://picsum.photos/seed/${event.seed}/1200/800`}
+          imageSrc={photoOf(event)}
           altText={event.title}
           captionText={event.title}
           containerHeight="100%"
@@ -65,12 +49,12 @@ function EventCard({ event, index }) {
           radius={0}
           rotateAmplitude={12}
           scaleOnHover={1.05}
-          glare={0.5}
+          glare={0}
           shadow={0.2}
           backContent={
             <div className="flex size-full flex-col justify-between bg-ink p-6 text-paper sm:p-8">
               <p className="type-label text-paper/55">
-                {event.date} · {event.place}
+                {formatDates(event)} · {event.place}
               </p>
               <p className="type-body max-w-[36ch] text-paper/80">{event.summary}</p>
               <p className="type-label text-paper/55">Click to flip back</p>
@@ -94,16 +78,16 @@ function EventCard({ event, index }) {
             No.{number} · {event.type}
           </p>
           <p className="type-body mt-2 text-ink/60">
-            {event.date} · {event.place}
+            {formatDates(event)} · {event.place}
           </p>
         </div>
-        <a
-          href="#events"
+        <TransitionLink
+          to={`/events/${event.slug}`}
           aria-label={`View ${event.title}`}
           className="flex size-10 shrink-0 items-center justify-center rounded-full border border-ink/15 transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
         >
           <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden="true" />
-        </a>
+        </TransitionLink>
       </div>
     </li>
   )
@@ -213,9 +197,14 @@ export default function EventsSection({ className }) {
               Events
             </span>
           </h2>
-          <p className="type-body hidden max-w-[32ch] pb-2 text-ink/60 sm:block">
-            Workshops, study jams and talks where Genesis members learn and build together.
-          </p>
+          <div className="flex flex-col items-end gap-4 pb-2">
+            <p className="type-body hidden max-w-[32ch] text-right text-ink/60 sm:block">
+              Hackathons, webinars and talks where Genesis members learn and build together.
+            </p>
+            <TransitionLink to="/events" className="btn btn-quiet -mr-3 h-10">
+              All events <ArrowUpRight aria-hidden="true" />
+            </TransitionLink>
+          </div>
         </div>
 
         <ul
@@ -223,7 +212,7 @@ export default function EventsSection({ className }) {
           className="mt-8 flex min-h-0 w-max flex-1 gap-12 pt-[6svh] px-4 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
         >
           {EVENTS.map((event, i) => (
-            <EventCard key={event.seed} event={event} index={i} />
+            <EventCard key={event.slug} event={event} index={i} />
           ))}
         </ul>
       </div>

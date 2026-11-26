@@ -3,9 +3,13 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 
+import { ArrowUpRight } from 'lucide-react'
+
+import DitherClouds from '@/components/animations/DitherClouds'
 import TechText from '@/components/animations/TechText'
 import TransitionLink from '@/components/common/TransitionLink'
 import { NAV_LINKS } from '@/config/navigation'
+import { isCoarsePointer } from '@/utils/motion'
 
 const COLUMNS = [
   { title: 'Club', links: NAV_LINKS.slice(0, 3) },
@@ -14,26 +18,35 @@ const COLUMNS = [
 
 const YEAR = new Date().getFullYear()
 
-// Two colour schemes: light (cream, used on the home page) and dark (ink, used
-// under the inner pages' cream closing band).
+// Two colour schemes. Light (the default) is a sand a step deeper than the
+// cream pages, so their rounded bottoms still read as they tuck over it; dark
+// is ink.
 const TONES = {
   light: {
-    footer: 'bg-paper text-ink',
+    footer: 'bg-[#e9e4dc] text-ink',
     label: 'text-ink/55',
     link: 'text-ink/75 hover:text-ink focus-visible:outline-ink',
-    rule: 'border-ink/10',
     meta: 'text-ink/60',
-    mark: '#dedad4',
+    lede: 'text-ink/65',
+    fade: 'from-[#e9e4dc]',
+    button: 'btn-dark',
+    mark: '#e0dad1',
     accent: '#0e0c11',
+    // Pale daylight clouds: warm shadow -> white lit top.
+    cloud: ['#d8cfc2', '#e3dcd2', '#f0ebe4', '#fcfbf9'],
   },
   dark: {
     footer: 'bg-ink text-paper',
     label: 'text-paper/55',
     link: 'text-paper/70 hover:text-paper focus-visible:outline-paper',
-    rule: 'border-paper/10',
     meta: 'text-paper/60',
-    mark: '#24212a',
+    lede: 'text-paper/65',
+    fade: 'from-ink',
+    button: 'bg-paper text-ink hover:bg-white focus-visible:!outline-paper',
+    mark: '#141217',
     accent: '#f6f3ee',
+    // Night clouds lit by the last of the hero's ember sunset.
+    cloud: ['#141016', '#1d1519', '#3a1d14', '#6e3214'],
   },
 }
 
@@ -79,10 +92,18 @@ export default function Footer({ tone = 'light' }) {
   return (
     // Pulled up under the rounded bottom of the section above, so the
     // footer's background shows in its corners.
-    <footer ref={root} className={`relative z-[5] -mt-16 pt-16 ${t.footer}`}>
+    <footer ref={root} className={`relative z-[5] -mt-16 overflow-hidden pt-16 ${t.footer}`}>
       <div className="px-4 pt-16 sm:px-10 sm:pt-24 lg:px-16">
         <div className="grid gap-12 md:grid-cols-[2fr_1fr_1fr]">
-          <p className="type-h3">Start your Day One</p>
+          <div>
+            <p className="type-h3">Start your Day One</p>
+            <p className={`type-caption mt-3 max-w-[38ch] ${t.lede}`}>
+              Learn the cloud with peers at Tarlac State University. Every builder starts somewhere.
+            </p>
+            <TransitionLink to="/join" className={`btn mt-6 ${t.button}`}>
+              Join the club <ArrowUpRight aria-hidden="true" />
+            </TransitionLink>
+          </div>
 
           {COLUMNS.map(column => (
             <nav key={column.title} aria-label={column.title}>
@@ -128,7 +149,19 @@ export default function Footer({ tone = 'light' }) {
         </div>
       </div>
 
-      <div className={`border-t px-4 py-6 sm:px-10 lg:px-16 ${t.rule}`}>
+      {/* Dithered clouds roll in front of the wordmark's base, so "Genesis"
+          rises out of them. The sky is see-through and the layer ignores the
+          pointer, so the letters underneath stay draggable. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[clamp(11rem,32vw,28rem)]"
+        aria-hidden="true"
+      >
+        <DitherClouds transparent cloud={t.cloud} cellSize={isCoarsePointer() ? 2 : 3} speed={0.8} />
+        {/* Settles the clouds into the footer colour behind the meta line. */}
+        <div className={`absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t ${t.fade} to-transparent`} />
+      </div>
+
+      <div className="relative px-4 py-6 sm:px-10 lg:px-16">
         <div className={`type-caption flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${t.meta}`}>
           <span>© {YEAR} AWS Learning Club – Genesis</span>
           <span>Tarlac State University · Tarlac City</span>

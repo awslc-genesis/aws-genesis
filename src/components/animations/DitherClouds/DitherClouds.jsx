@@ -19,6 +19,7 @@ uniform float uTime;
 uniform float uPresence; // 0 -> 1 intro
 uniform vec3 uPointer;   // x, y (cells, y up), strength
 uniform vec3 uSky;       // one flat color
+uniform float uSkyAlpha; // 0 lets the page show through the sky
 uniform vec3 uCloud[4];  // shadow -> lit top
 out vec4 outColor;
 
@@ -126,11 +127,14 @@ void main() {
   tone += near * 0.22 * cloud;
   tone *= mix(0.4, 1.0, uPresence);
 
+  float alpha = uSkyAlpha;
   if (cloud > 0.5) {
     float steps = clamp(tone, 0.0, 0.999) * 3.0;
     color = uCloud[int(floor(steps)) + (fract(steps) > threshold ? 1 : 0)];
+    alpha = 1.0;
   }
-  outColor = vec4(color, 1.0);
+  // The canvas is premultiplied, so a see-through sky must be black too.
+  outColor = vec4(color * alpha, alpha);
 }`
 
 const INTRO_SECONDS = 1.8
@@ -171,17 +175,25 @@ const CLOUD = ['#2b110a', '#4a1a08', '#b8480f', '#ffb056']
  *   cellSize?: number,   // dither cell size in CSS pixels
  *   speed?: number,
  *   paused?: boolean,
+ *   transparent?: boolean, // draw only the clouds; the sky shows what's behind
  * }} props
  */
-export default function DitherClouds({ sky = SKY, cloud = CLOUD, cellSize = 3, speed = 1, paused = false }) {
+export default function DitherClouds({
+  sky = SKY,
+  cloud = CLOUD,
+  cellSize = 3,
+  speed = 1,
+  paused = false,
+  transparent = false,
+}) {
   const containerRef = useRef(null)
   const wakeRef = useRef(null)
   const settings = useRef(null)
 
   useEffect(() => {
-    settings.current = { sky: hexToRgb(sky), cloud: cloud.flatMap(hexToRgb), cellSize, speed, paused }
+    settings.current = { sky: hexToRgb(sky), cloud: cloud.flatMap(hexToRgb), cellSize, speed, paused, transparent }
     wakeRef.current?.()
-  }, [sky, cloud, cellSize, speed, paused])
+  }, [sky, cloud, cellSize, speed, paused, transparent])
 
   useEffect(() => {
     const container = containerRef.current
@@ -208,6 +220,7 @@ export default function DitherClouds({ sky = SKY, cloud = CLOUD, cellSize = 3, s
       presence: uniform('uPresence'),
       pointer: uniform('uPointer'),
       sky: uniform('uSky'),
+      skyAlpha: uniform('uSkyAlpha'),
       cloud: uniform('uCloud'),
     }
 
@@ -227,6 +240,7 @@ export default function DitherClouds({ sky = SKY, cloud = CLOUD, cellSize = 3, s
       gl.uniform1f(u.presence, eased)
       gl.uniform3f(u.pointer, state.x / cssCell, state.y / cssCell, state.touch)
       gl.uniform3fv(u.sky, settings.current.sky)
+      gl.uniform1f(u.skyAlpha, settings.current.transparent ? 0 : 1)
       gl.uniform3fv(u.cloud, settings.current.cloud)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
     }
@@ -311,5 +325,5 @@ export default function DitherClouds({ sky = SKY, cloud = CLOUD, cellSize = 3, s
     }
   }, [])
 
-  return <div ref={containerRef} className="dither-clouds" />
+  return <div ref={containerRef} className={transparent ? 'dither-clouds dither-clouds-clear' : 'dither-clouds'} />
 }

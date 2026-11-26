@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import About from '@/pages/About'
 import Contact from '@/pages/Contact'
+import EventDetail from '@/pages/EventDetail'
 import Events from '@/pages/Events'
 import Home from '@/pages/Home'
 import Join from '@/pages/Join'
@@ -18,6 +19,7 @@ export default function AppRoutes() {
       <Route path="/about" element={<About />} />
       <Route path="/team" element={<Team />} />
       <Route path="/events" element={<Events />} />
+      <Route path="/events/:slug" element={<EventDetail />} />
       <Route path="/resources" element={<Resources />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/join" element={<Join />} />

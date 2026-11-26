@@ -469,7 +469,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer tone="dark" />
+      <Footer />
     </div>
   )
 }

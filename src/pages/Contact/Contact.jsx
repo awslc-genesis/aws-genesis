@@ -40,8 +40,8 @@ export default function Contact() {
       <main className="relative z-10 overflow-hidden rounded-b-[2.5rem] bg-paper text-ink sm:rounded-b-[4rem]">
         {/* Hero: the headline on open sky, with a band of drifting clouds
             below it, so the clouds never sit behind the text. */}
-        <section className="relative bg-white" aria-labelledby="contact-title">
-          <div className="relative flex flex-col px-4 pt-28 sm:px-10 lg:px-16 lg:pt-[18svh]">
+        <section className="relative flex min-h-[100svh] flex-col bg-white" aria-labelledby="contact-title">
+          <div className="relative z-10 flex flex-col px-4 pt-28 sm:px-10 lg:px-16 lg:pt-[18svh]">
             <p data-hero-kicker className="type-label text-ink/60">
               We are listening
             </p>
@@ -63,10 +63,21 @@ export default function Contact() {
               </a>
             </div>
           </div>
-          <div className="relative mt-12 h-[clamp(14rem,42svh,28rem)] overflow-hidden sm:mt-16">
-            <DitherClouds cellSize={isCoarsePointer() ? 2 : 3} />
-            {/* Fades the clouds into the cream sheet below. */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-paper" />
+          {/* The band's sky is see-through and it tucks up under the hero copy,
+              so the clouds sit higher without covering the text. */}
+          <div className="relative -mt-10 min-h-[16rem] flex-1 overflow-hidden sm:-mt-32">
+            <div className="absolute inset-0">
+              <DitherClouds transparent cellSize={isCoarsePointer() ? 2 : 3} />
+            </div>
+            {/* Fades the clouds into the cream sheet below: a tall band with
+                eased stops so there is no visible edge where the fade begins. */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[26%]"
+              style={{
+                background:
+                  'linear-gradient(to bottom, rgb(246 243 238 / 0) 0%, rgb(246 243 238 / 0.04) 15%, rgb(246 243 238 / 0.14) 30%, rgb(246 243 238 / 0.3) 45%, rgb(246 243 238 / 0.5) 58%, rgb(246 243 238 / 0.7) 70%, rgb(246 243 238 / 0.86) 82%, rgb(246 243 238 / 0.96) 92%, var(--color-paper) 100%)',
+              }}
+            />
           </div>
         </section>
 
@@ -89,7 +100,7 @@ export default function Contact() {
           </div>
         </section>
       </main>
-      <Footer tone="dark" />
+      <Footer />
     </div>
   )
 }
