@@ -71,7 +71,7 @@ function MemberRow({ member }) {
   const photo = leadPhotos[`/src/assets/images/leads/${member.photoFile}`]
 
   return (
-    <li data-member className="grid gap-8 border-t border-ink/10 py-14 sm:py-20 lg:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] lg:gap-16">
+    <li data-member className="grid gap-8 py-14 sm:py-20 lg:grid-cols-[minmax(0,3fr)_minmax(0,4fr)] lg:gap-16">
       <div>
         <div className="relative size-44 overflow-hidden bg-ink sm:size-52">
           {photo ? (
@@ -148,7 +148,7 @@ export default function TeamSection({ className, heading = true }) {
       </div>
       )}
 
-      <ul className={cn('border-b border-ink/10 lg:ml-[25%]', heading && 'mt-14 sm:mt-20')}>
+      <ul className={cn('lg:ml-[25%]', heading && 'mt-14 sm:mt-20')}>
         {TEAM.map(member => (
           <MemberRow key={member.name} member={member} />
         ))}

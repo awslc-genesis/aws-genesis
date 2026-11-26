@@ -84,11 +84,11 @@ export default function EventDetail() {
 
         <section
           aria-label="About this event"
-          className="mt-20 grid gap-12 border-t border-ink/10 pt-12 sm:mt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-20"
+          className="mt-20 grid gap-12 sm:mt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-20"
         >
           <dl data-reveal className="grid h-fit grid-cols-2 gap-x-8 lg:grid-cols-1">
             {facts.map(fact => (
-              <div key={fact.label} className="border-b border-ink/10 py-4">
+              <div key={fact.label} className="py-4">
                 <dt className="type-fine text-ink/45">{fact.label}</dt>
                 <dd className="type-body mt-1">{fact.value}</dd>
               </div>
@@ -108,7 +108,7 @@ export default function EventDetail() {
                 rel="noreferrer"
                 className="type-body group mt-10 inline-flex items-center gap-3 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
               >
-                <span className="border-b border-ink/30 pb-1 transition-colors group-hover:border-ink">See the recap</span>
+                <span className="transition-colors group-hover:text-ink/70">See the recap</span>
                 <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden="true" />
               </a>
             )}
@@ -120,7 +120,7 @@ export default function EventDetail() {
           <section
             id="register"
             aria-labelledby="register-title"
-            className="mt-24 grid scroll-mt-24 gap-8 border-t border-ink/10 pt-12 sm:mt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-16"
+            className="mt-24 grid scroll-mt-24 gap-8 sm:mt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-16"
           >
             {/* Heading on the side, form beside it, so the form stays small. */}
             <div className="lg:sticky lg:top-28 lg:h-fit">
@@ -143,7 +143,7 @@ export default function EventDetail() {
                     ? 'This event has ended. Thanks to everyone who joined.'
                     : 'Registration for this event is closed.'}{' '}
                   See what’s next on the{' '}
-                  <TransitionLink to="/events" className="border-b border-ink/30 text-ink hover:border-ink">
+                  <TransitionLink to="/events" className="font-medium text-ink transition-colors hover:text-ink/70">
                     Events page
                   </TransitionLink>
                   .

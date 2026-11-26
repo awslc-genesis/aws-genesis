@@ -324,7 +324,7 @@ export default function Home() {
 
             <ul data-features className="mt-24 sm:mt-36">
               {FEATURES.map((feature, i) => (
-                <li key={feature.title} data-feature className="border-t border-ink/10 py-14 sm:py-20">
+                <li key={feature.title} data-feature className="py-14 sm:py-20">
                   <p data-feature-label className="type-label text-ink/55">
                     No.{i + 1}
                   </p>
@@ -425,7 +425,7 @@ export default function Home() {
             aria-labelledby="sponsor-title"
             className="mt-28 px-4 sm:mt-40 sm:px-10 lg:px-16"
           >
-            <div className="flex items-center justify-between gap-6 border-t border-ink/10 pt-6">
+            <div className="flex items-center justify-between gap-6">
               <p id="sponsor-title" className="type-label text-ink/55">
                 Principal Sponsor
               </p>
@@ -454,7 +454,7 @@ export default function Home() {
                   rel="noreferrer"
                   className="type-body group mt-10 inline-flex items-center gap-3 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                 >
-                  <span className="border-b border-ink/30 pb-1 transition-colors group-hover:border-ink">
+                  <span className="transition-colors group-hover:text-ink/70">
                     Visit Amazon Web Services
                   </span>
                   <ArrowUpRight

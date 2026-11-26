@@ -212,7 +212,7 @@ export function ScratchHint({ className }) {
         </svg>
       </p>
       {scratch.hasInk && (
-        <button type="button" onClick={scratch.clear} className="type-fine mt-1 text-ink/45 underline underline-offset-4 hover:text-ink">
+        <button type="button" onClick={scratch.clear} className="type-fine mt-1 text-ink/45 hover:text-ink">
           Wipe the desk
         </button>
       )}

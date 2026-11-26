@@ -46,7 +46,7 @@ export default function About() {
         </div>
 
         {/* Mission and vision. */}
-        <div className="mt-28 grid gap-12 border-t border-ink/10 pt-12 sm:mt-40 md:grid-cols-2">
+        <div className="mt-28 grid gap-12 sm:mt-40 md:grid-cols-2">
           <div data-reveal>
             <p className="type-label text-ink/55">Mission</p>
             <p className="type-h3 mt-6 max-w-[28ch]">
@@ -67,7 +67,7 @@ export default function About() {
             <li
               key={pillar.title}
               data-reveal
-              className="grid gap-6 border-t border-ink/10 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_min(42rem,45vw)] lg:gap-20"
+              className="grid gap-6 py-14 sm:py-20 lg:grid-cols-[minmax(0,1fr)_min(42rem,45vw)] lg:gap-20"
             >
               <p className="type-label text-ink/55">No.{i + 1}</p>
               <div>
@@ -79,7 +79,7 @@ export default function About() {
         </ul>
 
         {/* In numbers (placeholder figures). */}
-        <div className="border-t border-ink/10 pt-12">
+        <div className="pt-12">
           <p data-reveal className="type-label text-ink/55">
             In numbers
           </p>

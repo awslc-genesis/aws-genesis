@@ -57,7 +57,7 @@ export default function EventListCard({ event, large = false }) {
           <h3 className={cn('mt-3', large ? 'type-h3 lg:type-statement' : 'type-h3')}>{event.title}</h3>
           <p className={cn('type-body mt-4 text-ink/60', large ? 'max-w-[44ch]' : 'max-w-[40ch]')}>{event.summary}</p>
         </div>
-        <div className="mt-6 flex items-center justify-between gap-4 border-t border-ink/10 pt-4">
+        <div className="mt-6 flex items-center justify-between gap-4 pt-1">
           <p className="type-small truncate text-ink/55">{event.place}</p>
           <span className="type-small inline-flex h-10 shrink-0 items-center border border-ink/15 px-4 font-medium transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
             Check it out!
