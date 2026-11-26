@@ -442,3 +442,25 @@ html[data-pen-hidden] .pen-cursor {
 .scratch-hint svg {
   margin-top: 0.6em;
 }
+
+/* ───────── Plain sheet (Contact) ─────────
+   The same paper without the tear-off stub: only as tall as its fields, with
+   square bottom corners instead of the stub notches, and one fold crease. */
+.paper.paper-plain {
+  aspect-ratio: auto;
+}
+.paper.paper-plain::after {
+  background: linear-gradient(
+    to bottom,
+    #0000 calc(50% - 22px),
+    rgb(14 12 17 / 0.035) calc(50% - 1px),
+    rgb(255 255 255 / 0.85) 50%,
+    rgb(14 12 17 / 0.06) calc(50% + 1px),
+    #0000 calc(50% + 16px)
+  );
+}
+.paper-plain .paper-sheet {
+  border-radius: 3px;
+  -webkit-mask: none;
+  mask: none;
+}

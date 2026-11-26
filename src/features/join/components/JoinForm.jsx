@@ -7,11 +7,7 @@ import { cn } from '@/utils/cn'
 import { DEPARTMENTS, facebookUrl, validate, YEARS } from '../fields'
 import { createRipAudio, playRip } from '../ripSound'
 import { submitApplication } from '../submitApplication'
-import './PaperForm.css'
-
-// 16px text on purpose: iOS zooms the page when a smaller field is focused.
-const FIELD_CLASS =
-  'mt-1 block w-full rounded-none border-0 border-b border-ink/20 bg-transparent px-0 py-2.5 text-base paper-ink caret-[#1f2d5c] outline-none transition-colors placeholder:text-ink/35 hover:border-ink/50 focus:border-ink aria-invalid:border-red-700'
+import { Choices, Field } from './PaperFields'
 
 // How long the Received stamp sits on the sheet before the stub is torn off,
 // and how long the rip takes (matches paper-rip in PaperForm.css).
@@ -19,83 +15,6 @@ const STAMP_MS = 1100
 const TEAR_MS = 950
 
 const TODAY = new Intl.DateTimeFormat('en-PH', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date())
-
-function FieldError({ id, message }) {
-  if (!message) return null
-  return (
-    <p id={id} className="type-small mt-2 text-red-700">
-      {message}
-    </p>
-  )
-}
-
-// The small question number in front of each label: 01, 02, …
-function Num({ n }) {
-  return (
-    <span aria-hidden="true" className="type-fine mr-2 tabular-nums text-ink/35">
-      {String(n).padStart(2, '0')}
-    </span>
-  )
-}
-
-// One labelled line to write on. `as="textarea"` makes it a ruled multi-line one.
-function Field({ as: Tag = 'input', n, name, label, error, className, ...props }) {
-  const errorId = `join-${name}-error`
-  const lined = Tag === 'textarea'
-  return (
-    <div className={className}>
-      <label htmlFor={`join-${name}`} className="type-small font-medium">
-        <Num n={n} />
-        {label}
-      </label>
-      <Tag
-        id={`join-${name}`}
-        name={name}
-        required
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? errorId : undefined}
-        className={cn(FIELD_CLASS, lined && 'paper-lined mt-2 border-b-0 py-0')}
-        {...props}
-      />
-      <FieldError id={errorId} message={error} />
-    </div>
-  )
-}
-
-// A question answered by circling one of a few options in pen.
-function Choices({ n, name, label, options, error, className }) {
-  const errorId = `join-${name}-error`
-  return (
-    <fieldset className={cn('min-w-0', className)} aria-describedby={error ? errorId : undefined}>
-      <legend className="type-small font-medium">
-        <Num n={n} />
-        {label}
-      </legend>
-      <div className="-mx-3 mt-2 flex flex-wrap gap-x-1">
-        {options.map(option => (
-          <label
-            key={option}
-            className="paper-choice relative inline-flex min-h-11 cursor-pointer items-center rounded-full px-3 type-small text-ink/60 transition-colors hover:text-ink has-checked:font-medium has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink"
-          >
-            <input type="radio" name={name} value={option} required className="absolute inset-0 cursor-pointer appearance-none outline-none" />
-            {option}
-            <svg viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
-              <path
-                d="M55 4C82 3 97 10 96 21C95 33 72 38 47 37C21 36 3 30 4 19C5 9 27 3 61 6"
-                pathLength="1"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
-          </label>
-        ))}
-      </div>
-      <FieldError id={errorId} message={error} />
-    </fieldset>
-  )
-}
 
 // Decorative barcode, drawn from the application number so each one differs.
 function Barcode({ seed }) {
@@ -290,11 +209,12 @@ export default function JoinForm() {
         </div>
 
         <div className="mt-7 mb-8 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-6 sm:grid-cols-2">
-          <Field n={1} name="name" label="Name" autoComplete="name" maxLength={100} error={errors.name} />
-          <Field n={2} name="college" label="College" maxLength={120} error={errors.college} />
-          <Choices n={3} name="year" label="Year" options={YEARS} error={errors.year} className="sm:col-span-2" />
-          <Field n={4} name="email" label="Email" type="email" autoComplete="email" maxLength={150} error={errors.email} />
+          <Field form="join" n={1} name="name" label="Name" autoComplete="name" maxLength={100} error={errors.name} />
+          <Field form="join" n={2} name="college" label="College" maxLength={120} error={errors.college} />
+          <Choices form="join" n={3} name="year" label="Year" options={YEARS} error={errors.year} className="sm:col-span-2" />
+          <Field form="join" n={4} name="email" label="Email" type="email" autoComplete="email" maxLength={150} error={errors.email} />
           <Field
+            form="join"
             n={5}
             name="facebook"
             label="Facebook link"
@@ -306,6 +226,7 @@ export default function JoinForm() {
             error={errors.facebook}
           />
           <Choices
+            form="join"
             n={6}
             name="department"
             label="Department you want to join"
@@ -314,6 +235,7 @@ export default function JoinForm() {
             className="sm:col-span-2"
           />
           <Field
+            form="join"
             as="textarea"
             n={7}
             name="reason"

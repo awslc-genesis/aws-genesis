@@ -1,0 +1,44 @@
+/* A sticky note stuck onto the sheet, pointing to the Join page. It pops on
+   with a little tilt, like it was just pressed down. */
+.contact-note {
+  position: relative;
+  /* Above the sheet's fold crease (.paper::after), since it was stuck on after. */
+  z-index: 4;
+  max-width: 26rem;
+  padding: 16px 18px 18px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #fde7c2, #fbdcaa);
+  rotate: -1.2deg;
+  box-shadow:
+    0 1px 1px rgb(14 12 17 / 0.08),
+    0 10px 24px -8px rgb(14 12 17 / 0.22);
+}
+
+/* A strip of tape holding it on. */
+.contact-note::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 64px;
+  height: 18px;
+  translate: -50% 0;
+  rotate: 3deg;
+  background: rgb(255 255 255 / 0.55);
+  box-shadow: 0 0 0 0.5px rgb(14 12 17 / 0.06);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .contact-note {
+    animation: contact-note-in 0.45s cubic-bezier(0.34, 1.4, 0.5, 1) both;
+  }
+}
+
+@keyframes contact-note-in {
+  from {
+    opacity: 0;
+    scale: 0.92;
+    rotate: -5deg;
+    translate: 0 -8px;
+  }
+}
