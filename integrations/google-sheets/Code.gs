@@ -10,6 +10,14 @@ const DEPARTMENTS = ['Operations', 'Finance', 'Tech Team', 'Creatives', 'N/A (Me
 // Facebook allows more than the form does, since the website tidies the link.
 const MAX_LENGTH = { name: 100, college: 120, email: 150, facebook: 2000, reason: 2000 }
 
+// Apps Script can't see who is sending, so applications are limited per email
+// address and in total. Each is { limit, seconds }; CacheService keeps
+// entries for 6 hours at most, so no window can be longer than that.
+const RATE = {
+  email: { limit: 3, seconds: 6 * 60 * 60 },
+  all: { limit: 30, seconds: 10 * 60 },
+}
+
 function doPost(event) {
   let data
   try {
@@ -30,6 +38,11 @@ function doPost(event) {
     const key = 'application-' + String(data.id || '').slice(0, 60)
     if (data.id && cache.get(key)) return reply({ ok: true })
 
+    const emailKey = 'email-' + data.email.trim().toLowerCase()
+    if (!underLimit(cache, emailKey, RATE.email) || !underLimit(cache, 'all', RATE.all)) {
+      return reply({ ok: false, error: 'rate_limited' })
+    }
+
     getSheet().appendRow([
       new Date(),
       asText(data.name),
@@ -49,6 +62,17 @@ function doPost(event) {
   } finally {
     lock.releaseLock()
   }
+}
+
+// Counts one more application under `name` in the current time window and
+// says whether it is still within the limit. Runs inside the script lock, so
+// counts can't race. Windows are fixed blocks of `seconds`.
+function underLimit(cache, name, rate) {
+  const key = 'rate-' + name + '-' + Math.floor(Date.now() / 1000 / rate.seconds)
+  const count = Number(cache.get(key) || 0)
+  if (count >= rate.limit) return false
+  cache.put(key, String(count + 1), rate.seconds)
+  return true
 }
 
 function isValid(data) {

@@ -90,7 +90,7 @@ function Stamp({ className }) {
 // club's Google Sheet; once saved, the stub tears off as the confirmation.
 export default function JoinForm() {
   const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'failed' | 'stamped' | 'tearing' | 'sent'
+  const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'failed' | 'limited' | 'stamped' | 'tearing' | 'sent'
   const [draft, setDraft] = useState({ name: '', year: '', department: '' })
   const sentRef = useRef(null)
   const stubRef = useRef(null)
@@ -162,7 +162,7 @@ export default function JoinForm() {
       setStatus('stamped')
     } catch (error) {
       console.error('Application not sent:', error)
-      setStatus('failed')
+      setStatus(error.message === 'rate_limited' ? 'limited' : 'failed')
     }
   }
 
@@ -273,6 +273,11 @@ export default function JoinForm() {
           {status === 'failed' && (
             <p className="type-small mt-4 text-red-700">
               Your application wasn't sent. Your answers are still here, so please try again.
+            </p>
+          )}
+          {status === 'limited' && (
+            <p className="type-small mt-4 text-red-700">
+              We've received several applications from this email recently. Please try again in a few hours.
             </p>
           )}
         </div>

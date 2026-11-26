@@ -16,7 +16,7 @@ const TODAY = new Intl.DateTimeFormat('en-PH', { day: 'numeric', month: 'short',
 // api/contact.js.
 export default function ContactForm() {
   const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'failed'
+  const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'failed' | 'limited'
   const [topic, setTopic] = useState('')
 
   async function onSubmit(event) {
@@ -40,7 +40,7 @@ export default function ContactForm() {
       setStatus('sent')
     } catch (error) {
       console.error('Message not sent:', error)
-      setStatus('failed')
+      setStatus(error.message === 'rate_limited' ? 'limited' : 'failed')
     }
   }
 
@@ -130,9 +130,10 @@ export default function ContactForm() {
         </div>
 
         <div className="flex flex-col gap-4 border-t border-dashed border-ink/15 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p role="status" className={cn('type-small sm:max-w-[34ch]', status === 'failed' ? 'text-red-700' : 'text-ink/60')}>
+          <p role="status" className={cn('type-small sm:max-w-[34ch]', status === 'failed' || status === 'limited' ? 'text-red-700' : 'text-ink/60')}>
             {status === 'sent' && 'Message sent. Thank you, we’ll reply to your email soon.'}
             {status === 'failed' && 'Your message wasn’t sent. Your answers are still here, so please try again.'}
+            {status === 'limited' && 'Too many messages for now. Please wait a few minutes before sending another.'}
             {(status === 'idle' || status === 'sending') && 'Goes straight to the Genesis inbox.'}
           </p>
           <button type="submit" disabled={status === 'sending'} className="btn btn-dark w-full shrink-0 sm:w-auto">

@@ -2,11 +2,21 @@
 // Resend (https://resend.com). Setup is in .env.example. The visitor's address
 // is set as Reply-To, so answering the email answers them.
 import { TOPICS, validate } from '../src/features/contact/fields.js'
+import { clientIp, hit } from './_rateLimit.js'
 
 const RESEND_URL = 'https://api.resend.com/emails'
 const LIMITS = { name: 100, email: 150, organization: 120, topic: 60, message: 2000 }
+const MINUTE = 60_000
+// Messages allowed from one visitor's address, from one email address, and in
+// total, before the form asks people to wait.
+const RATE = {
+  ip: { limit: 5, windowMs: 10 * MINUTE },
+  email: { limit: 3, windowMs: 60 * MINUTE },
+  all: { limit: 60, windowMs: 60 * MINUTE },
+}
 
-const json = (body, status = 200) => Response.json(body, { status })
+const json = (body, status = 200, headers) => Response.json(body, { status, headers })
+const tooMany = wait => json({ ok: false, error: 'rate_limited' }, 429, { 'Retry-After': String(wait) })
 
 export async function POST(request) {
   const { RESEND_API_KEY, CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL } = process.env
@@ -14,6 +24,10 @@ export async function POST(request) {
     console.error('Contact email is not set up: RESEND_API_KEY and CONTACT_TO_EMAIL are required.')
     return json({ ok: false, error: 'not_configured' }, 500)
   }
+
+  // Checked before reading the body, so a flood costs as little as possible.
+  const ipWait = hit(`ip:${clientIp(request)}`, RATE.ip.limit, RATE.ip.windowMs)
+  if (ipWait) return tooMany(ipWait)
 
   let input
   try {
@@ -31,6 +45,11 @@ export async function POST(request) {
   if (Object.keys(errors).length || !TOPICS.includes(values.topic)) {
     return json({ ok: false, error: 'invalid', fields: Object.keys(errors) }, 400)
   }
+
+  const emailWait = hit(`email:${values.email.toLowerCase()}`, RATE.email.limit, RATE.email.windowMs)
+  if (emailWait) return tooMany(emailWait)
+  const allWait = hit('all', RATE.all.limit, RATE.all.windowMs)
+  if (allWait) return tooMany(allWait)
 
   const text = [
     values.message || '(No message)',
