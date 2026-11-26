@@ -11,13 +11,12 @@ import { submitApplication } from '../submitApplication'
 const FIELD_CLASS =
   'mt-2 block w-full rounded-none border-0 border-b border-ink/25 bg-transparent px-0 py-3 text-base text-ink outline-none transition-colors placeholder:text-ink/55 hover:border-ink/60 focus:border-ink focus:shadow-[0_1px_0_0_var(--color-ink)] aria-invalid:border-red-700'
 
-const BUTTON_CLASS =
-  'inline-flex min-h-12 items-center justify-center gap-2 bg-genesis px-6 text-sm font-medium text-black transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink disabled:opacity-60 disabled:hover:brightness-100'
+const BUTTON_CLASS = 'btn btn-dark'
 
 function FieldError({ id, message }) {
   if (!message) return null
   return (
-    <p id={id} className="mt-2 text-sm text-red-700">
+    <p id={id} className="type-small mt-2 text-red-700">
       {message}
     </p>
   )
@@ -56,7 +55,7 @@ function Choices({ name, label, options, error, className }) {
           <label
             key={option}
             className={cn(
-              'relative inline-flex min-h-11 items-center border px-4 text-sm font-medium transition-colors hover:border-ink has-checked:border-ink has-checked:bg-ink has-checked:text-paper has-focus-visible:outline-2 has-focus-visible:outline-offset-4 has-focus-visible:outline-ink',
+              'relative inline-flex min-h-11 items-center rounded-full border px-4 type-small font-medium transition-colors hover:border-ink has-checked:border-ink has-checked:bg-ink has-checked:text-paper has-focus-visible:outline-2 has-focus-visible:outline-offset-4 has-focus-visible:outline-ink',
               error ? 'border-red-700' : 'border-ink/25',
             )}
           >
@@ -179,7 +178,7 @@ export default function JoinForm() {
         </button>
         <div role="alert">
           {status === 'failed' && (
-            <p className="mt-4 text-sm text-red-700">
+            <p className="type-small mt-4 text-red-700">
               Your application wasn't sent. Your answers are still here, so please try again.
             </p>
           )}

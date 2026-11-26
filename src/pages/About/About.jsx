@@ -33,7 +33,7 @@ export default function About() {
 
   return (
     <PageLayout title="About Genesis">
-      <div ref={root} className="px-5 py-24 sm:px-10 sm:py-36 lg:px-16">
+      <div ref={root} className="px-4 py-24 sm:px-10 sm:py-36 lg:px-16">
         {/* Mission, with the AWS logo beside it. */}
         <div className="grid items-start gap-14 lg:grid-cols-[minmax(0,1fr)_min(42rem,45vw)] lg:gap-20">
           <div data-reveal className="w-[min(45vw,14rem)] text-[#232f3e]">

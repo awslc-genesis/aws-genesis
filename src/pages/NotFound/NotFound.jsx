@@ -9,7 +9,7 @@ export default function NotFound() {
       <p className="type-body text-ink/70">This page doesn’t exist.</p>
       <TransitionLink
         to="/"
-        className="mt-2 inline-flex min-h-11 items-center justify-center bg-genesis px-4 text-sm font-medium text-black transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+        className="btn btn-dark mt-2"
       >
         Back home
       </TransitionLink>

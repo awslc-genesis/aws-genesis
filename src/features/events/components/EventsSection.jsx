@@ -203,7 +203,7 @@ export default function EventsSection({ className }) {
       className={cn('relative h-[300svh]', className)}
     >
       <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-24 pb-8 sm:pt-28 sm:pb-10">
-        <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
+        <div className="flex items-end justify-between gap-6 px-4 sm:px-10 lg:px-16">
           <h2
             id="events-title"
             className="type-h2"
@@ -220,7 +220,7 @@ export default function EventsSection({ className }) {
 
         <ul
           ref={track}
-          className="mt-8 flex min-h-0 w-max flex-1 gap-12 pt-[6svh] px-5 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
+          className="mt-8 flex min-h-0 w-max flex-1 gap-12 pt-[6svh] px-4 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
         >
           {EVENTS.map((event, i) => (
             <EventCard key={event.seed} event={event} index={i} />

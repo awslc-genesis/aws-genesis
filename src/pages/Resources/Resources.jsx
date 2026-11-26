@@ -82,7 +82,7 @@ export default function Resources() {
 
   return (
     <PageLayout title="Resources">
-      <div ref={root} className="px-5 py-24 sm:px-10 sm:py-36 lg:px-16">
+      <div ref={root} className="px-4 py-24 sm:px-10 sm:py-36 lg:px-16">
         {GROUPS.map((group, g) => (
           <section key={group.title} aria-labelledby={`resources-${group.title}`} className={g > 0 ? 'mt-24 sm:mt-32' : ''}>
             <div data-reveal className="flex items-end justify-between gap-6">

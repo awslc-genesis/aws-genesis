@@ -77,7 +77,7 @@ export default function Navbar({ tone = 'light' }) {
   return (
     <>
       <header ref={root} className="absolute inset-x-0 top-0 z-50">
-        <div className="relative z-[45] px-5 py-5 sm:px-10 sm:py-6">
+        <div className="relative z-[45] px-4 py-5 sm:px-10 sm:py-6">
           <TransitionLink
             to="/"
             onClick={() => setOpen(false)}
@@ -86,8 +86,8 @@ export default function Navbar({ tone = 'light' }) {
             }`}
           >
             <span className="flex flex-col leading-tight">
-              <span className="text-sm font-medium tracking-tight">AWS Learning Club - Genesis</span>
-              <span className={`text-xs font-normal tracking-wide ${open || onCream ? 'text-ink/70' : 'text-white/70'}`}>
+              <span className="text-[15px] font-bold">AWS Learning Club - Genesis</span>
+              <span className={`type-fine ${open || onCream ? 'text-ink/70' : 'text-white/70'}`}>
                 Tarlac State University
               </span>
             </span>
@@ -100,7 +100,7 @@ export default function Navbar({ tone = 'light' }) {
           inert={!open}
           className="invisible fixed inset-0 z-40 flex flex-col bg-white text-ink"
         >
-          <nav aria-label="Main" className="flex flex-1 items-center justify-center px-5">
+          <nav aria-label="Main" className="flex flex-1 items-center justify-center px-4">
             {/* Hovering (or keyboard-focusing) one link dims the others. */}
             <ul className="group/menu text-center">
               {NAV_LINKS.map((link, i) => (
@@ -112,7 +112,7 @@ export default function Navbar({ tone = 'light' }) {
                     to={link.to}
                     aria-current={pathname === link.to ? 'page' : undefined}
                     onClick={() => setOpen(false)}
-                    className={`inline-block text-[clamp(2rem,min(9svh,15vw),6.5rem)] leading-[1.08] font-medium tracking-[-0.045em] uppercase transition-opacity duration-300 group-hover/menu:opacity-20 group-has-[a:focus-visible]/menu:opacity-20 hover:!opacity-100 focus-visible:!opacity-100 focus-visible:outline-ink ${focusRing}`}
+                    className={`inline-block text-[clamp(2rem,min(9svh,15vw),6.5rem)] leading-[1.08] font-semibold tracking-[-0.04em] transition-opacity duration-300 group-hover/menu:opacity-20 group-has-[a:focus-visible]/menu:opacity-20 hover:!opacity-100 focus-visible:!opacity-100 focus-visible:outline-ink ${focusRing}`}
                   >
                     {link.label}
                   </TransitionLink>
@@ -138,7 +138,7 @@ export default function Navbar({ tone = 'light' }) {
         aria-expanded={open}
         aria-controls="site-menu"
         aria-label={open ? 'Close menu' : 'Open menu'}
-        className={`fixed top-5 right-5 z-[60] grid size-11 place-items-center bg-white text-black mix-blend-difference sm:top-6 sm:right-10 ${focusRing} focus-visible:outline-white`}
+        className={`fixed top-5 right-4 z-[60] grid size-11 place-items-center bg-white text-black mix-blend-difference sm:top-6 sm:right-10 ${focusRing} focus-visible:outline-white`}
       >
         <span aria-hidden="true" className="relative block h-3 w-5">
           <span

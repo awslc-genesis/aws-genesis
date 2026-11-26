@@ -26,7 +26,6 @@ const VISION_STATEMENT =
   'Genesis will not only be a university organization, it will soon become an independent initiative that will ' +
   "create bridges for the community and reach beyond the typical. Stay tuned and let's make history."
 
-const HERO_LINK_CLASS = 'inline-flex min-h-11 items-center justify-center gap-2 px-4 text-sm font-medium text-black transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink'
 
 // Draft copy for the three points under the AWS logo; replace with the club's own wording.
 const FEATURES = [
@@ -234,9 +233,9 @@ export default function Home() {
 
         <div
           data-hero-content
-          className="relative mx-auto flex h-full w-full max-w-5xl flex-col px-5 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-[20svh]"
+          className="relative mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-[20svh]"
         >
-          <h1 id="hero-title" data-hero-title className="type-h2 !text-[clamp(3.25rem,16vw,4.5rem)] sm:!text-[clamp(3.75rem,6.2vw,6.5rem)]">
+          <h1 id="hero-title" data-hero-title className="type-display">
             <span className="block">
               <span className="mr-[0.1em] inline-block overflow-hidden pb-[0.08em] align-bottom">
                 <span data-word className="inline-block pr-[0.1em]">
@@ -247,18 +246,18 @@ export default function Home() {
             <span className="block">
               <SplitWords
                 text="history"
-                wordClassName="text-genesis-gradient type-accent leading-[0.82] pr-[0.1em] pb-[0.3em]"
-                maskClassName="-mb-[0.3em]"
+                wordClassName="text-genesis-gradient type-accent pb-[0.15em]"
+                maskClassName="-mb-[0.15em]"
               />
             </span>
           </h1>
-          <div data-hero-actions className="mt-5 sm:mt-8">
-            <div className="flex flex-wrap gap-2.5">
-              <TransitionLink to="/join" className={`${HERO_LINK_CLASS} bg-genesis hover:brightness-110`}>
-                Join Us <ArrowRight className="size-4" aria-hidden="true" />
+          <div data-hero-actions className="mt-7">
+            <div className="flex flex-wrap gap-2">
+              <TransitionLink to="/join" className="btn btn-dark">
+                Join Us <ArrowRight aria-hidden="true" />
               </TransitionLink>
-              <a href="#events" className={`${HERO_LINK_CLASS} bg-ink !text-white hover:bg-ink/85`}>
-                Events
+              <a href="#events" className="btn btn-quiet btn-turn">
+                Explore events <ArrowRight aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -270,7 +269,7 @@ export default function Home() {
       <section
         id="about"
         data-panel
-        className="relative z-10 mt-[60svh] min-h-svh bg-paper px-5 py-24 text-ink sm:px-10 sm:py-36"
+        className="relative z-10 mt-[60svh] min-h-svh bg-paper px-4 py-24 text-ink sm:px-10 sm:py-36"
         aria-label="About the club"
       >
         {/* Gradient band above the panel: it fades the hero through ember orange
@@ -344,7 +343,7 @@ export default function Home() {
         </div>
 
         {/* Events strip spans the full screen width, so it cancels the panel's side padding. */}
-        <EventsSection className="-mx-5 mt-[20svh] sm:-mx-10" />
+        <EventsSection className="-mx-4 mt-[20svh] sm:-mx-10" />
 
         {/* Meet the Team, just before the Become a Member button. */}
         <TeamSection className="mt-[20svh]" />
@@ -402,7 +401,7 @@ export default function Home() {
           role="region"
           className="relative flex min-h-[80svh] flex-col justify-center gap-[12svh] py-24 sm:py-32"
         >
-          <div className="flex items-end justify-between gap-6 px-5 sm:px-10 lg:px-16">
+          <div className="flex items-end justify-between gap-6 px-4 sm:px-10 lg:px-16">
             <h2 id="partners-title" className="type-h2">
               Our <span className="text-genesis-gradient type-accent">Partners</span>
             </h2>
@@ -423,7 +422,7 @@ export default function Home() {
             data-sponsor
             role="region"
             aria-labelledby="sponsor-title"
-            className="mt-28 px-5 sm:mt-40 sm:px-10 lg:px-16"
+            className="mt-28 px-4 sm:mt-40 sm:px-10 lg:px-16"
           >
             <div className="flex items-center justify-between gap-6 border-t border-ink/10 pt-6">
               <p id="sponsor-title" className="type-label text-ink/55">

@@ -38,7 +38,7 @@ const TONES = {
 
 export default function Footer({ tone = 'light' }) {
   const t = TONES[tone] ?? TONES.light
-  const linkClass = `rounded-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 ${t.link}`
+  const linkClass = `inline-flex min-h-11 items-center rounded-sm transition-colors sm:min-h-8 focus-visible:outline-2 focus-visible:outline-offset-4 ${t.link}`
   const root = useRef(null)
 
   // The giant wordmark rises out of its mask as the footer scrolls into view.
@@ -60,14 +60,14 @@ export default function Footer({ tone = 'light' }) {
     // Pulled up under the rounded bottom of the section above, so the
     // footer's background shows in its corners.
     <footer ref={root} className={`relative z-[5] -mt-16 pt-16 ${t.footer}`}>
-      <div className="px-5 pt-16 sm:px-10 sm:pt-24 lg:px-16">
+      <div className="px-4 pt-16 sm:px-10 sm:pt-24 lg:px-16">
         <div className="grid gap-12 md:grid-cols-[2fr_1fr_1fr]">
           <p className="type-h3">Start your Day One</p>
 
           {COLUMNS.map(column => (
             <nav key={column.title} aria-label={column.title}>
               <h2 className={`type-label ${t.label}`}>{column.title}</h2>
-              <ul className="type-body mt-6 space-y-3">
+              <ul className="type-caption mt-4 sm:space-y-1">
                 {column.links.map(link => (
                   <li key={link.to}>
                     <TransitionLink to={link.to} className={linkClass}>
@@ -90,7 +90,7 @@ export default function Footer({ tone = 'light' }) {
           <div data-footer-mark className="relative aspect-[3.2/1] w-full">
             <TechText
               text="Genesis"
-              fontFamily='"Inter", sans-serif'
+              fontFamily='"Inter Tight", sans-serif'
               fontWeight={600}
               fontSize={900}
               color={t.mark}
@@ -108,8 +108,8 @@ export default function Footer({ tone = 'light' }) {
         </div>
       </div>
 
-      <div className={`border-t px-5 py-6 sm:px-10 lg:px-16 ${t.rule}`}>
-        <div className={`type-body flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${t.meta}`}>
+      <div className={`border-t px-4 py-6 sm:px-10 lg:px-16 ${t.rule}`}>
+        <div className={`type-caption flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ${t.meta}`}>
           <span>© {YEAR} AWS Learning Club – Genesis</span>
           <span>Tarlac State University · Tarlac City</span>
         </div>

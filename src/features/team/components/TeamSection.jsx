@@ -81,7 +81,7 @@ function MemberRow({ member }) {
             // over a warm glow, the same palette as the rest of the page.
             <div aria-hidden="true" className="flex size-full items-center justify-center">
               <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_120%,#f97316_0%,rgb(110_36_6/0.6)_45%,transparent_75%)] opacity-80" />
-              <span className="type-accent text-genesis-gradient relative text-[4.5rem] leading-none">
+              <span className="type-accent text-genesis-gradient relative text-[4.5rem] leading-none font-bold tracking-[-0.04em]">
                 {initials(member.name)}
               </span>
             </div>
