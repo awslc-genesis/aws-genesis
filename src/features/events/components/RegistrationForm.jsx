@@ -16,7 +16,7 @@ import {
 // 16px text on purpose: iOS zooms the page when a smaller field is focused.
 // Same underlined line as the Join and Contact sheets.
 const LINE =
-  'mt-1 block w-full rounded-none border-0 border-b border-ink/20 bg-transparent px-0 py-2.5 text-base paper-ink caret-[#1f2d5c] outline-none transition-colors placeholder:text-ink/35 hover:border-ink/50 focus:border-ink aria-invalid:border-red-700'
+  'mt-0.5 block w-full rounded-none border-0 border-b border-ink/20 bg-transparent px-0 py-1.5 text-base paper-ink caret-[#1f2d5c] outline-none transition-colors placeholder:text-ink/35 hover:border-ink/50 focus:border-ink aria-invalid:border-red-700'
 
 const optionValue = option => option.value ?? option
 
@@ -44,7 +44,7 @@ function Question({ field, name, value, onValue, error, values, formId }) {
 
   if (field.type === 'note') {
     const text = typeof field.text === 'function' ? field.text(values) : field.text
-    return <p className={cn('type-body rounded-sm border border-ink/10 bg-white/60 p-5 text-ink/75', span)}>{text}</p>
+    return <p className={cn('type-small rounded-sm border border-ink/10 bg-white/60 p-3 text-ink/75', span)}>{text}</p>
   }
 
   if (field.type === 'check') {
@@ -66,7 +66,7 @@ function Question({ field, name, value, onValue, error, values, formId }) {
           >
             {value && <Check className="size-3.5" strokeWidth={2.5} />}
           </span>
-          <span className="type-body text-ink/80">{field.label}</span>
+          <span className="type-small text-ink/80">{field.label}</span>
         </label>
         <ErrorLine id={errorId} message={error} />
       </div>
@@ -81,7 +81,7 @@ function Question({ field, name, value, onValue, error, values, formId }) {
         {hint}
         <div
           className={cn(
-            cards ? 'mt-3 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))]' : '-mx-3 mt-2 flex flex-wrap gap-x-1',
+            cards ? 'mt-3 grid grid-cols-2 gap-2 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))]' : '-mx-3 mt-1 flex flex-wrap gap-x-1',
           )}
         >
           {field.options.map(option => {
@@ -101,7 +101,7 @@ function Question({ field, name, value, onValue, error, values, formId }) {
               return (
                 <label
                   key={optValue}
-                  className="paper-choice relative inline-flex min-h-11 cursor-pointer items-center rounded-full px-3 type-small text-ink/60 transition-colors hover:text-ink has-checked:font-medium has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink"
+                  className="paper-choice relative inline-flex min-h-10 cursor-pointer items-center rounded-full px-3 type-small text-ink/60 transition-colors hover:text-ink has-checked:font-medium has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink"
                 >
                   {radio}
                   {optValue}
@@ -122,7 +122,7 @@ function Question({ field, name, value, onValue, error, values, formId }) {
               <label
                 key={optValue}
                 className={cn(
-                  'relative flex min-h-28 cursor-pointer flex-col justify-between gap-4 rounded-sm border p-4 transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink',
+                  'relative flex min-h-20 cursor-pointer flex-col justify-between gap-3 rounded-sm border p-3 transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink',
                   checked ? 'border-ink bg-ink text-paper' : 'border-ink/15 bg-white/50 hover:border-ink/50',
                 )}
               >
@@ -180,14 +180,14 @@ function Question({ field, name, value, onValue, error, values, formId }) {
         id={id}
         name={name}
         type={Tag === 'input' ? field.type : undefined}
-        rows={Tag === 'textarea' ? 3 : undefined}
+        rows={Tag === 'textarea' ? 2 : undefined}
         value={value ?? ''}
         onChange={event => onValue(event.target.value)}
         autoComplete={field.autoComplete}
         maxLength={Tag === 'textarea' ? 2000 : 200}
         aria-invalid={Boolean(error)}
         aria-describedby={described}
-        className={cn(LINE, Tag === 'textarea' && 'paper-lined mt-2 border-b-0 py-0')}
+        className={cn(LINE, Tag === 'textarea' && 'paper-lined mt-1 border-b-0 py-0')}
       />
       {hint}
       <ErrorLine id={errorId} message={error} />
@@ -297,7 +297,7 @@ export default function RegistrationForm({ event }) {
   return (
     <div ref={sheet} className="scroll-mt-28">
       {/* Step tabs: done steps can be revisited, later ones unlock in order. */}
-      <ol className="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fit,minmax(8rem,1fr))]">
+      <ol className="flex flex-wrap gap-1.5">
         {steps.map((s, i) => {
           const active = i === current
           const done = i <= reached && !active
@@ -314,7 +314,7 @@ export default function RegistrationForm({ event }) {
                   else goTo(i)
                 }}
                 className={cn(
-                  'flex h-12 w-full items-center gap-3 rounded-sm border px-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+                  'flex h-8 items-center gap-2 rounded-full border px-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
                   active
                     ? 'border-ink bg-ink text-paper'
                     : done
@@ -332,16 +332,13 @@ export default function RegistrationForm({ event }) {
         })}
       </ol>
 
-      <div className="paper paper-plain mt-6 max-w-none! lg:rotate-0!">
-        <form noValidate onSubmit={onSubmit} className="paper-sheet">
-          <span aria-hidden="true" className="paper-hole top-[30%]" />
-          <span aria-hidden="true" className="paper-hole top-[70%]" />
-
-          <div className="flex items-start justify-between gap-4 border-b border-ink/10 pb-5">
+      <div className="paper paper-plain mt-4 max-w-none! after:hidden! lg:rotate-0!">
+        <form noValidate onSubmit={onSubmit} className="paper-sheet px-5! py-5! sm:px-8! sm:py-6!">
+                    <div className="flex items-start justify-between gap-4 border-b border-ink/10 pb-3">
             <div>
-              <p className="type-h3">{step.title}</p>
+              <p className="type-body font-medium">{step.title}</p>
               {(step.intro || step.review) && (
-                <p className="type-small mt-1 max-w-[52ch] text-ink/55">
+                <p className="type-fine mt-0.5 max-w-[52ch] text-ink/55">
                   {step.review ? 'Check your answers, then send. Use the tabs above to change anything.' : step.intro}
                 </p>
               )}
@@ -352,32 +349,43 @@ export default function RegistrationForm({ event }) {
           </div>
 
           {step.review ? (
-            <dl className="mt-7 mb-8 grid gap-x-10 sm:grid-cols-2">
+            <dl className="mt-4 mb-5 grid gap-x-8 sm:grid-cols-2">
               {toRows(form, values).map(([label, answer]) => (
-                <div key={label} className="border-b border-ink/10 py-3">
+                <div key={label} className="border-b border-ink/10 py-2">
                   <dt className="type-fine text-ink/45">{label}</dt>
                   <dd className={cn('type-small mt-0.5 break-words', !answer && 'text-ink/35')}>{answer || '—'}</dd>
                 </div>
               ))}
             </dl>
           ) : (
-            <div className="mt-7 mb-8 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-7 sm:grid-cols-2">
+            <div className="mt-4 mb-5 grid grid-cols-[minmax(0,1fr)] gap-x-6 gap-y-4 sm:grid-cols-2">
               {visibleFields(step, values).map(field =>
                 field.type === 'members' ? (
                   Array.from({ length: memberCount(field, form, values) }, (_, i) => (
-                    <fieldset key={`${field.name}-${i}`} className="min-w-0 sm:col-span-2">
-                      <legend className="type-label flex w-full items-center gap-3 text-ink/55">
+                    <fieldset
+                      key={`${field.name}-${i}`}
+                      className={cn('min-w-0 sm:col-span-2', i > 0 && 'mt-4 border-t border-dashed border-ink/15 pt-6')}
+                    >
+                      <legend className="type-small flex items-center gap-2 font-medium">
+                        <span
+                          aria-hidden="true"
+                          className="flex size-6 items-center justify-center rounded-full bg-ink text-[11px] text-paper tabular-nums"
+                        >
+                          {i + 1}
+                        </span>
                         Member {i + 1}
-                        {i === 0 && memberCount(field, form, values) > 1 && ' · Team leader'}
-                        <span aria-hidden="true" className="h-px flex-1 bg-ink/10" />
+                        {i === 0 && memberCount(field, form, values) > 1 && (
+                          <span className="font-normal text-ink/45">· Team leader</span>
+                        )}
                       </legend>
-                      <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-6 sm:grid-cols-2">
+                      <div className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-x-6 gap-y-4 sm:grid-cols-2">
                         {memberFields(field, i).map(sub => {
                           const name = `${field.name}.${i}.${sub.name}`
                           return (
                             <Question
                               key={name}
-                              field={sub}
+                              // Hints show once, under Member 1, not repeated for everyone.
+                              field={i > 0 ? { ...sub, hint: undefined } : sub}
                               name={name}
                               value={values[field.name]?.[i]?.[sub.name]}
                               onValue={value => setValue(name, value)}
@@ -411,7 +419,7 @@ export default function RegistrationForm({ event }) {
             <input ref={trap} type="text" name="website" tabIndex={-1} autoComplete="off" />
           </div>
 
-          <div className="mt-auto flex flex-col-reverse gap-3 border-t border-dashed border-ink/15 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-auto flex flex-col-reverse gap-3 border-t border-dashed border-ink/15 pt-4 sm:flex-row sm:items-center sm:justify-between">
             {current > 0 ? (
               <button type="button" onClick={() => goTo(current - 1)} className="btn btn-quiet -ml-3 self-start">
                 <ArrowLeft aria-hidden="true" /> Back

@@ -1,5 +1,3 @@
-import { ArrowUpRight } from 'lucide-react'
-
 import TransitionLink from '@/components/common/TransitionLink'
 import { cn } from '@/utils/cn'
 
@@ -15,7 +13,7 @@ export function EventBadge({ event, className }) {
   return (
     <span
       className={cn(
-        'type-fine inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-medium',
+        'type-fine inline-flex items-center gap-1.5 rounded-none px-2.5 py-1 font-medium',
         live ? 'bg-ink text-paper' : 'bg-ink/[0.06] text-ink/60',
         className,
       )}
@@ -35,10 +33,10 @@ export default function EventListCard({ event, large = false }) {
       to={`/events/${event.slug}`}
       className={cn(
         'group grid h-full gap-6 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink',
-        large && 'lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-12',
+        large && 'lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12',
       )}
     >
-      <div className="relative aspect-[3/2] overflow-hidden bg-ink/5">
+      <div className={cn('relative aspect-[3/2] overflow-hidden bg-ink/5', large && 'lg:aspect-[16/10]')}>
         <img
           src={photoOf(event)}
           alt=""
@@ -56,13 +54,13 @@ export default function EventListCard({ event, large = false }) {
           <p className="type-label text-ink/55">
             {event.type} · {formatDates(event)}
           </p>
-          <h3 className={cn('mt-3', large ? 'type-h2' : 'type-h3')}>{event.title}</h3>
+          <h3 className={cn('mt-3', large ? 'type-h3 lg:type-statement' : 'type-h3')}>{event.title}</h3>
           <p className={cn('type-body mt-4 text-ink/60', large ? 'max-w-[44ch]' : 'max-w-[40ch]')}>{event.summary}</p>
         </div>
         <div className="mt-6 flex items-center justify-between gap-4 border-t border-ink/10 pt-4">
           <p className="type-small truncate text-ink/55">{event.place}</p>
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-ink/15 transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
-            <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden="true" />
+          <span className="type-small inline-flex h-10 shrink-0 items-center border border-ink/15 px-4 font-medium transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
+            Check it out!
           </span>
         </div>
       </div>

@@ -43,13 +43,38 @@ import { basicForm, hackathonForm } from './forms'
 // ─────────────────────────────────────────────────────────────────────────────
 const LIST = [
   {
-    slug: 'genesis-seminar-2027',
+    slug: 'cloud-computing-101',
     title: 'Cloud Computing 101',
     type: 'Seminar', // 'Hackathon' | 'Webinar' | 'Seminar'
     registration: true,
+    closed: false,
     place: 'TSU - San Isidro Campus',
     summary: 'this is a test',
     date: '2027-01-15',
+    time: '1:00 – 4:00 PM',
+    photoFile: 'tbaEvent.png',
+  },
+  {
+    slug: 'cloud-computing-102',
+    title: 'Cloud Computing 102',
+    type: 'Hackathon', // 'Hackathon' | 'Webinar' | 'Seminar'
+    registration: true,
+    closed: false,
+    place: 'TSU - San Isidro Campus',
+    summary: 'this is a test',
+    date: '2027-02-15',
+    time: '1:00 – 4:00 PM',
+    photoFile: 'tbaEvent.png',
+  },
+  {
+    slug: 'cloud-computing-103',
+    title: 'Cloud Computing 103',
+    type: 'Webinar', // 'Hackathon' | 'Webinar' | 'Seminar'
+    registration: false,
+    closed: false,
+    place: 'TSU - San Isidro Campus',
+    summary: 'this is a test',
+    date: '2027-03-15',
     time: '1:00 – 4:00 PM',
     photoFile: 'tbaEvent.png',
   },

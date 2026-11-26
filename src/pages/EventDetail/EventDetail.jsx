@@ -95,9 +95,9 @@ export default function EventDetail() {
             ))}
           </dl>
           <div data-reveal>
-            <p className="type-statement">{event.summary}</p>
+            <p className="type-lede max-w-[52ch] font-medium">{event.summary}</p>
             {event.about?.map(paragraph => (
-              <p key={paragraph} className="type-body mt-6 max-w-[60ch] text-ink/65">
+              <p key={paragraph} className="type-body mt-4 max-w-[60ch] text-ink/65">
                 {paragraph}
               </p>
             ))}
@@ -120,22 +120,21 @@ export default function EventDetail() {
           <section
             id="register"
             aria-labelledby="register-title"
-            className="mt-24 scroll-mt-24 border-t border-ink/10 pt-12 sm:mt-36"
+            className="mt-24 grid scroll-mt-24 gap-8 border-t border-ink/10 pt-12 sm:mt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-16"
           >
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div>
-                <h2 id="register-title" className="type-h2">
-                  Register for <span className="text-genesis-gradient type-accent">{event.title}</span>
-                </h2>
-                {reg === 'open' && (
-                  <p className="type-lede mt-4 max-w-[52ch] text-ink/65">
-                    {event.registration.note ?? 'Takes a few minutes. You’ll get the details by email.'}
-                    {event.registration.closes && ` Closes ${longDate(event.registration.closes)}.`}
-                  </p>
-                )}
-              </div>
+            {/* Heading on the side, form beside it, so the form stays small. */}
+            <div className="lg:sticky lg:top-28 lg:h-fit">
+              <h2 id="register-title" className="type-h3 font-semibold">
+                Register for <span className="text-genesis-gradient type-accent">{event.title}</span>
+              </h2>
+              {reg === 'open' && (
+                <p className="type-body mt-3 max-w-[40ch] text-ink/60">
+                  {event.registration.note ?? 'Takes a few minutes. You’ll get the details by email.'}
+                  {event.registration.closes && ` Closes ${longDate(event.registration.closes)}.`}
+                </p>
+              )}
             </div>
-            <div className="mt-10 sm:mt-14">
+            <div className="min-w-0 max-w-2xl">
               {reg === 'open' ? (
                 <RegistrationForm event={event} />
               ) : (

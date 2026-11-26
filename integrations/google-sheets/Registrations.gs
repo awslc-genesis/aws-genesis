@@ -7,7 +7,7 @@
 // this script doesn't need editing when a form changes: a new question simply
 // becomes a new column at the end of that event's tab.
 
-const MAX_ROWS = 120 // answers per registration (a 5-person team is ~45)
+const MAX_ROWS = 120 // answers per registration (a 3-person team is ~25)
 const MAX_LABEL = 200
 const MAX_VALUE = 2000
 

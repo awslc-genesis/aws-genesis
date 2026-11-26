@@ -10,27 +10,23 @@ import TransitionLink from '@/components/common/TransitionLink'
 import { cn } from '@/utils/cn'
 
 import { formatDates, latestEvents, photoOf } from '../eventUtils'
+import { EventBadge } from './EventListCard'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-// The home page strip shows what's coming up, then the latest past events.
+// The home page shows up to three events: upcoming (and ongoing) ones soonest
+// first, topped up with the most recent past ones when fewer are coming up.
 // Edit events in ../data/events.js; this strip and the Events page both read it.
-const EVENTS = latestEvents(6)
+const EVENTS = latestEvents(3)
 
 function EventCard({ event, index }) {
-  // Cards alternate a little above and below the row's center for an editorial rhythm.
-  const raised = index % 2 === 1
   const number = String(index + 1).padStart(2, '0')
 
   return (
     <li
-      className={cn(
-        // Width follows the screen's height on wide screens, so a card plus its
-        // caption always fits vertically; on phones one card fills most of the
-        // width with the next peeking in.
-        'relative w-[min(90vw,78svh)] shrink-0 self-center text-ink',
-        raised ? '-translate-y-[5svh]' : 'translate-y-[5svh]',
-      )}
+      // Width follows the screen's height on wide screens, so a card plus its
+      // caption always fits vertically; on phones it fills most of the width.
+      className="relative w-[min(90vw,72svh)] shrink-0 self-center text-ink"
     >
       {/* Landscape photo as a React Bits TiltedCard: it tilts toward the
           pointer (no glare), the title floats on a parallax layer, and a
@@ -63,6 +59,9 @@ function EventCard({ event, index }) {
         >
           {/* Blended so the title inverts against the photo: dark on light
               photos, white on dark ones. */}
+          <TiltedCardLayer depth={20}>
+            <EventBadge event={event} className="absolute top-4 left-4" />
+          </TiltedCardLayer>
           <TiltedCardLayer depth={30} className="mix-blend-difference">
             <h3 className="type-h3 absolute right-6 bottom-5 left-6 text-white sm:bottom-6 sm:left-7">
               {event.title}
@@ -83,10 +82,10 @@ function EventCard({ event, index }) {
         </div>
         <TransitionLink
           to={`/events/${event.slug}`}
-          aria-label={`View ${event.title}`}
-          className="flex size-10 shrink-0 items-center justify-center rounded-full border border-ink/15 transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+          aria-label={`Check it out: ${event.title}`}
+          className="type-small inline-flex h-10 shrink-0 items-center border border-ink/15 px-4 font-medium transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
         >
-          <ArrowUpRight className="size-4" strokeWidth={1.5} aria-hidden="true" />
+          Check it out!
         </TransitionLink>
       </div>
     </li>
@@ -209,7 +208,7 @@ export default function EventsSection({ className }) {
 
         <ul
           ref={track}
-          className="mt-8 flex min-h-0 w-max flex-1 gap-12 pt-[6svh] px-4 will-change-transform sm:mt-10 sm:gap-24 sm:px-10 lg:gap-40 lg:px-16"
+          className="mt-8 flex min-h-0 w-max flex-1 gap-8 px-4 will-change-transform sm:mt-10 sm:gap-12 sm:px-10 lg:gap-20 lg:px-16"
         >
           {EVENTS.map((event, i) => (
             <EventCard key={event.slug} event={event} index={i} />

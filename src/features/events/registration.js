@@ -9,7 +9,7 @@ export const isShown = (field, values) => !field.showIf || field.showIf(values)
 export const visibleFields = (step, values) => step.fields.filter(field => isShown(field, values))
 
 // How many members a 'members' question asks for, from the size of the option
-// picked in its `countFrom` cards.
+// picked in its `countFrom` question.
 export function memberCount(field, form, values) {
   const source = form.flatMap(step => step.fields).find(f => f.name === field.countFrom)
   const picked = source?.options?.find(option => (option.value ?? option) === values[field.countFrom])

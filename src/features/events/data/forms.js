@@ -18,7 +18,7 @@
 //              short options) | 'cards' (big tiles with a hint line) |
 //              'check' (a box to tick, e.g. an agreement) | 'members' (one set
 //              of questions per team member) | 'note' (text only, no answer).
-//   options    For choice and cards: strings, or { value, hint, size } for cards.
+//   options    For choice and cards: strings, or { value, hint, size }.
 //   required   Defaults to true.
 //   hint       Small grey line under the question.
 //   wide       true to span both columns.
@@ -35,26 +35,11 @@
 // When you change questions after people have registered, the Google Sheet
 // simply gets new columns; old rows keep their answers.
 
+// Shown as a simple row of choices; `size` is how many members to ask about.
 const DEFAULT_TEAM_SIZES = [
-  { value: 'Solo', hint: '1 person', size: 1 },
-  { value: 'Duo', hint: '2 people', size: 2 },
-  { value: 'Trio', hint: '3 people', size: 3 },
-  { value: 'Full team', hint: '5 people', size: 5 },
-]
-
-const DEFAULT_TRACKS = [
-  { value: 'Education & Digital Literacy', hint: 'Learning that reaches more people' },
-  { value: 'Sustainability & Climate', hint: 'Less waste, cleaner cities' },
-  { value: 'Health & Well-being', hint: 'Care, access and mental health' },
-  { value: 'Civic Innovation & Public Service', hint: 'Better services for citizens' },
-  { value: 'Economic Empowerment', hint: 'Jobs, small business and finance' },
-]
-
-const DEFAULT_FORMATS = [
-  { value: 'Web app', hint: 'Runs in the browser' },
-  { value: 'Mobile app', hint: 'Android or iOS' },
-  { value: 'AI & data', hint: 'Models, analytics, chatbots' },
-  { value: 'IoT & hardware', hint: 'Sensors and devices' },
+  { value: 'Solo', size: 1 },
+  { value: 'Team of 2', size: 2 },
+  { value: 'Team of 3', size: 3 },
 ]
 
 const DEFAULT_RULES = [
@@ -74,7 +59,7 @@ export function basicForm({ title = 'Your details', extra = [] } = {}) {
       title,
       fields: [
         { name: 'name', label: 'Full name', type: 'text', autoComplete: 'name' },
-        { name: 'email', label: 'Email', type: 'email', autoComplete: 'email' },
+        { name: 'email', label: 'Student email', type: 'email', autoComplete: 'email', hint: 'The address your school gave you' },
         { name: 'school', label: 'School or organization', type: 'text', autoComplete: 'organization' },
         { name: 'course', label: 'Course and year', type: 'text', required: false, hint: 'e.g. BSIT 2nd year' },
         { name: 'member', label: 'Are you a Genesis member?', type: 'choice', options: ['Yes', 'Not yet'], wide: true },
@@ -91,14 +76,12 @@ export function basicForm({ title = 'Your details', extra = [] } = {}) {
   ]
 }
 
-// A team event with tracks, eligibility, members and an optional fee.
+// A team event with eligibility, members and an optional fee.
 // Everything has a default; pass only what this hackathon does differently.
 // `fee` is per member, in pesos; leave it out (or 0) for a free event and the
 // Payment step disappears.
 export function hackathonForm({
   teamSizes = DEFAULT_TEAM_SIZES,
-  tracks = DEFAULT_TRACKS,
-  formats = DEFAULT_FORMATS,
   rules = DEFAULT_RULES,
   fee = 0,
   payment = {},
@@ -106,10 +89,9 @@ export function hackathonForm({
   const sizeOf = values => teamSizes.find(option => option.value === values.teamSize)?.size ?? 1
   const steps = [
     {
-      title: 'Setup',
-      intro: 'Choose how you’re joining, then pick 1 impact track and 1 technology format.',
+      title: 'Team',
       fields: [
-        { name: 'teamSize', label: 'Join as', type: 'cards', options: teamSizes, wide: true },
+        { name: 'teamSize', label: 'Joining as', type: 'choice', options: teamSizes, wide: true },
         {
           name: 'teamName',
           label: 'Team name',
@@ -117,8 +99,6 @@ export function hackathonForm({
           wide: true,
           showIf: values => sizeOf(values) > 1,
         },
-        { name: 'track', label: 'Impact track', type: 'cards', options: tracks, wide: true },
-        { name: 'format', label: 'Technology format', type: 'cards', options: formats, wide: true },
       ],
     },
     {
@@ -136,11 +116,10 @@ export function hackathonForm({
           countFrom: 'teamSize',
           fields: [
             { name: 'name', label: 'Full name', type: 'text' },
-            { name: 'email', label: 'Email', type: 'email' },
+            { name: 'email', label: 'Student email', type: 'email', hint: 'The address your school gave you' },
             { name: 'school', label: 'School', type: 'text' },
             { name: 'course', label: 'Course', type: 'text', hint: 'e.g. BS Computer Science' },
             { name: 'year', label: 'Year level', type: 'choice', options: YEAR_LEVELS, wide: true },
-            { name: 'phone', label: 'Mobile number', type: 'tel', leaderOnly: true, autoComplete: 'tel' },
           ],
         },
       ],

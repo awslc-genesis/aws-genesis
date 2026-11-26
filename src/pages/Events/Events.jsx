@@ -61,16 +61,16 @@ export default function Events() {
         )}
 
         <section aria-labelledby="upcoming-title" className="mt-16 sm:mt-24">
-          <div className="flex items-end justify-between gap-6 border-b border-ink/10 pb-5">
-            <h2 id="upcoming-title" className="type-h2">
+          <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 pb-3">
+            <h2 id="upcoming-title" className="type-h3 font-semibold">
               Upcoming
             </h2>
-            <p className="type-label pb-1 text-ink/55 tabular-nums">{String(upcoming.length).padStart(2, '0')}</p>
+            <p className="type-label text-ink/45 tabular-nums">{String(upcoming.length).padStart(2, '0')}</p>
           </div>
 
           {featured ? (
             <>
-              <div data-reveal className="mt-10 sm:mt-14">
+              <div data-reveal className="mt-8 sm:mt-10">
                 <EventListCard event={featured} large />
               </div>
               {later.length > 0 && (
@@ -93,13 +93,13 @@ export default function Events() {
 
         {past.length > 0 && (
           <section aria-labelledby="past-title" className="mt-24 sm:mt-36">
-            <div className="flex items-end justify-between gap-6 border-b border-ink/10 pb-5">
-              <h2 id="past-title" className="type-h2 text-ink/35">
+            <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 pb-3">
+              <h2 id="past-title" className="type-h3 font-semibold text-ink/55">
                 Past events
               </h2>
-              <p className="type-label pb-1 text-ink/55 tabular-nums">{String(past.length).padStart(2, '0')}</p>
+              <p className="type-label text-ink/45 tabular-nums">{String(past.length).padStart(2, '0')}</p>
             </div>
-            <ul className="mt-10 grid gap-x-10 gap-y-16 sm:mt-14 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-8 grid gap-x-10 gap-y-16 sm:mt-10 sm:grid-cols-2 lg:grid-cols-3">
               {past.map(event => (
                 <li key={event.slug} data-reveal>
                   <EventListCard event={event} />
