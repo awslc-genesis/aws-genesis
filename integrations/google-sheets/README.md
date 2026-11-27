@@ -33,9 +33,9 @@ The year and department choices are in both `Code.gs` and
 
 Event pages (`/events/<slug>`) that take registrations send each one to a
 second Apps Script, [Registrations.gs](Registrations.gs). Each event gets its
-own tab, named after its slug, and every question becomes a column. Events
-without a `registration` entry in `src/features/events/data/events.js` (or
-with `registration.url` pointing to an outside form) never send anything here.
+own tab, named after its slug, and every question becomes a column. Only
+events with `registration: true` in `src/features/events/data/events.js` (and
+no `registerUrl` pointing to an outside form) send anything here.
 
 ## Set it up (once)
 
