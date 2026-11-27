@@ -314,7 +314,7 @@ export default function RegistrationForm({ event }) {
                   else goTo(i)
                 }}
                 className={cn(
-                  'flex h-8 items-center gap-2 rounded-full border px-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+                  'flex h-8 items-center gap-2 rounded-none border px-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
                   active
                     ? 'border-ink bg-ink text-paper'
                     : done
