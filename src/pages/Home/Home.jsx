@@ -9,6 +9,7 @@ import DitherClouds from '@/components/animations/DitherClouds'
 import AwsLogo from '@/components/common/AwsLogo'
 import SplitWords from '@/components/common/SplitWords'
 import TransitionLink from '@/components/common/TransitionLink'
+import OptionWheel from '@/components/ui/option-wheel'
 import Footer from '@/components/layout/Footer'
 import Navbar from '@/components/layout/Navbar'
 import { EventsSection } from '@/features/events'
@@ -26,6 +27,50 @@ const VISION_STATEMENT =
   'Genesis will not only be a university organization, it will soon become an independent initiative that will ' +
   "create bridges for the community and reach beyond the typical. Stay tuned and let's make history."
 
+
+// The hero clouds are drawn as three stacked layers, one bank each, so the
+// services wheel can sit between them: back (0) and middle (+1) behind it,
+// front (+2) in front of it.
+const CLOUD_LAYERS = [
+  { banks: ['far'], className: 'z-0', transparent: false },
+  { banks: ['mid'], className: 'z-10', transparent: true },
+  { banks: ['front'], className: 'z-30', transparent: true },
+]
+
+// AWS services cycling through the hero wheel, each with a one-line,
+// plain-language take on what it does.
+const AWS_SERVICES = [
+  { label: 'EC2', note: 'a computer you rent by the second' },
+  { label: 'S3', note: 'a closet with no back wall' },
+  { label: 'Lambda', note: 'code that wakes up, works, and naps' },
+  { label: 'DynamoDB', note: 'answers before you finish asking' },
+  { label: 'RDS', note: 'SQL, minus the 3 a.m. pages' },
+  { label: 'Aurora', note: 'a database that dawns on you' },
+  { label: 'CloudFront', note: 'your site, next door to everyone' },
+  { label: 'Route 53', note: 'the internet’s phone book' },
+  { label: 'IAM', note: 'who gets in, and how far' },
+  { label: 'VPC', note: 'your own corner of the cloud' },
+  { label: 'API Gateway', note: 'the front desk for your code' },
+  { label: 'SQS', note: 'a line that never loses its place' },
+  { label: 'SNS', note: 'one shout, a thousand ears' },
+  { label: 'EventBridge', note: 'when this happens, do that' },
+  { label: 'Step Functions', note: 'chores, in the right order' },
+  { label: 'ECS', note: 'containers, neatly stacked' },
+  { label: 'EKS', note: 'Kubernetes, without the yak shaving' },
+  { label: 'Fargate', note: 'containers, no servers attached' },
+  { label: 'CloudWatch', note: 'it never blinks' },
+  { label: 'CloudFormation', note: 'infrastructure, written down' },
+  { label: 'Amplify', note: 'from idea to URL by lunch' },
+  { label: 'Cognito', note: 'sign-in, sorted' },
+  { label: 'Bedrock', note: 'foundation models on tap' },
+  { label: 'SageMaker', note: 'teach the machine' },
+  { label: 'Kinesis', note: 'data that never sits still' },
+  { label: 'Athena', note: 'ask your files a question' },
+  { label: 'Glue', note: 'holds your data together' },
+  { label: 'Redshift', note: 'billions of rows, one query' },
+  { label: 'Lightsail', note: 'the cloud with training wheels' },
+  { label: 'Elastic Beanstalk', note: 'upload it, it grows' },
+]
 
 // Draft copy for the three points under the AWS logo; replace with the club's own wording.
 const FEATURES = [
@@ -47,6 +92,9 @@ export default function Home() {
   const root = useRef(null)
   const [veilPaused, setVeilPaused] = useState(false)
   const pressStart = useRef(null)
+  // One ref per cloud layer (back, middle, front), so a wheel step disturbs all three.
+  const clouds = useRef([])
+  const wheelBox = useRef(null)
 
   useGSAP(
     () => {
@@ -72,7 +120,7 @@ export default function Home() {
           end: 'top top',
           scrub: true,
         }
-        gsap.to('[data-hero-content]', { autoAlpha: 0, ease: 'none', scrollTrigger: cover })
+        gsap.to('[data-hero-content], [data-hero-wheel]', { autoAlpha: 0, ease: 'none', scrollTrigger: cover })
         // Light floods up from the panel's edge into the dark hero. The glow is
         // anchored to the panel and grows upward (it never fades, so its paper
         // end always matches the panel and no edge shows). Its top is fully
@@ -212,7 +260,14 @@ export default function Home() {
         pending = setTimeout(() => ScrollTrigger.refresh(), 150)
       })
       heightWatcher.observe(root.current)
+      // Height changes made by a refresh itself are the new baseline, not a
+      // reason to refresh again (each refresh nudges the scroll on phones).
+      const syncHeight = () => {
+        lastHeight = root.current?.offsetHeight ?? lastHeight
+      }
+      ScrollTrigger.addEventListener('refresh', syncHeight)
       return () => {
+        ScrollTrigger.removeEventListener('refresh', syncHeight)
         heightWatcher.disconnect()
         clearTimeout(pending)
       }
@@ -226,14 +281,61 @@ export default function Home() {
       <Navbar tone="dark" />
       {/* Hero stays pinned (CSS sticky) while the next section slides over it. */}
       <section id="home" className="sticky top-0 h-svh overflow-hidden text-ink" aria-labelledby="hero-title">
-        <div data-hero-veil className="absolute inset-0 origin-top">
-          <DitherClouds paused={veilPaused} cellSize={isCoarsePointer() ? 2 : 3} />
-        </div>
+        {CLOUD_LAYERS.map((layer, i) => (
+          <div
+            key={layer.banks[0]}
+            data-hero-veil
+            className={`pointer-events-none absolute inset-0 origin-top ${layer.className}`}
+          >
+            <DitherClouds
+              ref={el => {
+                clouds.current[i] = el
+              }}
+              banks={layer.banks}
+              transparent={layer.transparent}
+              paused={veilPaused}
+              cellSize={isCoarsePointer() ? 2 : 3}
+            />
+          </div>
+        ))}
 
+        {/* AWS services wheel on the right. It steps on its own every second and
+            only takes the mouse wheel while the pointer is over it, so it never
+            scrolls with the page. Hidden on small screens, where there is no room. */}
+        <div
+          ref={wheelBox}
+          data-hero-wheel
+          className="absolute inset-y-0 right-0 z-20 hidden w-[min(44vw,40rem)] [mask-image:linear-gradient(to_bottom,transparent,black_18%)] lg:block"
+        >
+          <OptionWheel
+            items={AWS_SERVICES}
+            aria-label="AWS cloud services"
+            side="right"
+            loop
+            autoPlay={1000}
+            paused={veilPaused}
+            fontSize={2.4}
+            inset={64}
+            fade={0.14}
+            minOpacity={0.2}
+            blur={1.2}
+            textColor="#a39d97"
+            activeColor="#f07a22"
+            onChange={() => {
+              // Every step sends a shockwave through the clouds from the
+              // selected service, at the wheel's right side.
+              const box = wheelBox.current?.getBoundingClientRect()
+              clouds.current.forEach(layer =>
+                layer?.disturb(box && box.right - box.width * 0.2, box && box.top + box.height / 2),
+              )
+            }}
+            className="h-full w-full"
+          />
+        </div>
 
         <div
           data-hero-content
-          className="relative mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-[20svh]"
+          className="pointer-events-none relative z-40 mx-auto flex h-full w-full max-w-5xl flex-col px-4 pt-28 pb-10 sm:px-10 sm:pb-14 lg:pt-[20svh]"
         >
           <h1 id="hero-title" data-hero-title className="type-display">
             <span className="block">
@@ -251,7 +353,7 @@ export default function Home() {
               />
             </span>
           </h1>
-          <div data-hero-actions className="mt-7">
+          <div data-hero-actions className="pointer-events-auto mt-7 w-fit">
             <div className="flex flex-wrap gap-2">
               <TransitionLink to="/join" className="btn btn-dark">
                 Join Us <ArrowRight aria-hidden="true" />
@@ -379,7 +481,9 @@ export default function Home() {
               size={150}
               fontSize={18}
               fontWeight={700}
-              draggable
+              // Spinning by drag only with a mouse: on touch screens a swipe
+              // over the ring must scroll the page, not get caught by it.
+              draggable={!isCoarsePointer()}
               hoverTilt={20}
             >
               <ArrowUpRight className="size-9" strokeWidth={1.5} aria-hidden="true" />

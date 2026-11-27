@@ -5,12 +5,13 @@ import { useGSAP } from '@gsap/react'
 import { ArrowUpRight } from 'lucide-react'
 
 import TiltedCard, { TiltedCardLayer } from '@/components/animations/TiltedCard'
-import { FREE, PINNED } from '@/utils/motion'
+import { FREE, PINNED, viewportHeight } from '@/utils/motion'
 import TransitionLink from '@/components/common/TransitionLink'
 import { cn } from '@/utils/cn'
 
 import { formatDates, latestEvents, photoOf } from '../eventUtils'
 import { EventBadge } from './EventListCard'
+import TicketStub from './TicketStub'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -19,8 +20,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 // Edit events in ../data/events.js; this strip and the Events page both read it.
 const EVENTS = latestEvents(3)
 
-function EventCard({ event, index }) {
-  const number = String(index + 1).padStart(2, '0')
+function EventCard({ event }) {
 
   return (
     <li
@@ -70,24 +70,14 @@ function EventCard({ event, index }) {
         </TiltedCard>
       </div>
 
-      {/* Caption in the same style as the About points: mono label, details, link. */}
-      <div className="flex items-end justify-between gap-4 pt-5">
-        <div className="min-w-0">
-          <p className="type-label text-ink/55">
-            No.{number} · {event.type}
-          </p>
-          <p className="type-body mt-2 text-ink/60">
-            {formatDates(event)} · {event.place}
-          </p>
-        </div>
-        <TransitionLink
-          to={`/events/${event.slug}`}
-          aria-label={`Check it out: ${event.title}`}
-          className="type-small inline-flex h-10 shrink-0 items-center border border-ink/15 px-4 font-medium transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
-        >
-          Check it out!
-        </TransitionLink>
-      </div>
+      {/* Ticket stub under the card, linking to the event's page. */}
+      <TransitionLink
+        to={`/events/${event.slug}`}
+        aria-label={`Check it out: ${event.title}`}
+        className="group block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+      >
+        <TicketStub event={event} />
+      </TransitionLink>
     </li>
   )
 }
@@ -110,14 +100,14 @@ export default function EventsSection({ className }) {
         const distance = () => Math.max(0, row.scrollWidth - window.innerWidth)
         // Extra scroll before the cards start moving, so the first card can be
         // seen while the strip holds still...
-        const lead = () => window.innerHeight * (touch ? 0.25 : 0.5)
+        const lead = () => viewportHeight() * (touch ? 0.25 : 0.5)
         // ...and after the last card arrives, so the strip rests with every
         // event in view before the page moves on to the next section.
-        const hold = () => window.innerHeight * (touch ? 0.35 : 0.6)
+        const hold = () => viewportHeight() * (touch ? 0.35 : 0.6)
 
         // Re-measured on every refresh (resize, font load) before triggers recalc.
         const setHeight = () => {
-          section.style.height = `${window.innerHeight + lead() + distance() + hold()}px`
+          section.style.height = `${viewportHeight() + lead() + distance() + hold()}px`
         }
         setHeight()
         ScrollTrigger.addEventListener('refreshInit', setHeight)
@@ -210,8 +200,8 @@ export default function EventsSection({ className }) {
           ref={track}
           className="mt-8 flex min-h-0 w-max flex-1 gap-8 px-4 will-change-transform sm:mt-10 sm:gap-12 sm:px-10 lg:gap-20 lg:px-16"
         >
-          {EVENTS.map((event, i) => (
-            <EventCard key={event.slug} event={event} index={i} />
+          {EVENTS.map(event => (
+            <EventCard key={event.slug} event={event} />
           ))}
         </ul>
       </div>

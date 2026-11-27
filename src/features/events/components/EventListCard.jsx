@@ -1,7 +1,8 @@
 import TransitionLink from '@/components/common/TransitionLink'
 import { cn } from '@/utils/cn'
 
-import { formatDates, photoOf, registrationState, statusOf } from '../eventUtils'
+import { photoOf, registrationState, statusOf } from '../eventUtils'
+import TicketStub from './TicketStub'
 
 // Small pill on a card: "Registration open", "Happening now", "Past"…
 export function EventBadge({ event, className }) {
@@ -24,19 +25,21 @@ export function EventBadge({ event, className }) {
   )
 }
 
-// A card on the Events page: photo, type, title, date and place, linking to
-// the event's own page. Past events stay black and white.
+// A card on the Events page, shaped like one ticket: photo, then the title and
+// summary, then the same tear-off stub as the home page. The large one (the
+// featured event) lies sideways on wide screens: photo, details, and the stub
+// at the right end.
 export default function EventListCard({ event, large = false }) {
   const past = statusOf(event) === 'past'
   return (
     <TransitionLink
       to={`/events/${event.slug}`}
       className={cn(
-        'group grid h-full gap-6 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink',
-        large && 'lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12',
+        'group flex h-full flex-col bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink',
+        large && 'lg:flex-row',
       )}
     >
-      <div className={cn('relative aspect-[3/2] overflow-hidden bg-ink/5', large && 'lg:aspect-[16/10]')}>
+      <div className={cn('relative aspect-[3/2] overflow-hidden bg-ink/5', large && 'lg:aspect-[16/10] lg:w-5/12 lg:shrink-0')}>
         <img
           src={photoOf(event)}
           alt=""
@@ -49,21 +52,12 @@ export default function EventListCard({ event, large = false }) {
         <EventBadge event={event} className="absolute top-4 left-4" />
       </div>
 
-      <div className={cn('flex min-w-0 flex-col', large && 'lg:justify-between lg:py-2')}>
-        <div>
-          <p className="type-label text-ink/55">
-            {event.type} · {formatDates(event)}
-          </p>
-          <h3 className={cn('mt-3', large ? 'type-h3 lg:type-statement' : 'type-h3')}>{event.title}</h3>
-          <p className={cn('type-body mt-4 text-ink/60', large ? 'max-w-[44ch]' : 'max-w-[40ch]')}>{event.summary}</p>
-        </div>
-        <div className="mt-6 flex items-center justify-between gap-4 pt-1">
-          <p className="type-small truncate text-ink/55">{event.place}</p>
-          <span className="type-small inline-flex h-10 shrink-0 items-center border border-ink/15 px-4 font-medium transition-colors duration-300 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
-            Check it out!
-          </span>
-        </div>
+      <div className={cn('min-w-0 flex-1 px-5 pt-5 pb-6 sm:px-7', large && 'lg:px-10 lg:py-8')}>
+        <h3 className={cn(large ? 'type-h3 lg:type-statement' : 'type-h3')}>{event.title}</h3>
+        <p className={cn('type-body mt-3 text-ink/60', large ? 'max-w-[44ch]' : 'max-w-[40ch]')}>{event.summary}</p>
       </div>
+
+      <TicketStub event={event} side={large} />
     </TransitionLink>
   )
 }

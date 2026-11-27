@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useImperativeHandle, useRef } from 'react'
 
 import './DitherClouds.css'
 
@@ -18,6 +18,8 @@ uniform vec2 uSize;      // canvas size, in dither cells
 uniform float uTime;
 uniform float uPresence; // 0 -> 1 intro
 uniform vec3 uPointer;   // x, y (cells, y up), strength
+uniform vec3 uBanks;     // which banks to draw: far, mid, front (1 or 0)
+uniform vec4 uGusts[3];  // shockwaves: x, y (cells, y up), age (s), strength
 uniform vec3 uSky;       // one flat color
 uniform float uSkyAlpha; // 0 lets the page show through the sky
 uniform vec3 uCloud[4];  // shadow -> lit top
@@ -100,6 +102,21 @@ void main() {
   float near = uPointer.z * exp(-dot(away, away) / 0.018);
   p -= away * near * 0.35;
 
+  // Shockwaves: a ring spreads out from each gust's origin, shoving the
+  // clouds outward and lighting them as it passes, then dies away.
+  float gustLight = 0.0;
+  for (int i = 0; i < 3; i++) {
+    vec4 g = uGusts[i];
+    if (g.w <= 0.0) continue;
+    vec2 d = p - g.xy / unit;
+    float r = length(d) + 1e-4;
+    float front = g.z * 0.75;
+    float band = exp(-pow((r - front) / 0.05, 2.0));
+    float amp = g.w * exp(-g.z * 2.0);
+    p -= (d / r) * band * amp * 0.012;
+    gustLight += band * amp;
+  }
+
   // Ragged, slowly boiling edges.
   vec2 w = p * 9.0 + vec2(uTime * 0.05, -uTime * 0.04);
   p += 0.022 * (vec2(noise(w), noise(w + 31.7)) - 0.5);
@@ -112,9 +129,12 @@ void main() {
   vec2 span = vec2(view.x, view.y * mix(0.64, 0.72, wide));
 
   float rise = (1.0 - uPresence) * 0.45;
-  vec2 far = bank(p + vec2(0.0, rise * 0.5), span, 1.0, 0.075, 0.36, 0.5, uTime * 0.006 + 3.0);
-  vec2 mid = bank(p + vec2(0.0, rise * 0.8), span, 2.0, 0.11, 0.2, 0.42, uTime * 0.011 + 7.0);
-  vec2 front = bank(p + vec2(0.0, rise * 1.2), span, 3.0, 0.15, 0.03, 0.3, uTime * 0.018 + 1.0);
+  vec2 far = vec2(0.0);
+  vec2 mid = vec2(0.0);
+  vec2 front = vec2(0.0);
+  if (uBanks.x > 0.5) far = bank(p + vec2(0.0, rise * 0.5), span, 1.0, 0.075, 0.36, 0.5, uTime * 0.006 + 3.0);
+  if (uBanks.y > 0.5) mid = bank(p + vec2(0.0, rise * 0.8), span, 2.0, 0.11, 0.2, 0.42, uTime * 0.011 + 7.0);
+  if (uBanks.z > 0.5) front = bank(p + vec2(0.0, rise * 1.2), span, 3.0, 0.15, 0.03, 0.3, uTime * 0.018 + 1.0);
 
   float threshold = bayer8(cell);
   vec3 color = uSky;
@@ -125,6 +145,7 @@ void main() {
   tone = mix(tone, front.x, front.y);
   float cloud = max(far.y, max(mid.y, front.y));
   tone += near * 0.22 * cloud;
+  tone += gustLight * 0.04 * cloud;
   tone *= mix(0.4, 1.0, uPresence);
 
   float alpha = uSkyAlpha;
@@ -138,6 +159,9 @@ void main() {
 }`
 
 const INTRO_SECONDS = 1.8
+// How long a shockwave lasts, and how many can overlap.
+const GUST_SECONDS = 2.4
+const GUST_SLOTS = 3
 // Clouds move slowly, so 30 frames a second looks the same and costs half.
 const FRAME_MS = 1000 / 31
 
@@ -166,6 +190,7 @@ const link = gl => {
 
 // Ember sunset, all in one orange hue. Clouds: shadow to lit top.
 const SKY = '#ffffff'
+const ALL_BANKS = ['far', 'mid', 'front']
 const CLOUD = ['#2b110a', '#4a1a08', '#b8480f', '#ffb056']
 
 /**
@@ -176,24 +201,42 @@ const CLOUD = ['#2b110a', '#4a1a08', '#b8480f', '#ffb056']
  *   speed?: number,
  *   paused?: boolean,
  *   transparent?: boolean, // draw only the clouds; the sky shows what's behind
+ *   banks?: ('far' | 'mid' | 'front')[], // which cloud banks to draw, for
+ *     // stacking content between them with a second, transparent instance
  * }} props
+ *
+ * The ref exposes `disturb(clientX?, clientY?)`: sends a shockwave through the
+ * clouds from that point on screen (default: the right side, mid-height).
  */
 export default function DitherClouds({
+  ref,
   sky = SKY,
   cloud = CLOUD,
   cellSize = 3,
   speed = 1,
   paused = false,
   transparent = false,
+  banks = ALL_BANKS,
 }) {
   const containerRef = useRef(null)
   const wakeRef = useRef(null)
   const settings = useRef(null)
+  const disturbRef = useRef(null)
+
+  useImperativeHandle(ref, () => ({ disturb: (x, y) => disturbRef.current?.(x, y) }), [])
 
   useEffect(() => {
-    settings.current = { sky: hexToRgb(sky), cloud: cloud.flatMap(hexToRgb), cellSize, speed, paused, transparent }
+    settings.current = {
+      sky: hexToRgb(sky),
+      cloud: cloud.flatMap(hexToRgb),
+      cellSize,
+      speed,
+      paused,
+      transparent,
+      banks: ALL_BANKS.map(name => (banks.includes(name) ? 1 : 0)),
+    }
     wakeRef.current?.()
-  }, [sky, cloud, cellSize, speed, paused, transparent])
+  }, [sky, cloud, cellSize, speed, paused, transparent, banks.join()])
 
   useEffect(() => {
     const container = containerRef.current
@@ -222,7 +265,11 @@ export default function DitherClouds({
       sky: uniform('uSky'),
       skyAlpha: uniform('uSkyAlpha'),
       cloud: uniform('uCloud'),
+      gusts: uniform('uGusts'),
+      banks: uniform('uBanks'),
     }
+    const gusts = []
+    const gustData = new Float32Array(GUST_SLOTS * 4)
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const pointer = { x: 0, y: 0, inside: false }
@@ -242,6 +289,10 @@ export default function DitherClouds({
       gl.uniform3fv(u.sky, settings.current.sky)
       gl.uniform1f(u.skyAlpha, settings.current.transparent ? 0 : 1)
       gl.uniform3fv(u.cloud, settings.current.cloud)
+      gl.uniform3fv(u.banks, settings.current.banks)
+      gustData.fill(0)
+      gusts.forEach((g, i) => gustData.set([g.x / cssCell, g.y / cssCell, g.age, g.strength], i * 4))
+      gl.uniform4fv(u.gusts, gustData)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
     }
 
@@ -260,6 +311,10 @@ export default function DitherClouds({
       last = now
       state.clock += dt * rate
       state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS)
+      for (let i = gusts.length - 1; i >= 0; i--) {
+        gusts[i].age += dt
+        if (gusts[i].age > GUST_SECONDS) gusts.splice(i, 1)
+      }
       if (pointer.inside && state.touch < 0.01) {
         state.x = pointer.x
         state.y = pointer.y
@@ -299,6 +354,16 @@ export default function DitherClouds({
       pointer.inside = false
     }
 
+    disturbRef.current = (clientX, clientY) => {
+      if (reduce) return
+      const rect = container.getBoundingClientRect()
+      const x = clientX == null ? rect.width * 0.8 : clientX - rect.left
+      const y = clientY == null ? rect.height * 0.5 : rect.bottom - clientY
+      gusts.push({ x, y, age: 0, strength: 1 })
+      if (gusts.length > GUST_SLOTS) gusts.shift()
+      wake()
+    }
+
     const resizeObserver = new ResizeObserver(resize)
     resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
@@ -315,6 +380,7 @@ export default function DitherClouds({
     return () => {
       cancelAnimationFrame(raf)
       wakeRef.current = null
+      disturbRef.current = null
       resizeObserver.disconnect()
       intersection.disconnect()
       window.removeEventListener('pointermove', onPointerMove)

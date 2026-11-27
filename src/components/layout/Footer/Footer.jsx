@@ -81,7 +81,15 @@ export default function Footer({ tone = 'light' }) {
         timer = setTimeout(() => ScrollTrigger.refresh(), 100)
       })
       observer.observe(document.body)
+      // A refresh can itself resize the page (the events strip sets its own
+      // height). Take that as the new baseline instead of refreshing again,
+      // since every extra refresh nudges the scroll position on phones.
+      const syncHeight = () => {
+        lastHeight = document.body.scrollHeight
+      }
+      ScrollTrigger.addEventListener('refresh', syncHeight)
       return () => {
+        ScrollTrigger.removeEventListener('refresh', syncHeight)
         observer.disconnect()
         clearTimeout(timer)
       }
@@ -94,8 +102,8 @@ export default function Footer({ tone = 'light' }) {
     // footer's background shows in its corners.
     <footer ref={root} className={`relative z-[5] -mt-16 overflow-hidden pt-16 ${t.footer}`}>
       <div className="px-4 pt-16 sm:px-10 sm:pt-24 lg:px-16">
-        <div className="grid gap-12 md:grid-cols-[2fr_1fr_1fr]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-[2fr_1fr_1fr] md:gap-12">
+          <div className="col-span-2 md:col-span-1">
             <p className="type-h3">Start your Day One</p>
             <p className={`type-caption mt-3 max-w-[38ch] ${t.lede}`}>
               Learn the cloud with peers at Tarlac State University. Every builder starts somewhere.

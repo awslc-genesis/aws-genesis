@@ -52,8 +52,7 @@ export default function PageTransition({ children }) {
 
       markCovered()
       navigate(to)
-      // Instant, because the site's smooth scrolling would be cut short by the
-      // refresh below and leave the new page partway down.
+      // Instant, so the refresh below measures the new page from the top.
       window.scrollTo({ top: 0, behavior: 'instant' })
       await nextPaint()
       ScrollTrigger.refresh()
@@ -67,6 +66,23 @@ export default function PageTransition({ children }) {
     },
     [location.pathname, navigate],
   )
+
+  // In-page links (href="#events" and the like) glide to their target. Done
+  // here rather than with CSS `scroll-behavior: smooth`, which would also
+  // slow down GSAP's own scroll jumps and leave the page in the wrong place.
+  useEffect(() => {
+    const onClick = event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      const link = event.target.closest?.('a[href^="#"]')
+      const id = link?.getAttribute('href').slice(1)
+      const target = id && document.getElementById(decodeURIComponent(id))
+      if (!target) return
+      event.preventDefault()
+      target.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
+    }
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [])
 
   // Back/forward buttons change the route without a link: start the new page
   // at the top unless the browser is restoring a scroll position.

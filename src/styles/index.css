@@ -252,6 +252,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* The page still scrolls; only the scrollbar is hidden. */
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
   body {
     font-size: var(--fs-body);
     line-height: 1.55;
@@ -335,11 +342,10 @@
   -webkit-text-fill-color: transparent;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
+/* No `scroll-behavior: smooth` on html: GSAP re-measures scroll effects by
+   jumping to the top and back, and smooth scrolling turns that jump back into
+   a slow glide that can leave the page at the top (worst on phones). In-page
+   #links still glide; see PageTransition. */
 
 /* Partner logo marquee: the track holds two identical rows and slides left by
    one row's width, then repeats. Edges fade out so logos enter and leave softly. */
