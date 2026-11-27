@@ -126,11 +126,11 @@ export default function Events() {
 
           {featured ? (
             <>
-              <div data-reveal className="mt-8 sm:mt-10">
+              <div data-reveal className="mx-auto mt-8 max-w-7xl sm:mt-10">
                 <EventListCard event={featured} large />
               </div>
               {later.length > 0 && (
-                <ul className="mt-16 grid gap-x-10 gap-y-16 sm:mt-24 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="mx-auto mt-16 grid max-w-7xl gap-x-10 gap-y-16 sm:mt-24 sm:grid-cols-2 lg:grid-cols-3">
                   {later.map(event => (
                     <li key={event.slug} data-reveal>
                       <EventListCard event={event} />

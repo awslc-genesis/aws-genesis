@@ -26,7 +26,7 @@ function EventCard({ event }) {
     <li
       // Width follows the screen's height on wide screens, so a card plus its
       // caption always fits vertically; on phones it fills most of the width.
-      className="relative w-[min(90vw,72svh)] shrink-0 self-center text-ink"
+      className="relative w-[min(90vw,52svh)] shrink-0 self-center text-ink"
     >
       {/* Landscape photo as a React Bits TiltedCard: it tilts toward the
           pointer (no glare), the title floats on a parallax layer, and a
@@ -198,7 +198,10 @@ export default function EventsSection({ className }) {
 
         <ul
           ref={track}
-          className="mt-8 flex min-h-0 w-max flex-1 gap-8 px-4 will-change-transform sm:mt-10 sm:gap-12 sm:px-10 lg:gap-20 lg:px-16"
+          // mx-auto centres the row when every card fits on screen; when it is
+          // wider than the screen, auto margins collapse to 0 and it starts at
+          // the left edge so the sideways scroll still reaches every card.
+          className="mx-auto mt-8 flex min-h-0 w-max flex-1 gap-8 px-4 will-change-transform sm:mt-10 sm:gap-12 sm:px-10 lg:gap-20 lg:px-16"
         >
           {EVENTS.map(event => (
             <EventCard key={event.slug} event={event} />
